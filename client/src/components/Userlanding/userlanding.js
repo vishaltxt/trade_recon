@@ -51,7 +51,7 @@ const UserLanding = ({ onAddNew, onEdit }) => {
       ))} */}
 
       {filterData.map((items, index) => (
-        <div key={index} className="flex w-[98%] m-auto">
+        <div key={index} className="flex w-[98%] m-auto hover:bg-gray-50">
           <div className="border p-3 w-full md:w-1/3 ">{items.name}</div>
           <div className="border p-3 w-full md:w-1/3 ">{items.email}</div>
           <div className="border p-3 w-full md:w-1/3">{items.role}</div>

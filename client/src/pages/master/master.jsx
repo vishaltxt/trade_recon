@@ -45,7 +45,7 @@ const Master = () => {
                     tabs={[
                         {
                             key: "landing",
-                            title: "master",
+                            title: "Master",
                             content: <MasterLanding onAddNew={handleAddMaster} />
                         },
                         ...tabs

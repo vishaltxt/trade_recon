@@ -1,7 +1,6 @@
 import React from "react";
 
-const Mappinglanding = ({onAddNew}) => {
-
+const Mappinglanding = ({ onAddNew }) => {
   const data = [
     {
       master_id: "111",
@@ -46,10 +45,15 @@ const Mappinglanding = ({onAddNew}) => {
       <hr /> */}
       <div className="flex justify-between">
         <div>
-          <h1 className="text-xl  font-bold m-4">All Mappings <span className="text-sm">10 items</span></h1>
+          <h1 className="text-xl  font-bold m-4">
+            All Mappings <span className="text-sm">10 items</span>
+          </h1>
         </div>
         <div>
-          <button className="text-white bg-[#586f80] p-1 w-32 rounded-md mr-5" onClick={onAddNew}>
+          <button
+            className="text-white bg-[#586f80] p-1 w-32 rounded-md mr-5"
+            onClick={onAddNew}
+          >
             +Add Mappings
           </button>
         </div>
@@ -58,16 +62,20 @@ const Mappinglanding = ({onAddNew}) => {
         <div className="flex w-[98%] m-auto bg-gray-100 font-bold text-[#637f92]">
           <div className="border p-3 w-full md:w-1/3 ">Master ID</div>
           <div className="border p-3 w-full md:w-1/3 ">Minion Id</div>
-          <div className="border p-3 w-full md:w-1/3">Percentage for Replication</div>
+          <div className="border p-3 w-full md:w-1/3">
+            Percentage for Replication
+          </div>
           <div className="border p-3 w-full md:w-1/3">Replication</div>
           <div className="border p-3 w-full md:w-1/3">Created At</div>
         </div>
       </div>
       {data.map((items, index) => (
-        <div key={index} className="flex w-[98%] m-auto">
+        <div key={index} className="flex w-[98%] m-auto hover:bg-gray-50">
           <div className="border p-3 w-full md:w-1/3 ">{items.master_id}</div>
           <div className="border p-3 w-full md:w-1/3 ">{items.minion_id}</div>
-          <div className="border p-3 w-full md:w-1/3">{items.percentage_replication}</div>
+          <div className="border p-3 w-full md:w-1/3">
+            {items.percentage_replication}
+          </div>
           <div className="border p-3 w-full md:w-1/3">{items.replication}</div>
           <div className="border p-3 w-full md:w-1/3">{items.created_at}</div>
         </div>

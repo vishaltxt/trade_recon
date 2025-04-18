@@ -22,13 +22,13 @@ const MasterLanding = ({ onAddNew }) => {
           </h1>
         </div>
         <div>
-          <MdSearch className="relative top-11 left-5 " />
+          <MdSearch className="relative  top-7 left-1 " />
           <input
             type="text"
             placeholder="Search by Master Name"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="border rounded-lg p-1 m-4 text-center"
+            className="border rounded-lg p-1 mr-4 text-center"
           />
           <button
             className="text-white bg-[#586f80] p-1 w-28 mr-5 rounded-md"
@@ -46,7 +46,7 @@ const MasterLanding = ({ onAddNew }) => {
         </div>
       </div>
       {filterData.map((items, index) => (
-        <div key={index} className="flex w-[98%] m-auto">
+        <div key={index} className="flex w-[98%] m-auto hover:bg-gray-50">
           <div className="border p-3 w-full md:w-1/3 ">{items.master_name}</div>
           <div className="border p-3 w-full md:w-1/3 ">{items.master_id}</div>
           <div className="border p-3 w-full md:w-1/3">{items.created_at}</div>

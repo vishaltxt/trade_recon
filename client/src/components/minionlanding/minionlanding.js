@@ -67,14 +67,10 @@ const Minionlanding = ({ onAddNew, onEdit }) => {
           </div>
         </div>
         {filterData.map((items, index) => (
-          <div key={index} className="flex w-[98%] m-auto">
-            <div className="border p-3 w-full md:w-1/3 ">
-              {items.minion_name}
-            </div>
+          <div key={index} className="flex w-[98%] m-auto hover:bg-gray-50">
+            <div className="border p-3 w-full md:w-1/3 ">{items.minion_name}</div>
             <div className="border p-3 w-full md:w-1/3 ">{items.minion_id}</div>
-            <div className="border p-3 w-full md:w-1/3">
-              {items.client_code}
-            </div>
+            <div className="border p-3 w-full md:w-1/3">{items.client_code}</div>
             <div className="border p-3 w-full md:w-1/3">{items.created_at}</div>
             <div className="border p-3 w-full md:w-1/3">{items.server}</div>
           </div>
