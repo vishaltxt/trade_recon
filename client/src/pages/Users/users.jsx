@@ -5,10 +5,10 @@ import UserLanding from '../../components/Userlanding/userlanding';
 import Dashboard from '../../components/Dashboard/dashboard';
 
 const Users = () => {
-  const [users, setUsers] = useState([
-    { id: '1', firstName: 'Alice', lastName: 'Brown', email: 'alice@example.com' },
-    { id: '2', firstName: 'Bob', lastName: 'Smith', email: 'bob@example.com' }
-  ]);
+  // const [users, setUsers] = useState([
+  //   { id: '1', firstName: 'Alice', lastName: 'Brown', email: 'alice@example.com' },
+  //   { id: '2', firstName: 'Bob', lastName: 'Smith', email: 'bob@example.com' }
+  // ]);
 
   const [tabs, setTabs] = useState([]);
   const [activeKey, setActiveKey] = useState('landing');
@@ -26,7 +26,6 @@ const Users = () => {
       key,
       'Create User',
       <UserForm
-        isCreateMode={true}
         onSave={() => {
           setTabs(tabs => tabs.filter(t => t.key !== key));
           setActiveKey('landing');
@@ -39,39 +38,38 @@ const Users = () => {
     );
   };
 
-  const handleEditUser = (user) => {
-    const key = user.id;
-    addTab(
-      key,
-      `${user.firstName} ${user.lastName}`,
-      <UserForm
-        user={user}
-        isCreateMode={false}
-        onSave={() => {
-          setTabs(tabs => tabs.filter(t => t.key !== key));
-          setActiveKey('landing');
-        }}
-        onClose={() => {
-          setTabs(tabs => tabs.filter(t => t.key !== key));
-          setActiveKey('landing');
-        }}
-      />
-    );
-  };
-
+  // const handleEditUser = (user) => {
+  //   const key = user.id;
+  //   addTab(
+  //     key,
+  //     `${user.firstName} ${user.lastName}`,
+  //     <UserForm
+  //       user={user}
+  //       isCreateMode={false}
+  //       onSave={() => {
+  //         setTabs(tabs => tabs.filter(t => t.key !== key));
+  //         setActiveKey('landing');
+  //       }}
+  //       onClose={() => {
+  //         setTabs(tabs => tabs.filter(t => t.key !== key));
+  //         setActiveKey('landing');
+  //       }}
+  //     />
+  //   );
+  // };
+  // onEdit={handleEditUser}
   return (
     <div className='flex'>
       <div>
         <Dashboard />
       </div>
       <div className='w-full'>
-        <TabsContainer
+        <TabsContainer 
           tabs={[
             {
               key: 'landing',
               title: 'User',
-              style:{},
-              content: <UserLanding users={users} onAddNew={handleAddUser} onEdit={handleEditUser} />
+              content: <UserLanding onAddNew={handleAddUser} />
             },
             ...tabs
           ]}

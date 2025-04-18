@@ -1,37 +1,28 @@
 import React from "react";
 
-const UserForm = ({ user,  onSave, onClose }) => {
+const MappingForm = ({ user,  onSave, onClose }) => {
   return (
     <div>
       <h3 className="mx-3 p-2 text-[#637f92] font-bold bg-[#f0f4f7]">
-        User Details
+      Mapping Details
       </h3>
       <form>
         <div className="m-3">
           <div className="p-4">
-            <label>First Name: </label>
-            <input className="border ml-6" defaultValue={user?.firstName || ""} />
+            <label>Select Master ID: </label>
+            <input className="border ml-2" defaultValue={user?.firstName || ""} />
           </div>
           <div className="p-4">
-            <label>Last Name: </label>
-            <input className="border ml-6" defaultValue={user?.lastName || ""} />
+            <label>Select Minion ID: </label>
+            <input className="border ml-2" defaultValue={user?.lastName || ""} />
           </div>
           <div className="p-4">
-            <label>Email: </label>
-            <input className="border ml-16" defaultValue={user?.email || ""} />
+            <label>Percentage for Replication: </label>
+            <input className="border ml-2" defaultValue={user?.email || ""} />
           </div>
           <div className="p-4">
-            <label>Password: </label>
-            <input className="border ml-8" defaultValue={user?.email || ""} />
-          </div>
-          <div className="p-4">
-            <label>Roles: </label>
+            <label>Toggle for Replication: </label>
             {/* <input className="border" defaultValue={user?.email || ""} /> */}
-            <select className="border w-48 ml-14">
-              <option>Reader</option>
-              <option>Manager</option>
-              <option>Admin</option>
-            </select>
           </div>
           <div className="mt-4">
             <button
@@ -55,4 +46,4 @@ const UserForm = ({ user,  onSave, onClose }) => {
   );
 };
 
-export default UserForm;
+export default MappingForm;

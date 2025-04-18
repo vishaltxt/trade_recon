@@ -1,37 +1,31 @@
 import React from "react";
 
-const UserForm = ({ user,  onSave, onClose }) => {
+const MinionForm = ({ user, onSave, onClose }) => {
   return (
     <div>
       <h3 className="mx-3 p-2 text-[#637f92] font-bold bg-[#f0f4f7]">
-        User Details
+        Minion User Details
       </h3>
       <form>
         <div className="m-3">
           <div className="p-4">
-            <label>First Name: </label>
-            <input className="border ml-6" defaultValue={user?.firstName || ""} />
+            <label>Enter Minion Name: </label>
+            <input className="border ml-2" defaultValue={user?.firstName || ""} />
           </div>
           <div className="p-4">
-            <label>Last Name: </label>
-            <input className="border ml-6" defaultValue={user?.lastName || ""} />
+            <label>Enter Minion Trader Id: </label>
+            <input className="border ml-2" defaultValue={user?.lastName || ""} />
           </div>
           <div className="p-4">
-            <label>Email: </label>
-            <input className="border ml-16" defaultValue={user?.email || ""} />
+            <label>Enter Minion Client Code: </label>
+            <input className="border ml-2" defaultValue={user?.email || ""} />
           </div>
           <div className="p-4">
-            <label>Password: </label>
-            <input className="border ml-8" defaultValue={user?.email || ""} />
-          </div>
-          <div className="p-4">
-            <label>Roles: </label>
-            {/* <input className="border" defaultValue={user?.email || ""} /> */}
-            <select className="border w-48 ml-14">
-              <option>Reader</option>
-              <option>Manager</option>
-              <option>Admin</option>
+            <label>Enter Minion Server: </label>
+            <select className="border w-56 p-1 ml-2">
+              <option>http://103.69.168.20:3000</option>
             </select>
+            {/* <input className="border" defaultValue={user?.email || ""} /> */}
           </div>
           <div className="mt-4">
             <button
@@ -55,4 +49,4 @@ const UserForm = ({ user,  onSave, onClose }) => {
   );
 };
 
-export default UserForm;
+export default MinionForm;

@@ -9,17 +9,17 @@ const Transactions = () => {
             <div className='w-full'>
                 <h2 className='text-lg m-3 font-bold'>Transaction</h2>
                 <hr />
-                <div className='mb-4'>
+                <div className='mb-4 flex justify-between'>
                     <div>
-                        <h1 className='text-xl  font-bold m-4'>Transactions</h1>
+                        <h1 className='text-xl  font-bold m-4'>Transactions <span className="text-sm">11 items</span></h1>
                     </div>
                     <div></div>
                     <div>
-                        <button className='text-white bg-[#586f80] p-0.5 w-36 rounded-md'>+Add Transaction</button>
+                        <button className='text-white bg-[#586f80] p-0.5 w-36 m-4 rounded-md'>+Add Transaction</button>
                     </div>
                 </div>
                   <div>
-                  <div className='flex w-11/12 m-auto bg-gray-100 font-bold text-[#637f92]'>
+                  <div className='flex w-[98%] m-auto bg-gray-100 font-bold text-[#637f92]'>
                             <div className='border p-3 w-full md:w-1/3 '>Security Name</div>
                             <div className='border p-3 w-full md:w-1/3 '>Minion Trade Quantity</div>
                             <div className='border p-3 w-full md:w-1/3'>Order Side</div>

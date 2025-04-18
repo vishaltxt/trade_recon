@@ -1,19 +1,62 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Dashboard from '../../components/Dashboard/dashboard';
+import MappingForm from '../../components/mappingLanding/mappingForm';
+import TabsContainer from '../../components/mappingLanding/tabsContainer';
+import Mappinglanding from '../../components/mappingLanding/mappinglanding';
 
 const Mapping = () => {
-    const data = [
-        { master_id: '111', minion_id: "544", percentage_replication:"100%" , replication:"Yes" , created_at: "12-01-20250"  },
-        { master_id: '222', minion_id: "223", percentage_replication:"100%", replication:"Yes" , created_at: "01-01-2025"  },
-        { master_id: '333', minion_id: "123", percentage_replication:"100%", replication:"Yes" , created_at: "10-04-2025" },
-        { master_id: '333', minion_id: "123", percentage_replication:"100%", replication:"Yes" , created_at: "10-04-2025" },
-        { master_id: '333', minion_id: "123", percentage_replication:"100%", replication:"Yes" , created_at: "10-04-2025" },
-    ]
+    
+    const [tabs, setTabs] = useState([]);
+    const [activeKey, setActiveKey] = useState('landing');
+
+    const addTab = (key, title, content) => {
+        if (!tabs.find(tab => tab.key === key)) {
+            setTabs(prev => [...prev, { key, title, content }]);
+        }
+        setActiveKey(key);
+    };
+
+    const handleAddMapping = () => {
+        const key = 'create';
+        addTab(
+            key,
+            'Create Mapping',
+            <MappingForm
+                onSave={() => {
+                    setTabs(tabs => tabs.filter(t => t.key !== key));
+                    setActiveKey('landing');
+                }}
+                onClose={() => {
+                    setTabs(tabs => tabs.filter(t => t.key !== key));
+                    setActiveKey('landing');
+                }}
+            />
+        );
+    };
     return (
         <div className='flex h-full'>
             <Dashboard />
             <div className='w-full'>
-                <h2 className='text-lg m-3 font-bold'>Mapping</h2>
+                <div className='w-full'>
+                    <TabsContainer
+                        tabs={[
+                            {
+                                key: 'landing',
+                                title: 'Mapping',
+                                style: {},
+                                content: <Mappinglanding onAddNew={handleAddMapping} />
+                            },
+                            ...tabs
+                        ]}
+                        activeKey={activeKey}
+                        onTabClick={setActiveKey}
+                        onCloseTab={(key) => {
+                            setTabs(tabs => tabs.filter(t => t.key !== key));
+                            setActiveKey('landing');
+                        }}
+                    />
+                </div>
+                {/* <h2 className='text-lg m-3 font-bold'>Mapping</h2>
                 <hr />
                 <div className='mb-4'>
                     <div>
@@ -43,7 +86,7 @@ const Mapping = () => {
                             <div className='border p-3 w-full md:w-1/3'>{items.created_at}</div>
                         </div>
                     ))
-                }
+                } */}
             </div>
         </div>
     )

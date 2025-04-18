@@ -1,4 +1,6 @@
 import { User } from "../modals/user-model.js";
+import fs from 'fs'
+import path from 'path';
 
 export const register = async (req, res) => {
   try {
@@ -64,17 +66,34 @@ export const recon = (req, res) => {
   }
 };
 
-//   export const logout = catchAsyncErrors(async (req, res, next) => {
-//     res
-//       .status(201)
-//       .cookie("token", "", {
-//         httpOnly: true,
-//         expires: new Date(Date.now()),
-//         secure: true,
-//         sameSite: "None",
-//       })
-//       .json({
-//         success: true,
-//         message: "Logged Out Successfully.",
-//       });
-//   });
+export const read = (req,res)=>{
+  try {
+    // const filePath = path.join(__dirname, 'data.txt');
+    const filePath = process.env.FILE_PATH;
+
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading file:', err);
+            return res.status(500).json({ error: 'Failed to read file' });
+        }
+
+        res.json({ content: data });
+    });
+  } catch (error) {
+    console.log(error)
+  }
+}
+  export const logout = (async (req, res, next) => {
+    res
+      // .status(201)
+      // .cookie("token", "", {
+      //   httpOnly: true,
+      //   expires: new Date(Date.now()),
+      //   secure: true,
+      //   sameSite: "None",
+      // })
+      .json({
+        success: true,
+        message: "Logged Out Successfully.",
+      });
+  });

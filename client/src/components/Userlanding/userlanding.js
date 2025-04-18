@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { MdSearch } from "react-icons/md";
-const UserLanding = ({ users, onAddNew, onEdit }) => {
+
+const UserLanding = ({ onAddNew, onEdit }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const data = [
     { name: "vishal", email: "vis@gmail.com", role: "Admin" },
@@ -8,7 +9,7 @@ const UserLanding = ({ users, onAddNew, onEdit }) => {
     { name: "rahul", email: "rahul@gmail.com", role: "Reader" },
   ];
 
-  const filteredData = data.filter((user) =>
+  const filterData = data.filter((user) =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
   return (
@@ -24,10 +25,10 @@ const UserLanding = ({ users, onAddNew, onEdit }) => {
             placeholder="Search by User Name"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="border rounded-lg p-1 m-4  text-center"
+            className="border rounded-lg p-1 m-4 text-center"
           />
           <button
-            className="text-white bg-[#586f80] p-0.5 w-24 mr-5 rounded-md"
+            className="text-white bg-[#586f80] p-1 w-24 mr-5 rounded-md"
             onClick={onAddNew}
           >
             + Add User
@@ -49,7 +50,7 @@ const UserLanding = ({ users, onAddNew, onEdit }) => {
         </div>
       ))} */}
 
-      {filteredData.map((items, index) => (
+      {filterData.map((items, index) => (
         <div key={index} className="flex w-[98%] m-auto">
           <div className="border p-3 w-full md:w-1/3 ">{items.name}</div>
           <div className="border p-3 w-full md:w-1/3 ">{items.email}</div>

@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+// import axios from 'axios';
+
 const Login = () => {
 
     const [user, setUser] = useState({
@@ -22,17 +24,25 @@ const Login = () => {
         console.log(user);
     }
 
-    const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+    const [showPassword, setShowPassword] = useState(false);
     const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword); // Toggle the showPassword state
+        setShowPassword(!showPassword); 
     };
 
     const handleLogin = () => {
         <Navigate to={'/recon'} />
     }
+
+    // useEffect(()=>{
+    //     try {
+    //         const response = axios.get('http://localhost:5000/api/auth/login');
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // },[])
     return (
         <form onSubmit={handleSubmit}>
-            <div className='border-2 rounded-lg text-center w-1/3 mx-auto bg-yellow-100 m-80 p-2'>
+            <div className='border rounded-lg text-center w-1/3 mx-auto bg-yellow-100 m-80 p-5'>
                 <h1 className='text-5xl font-medium text-amber-300'>Login to Dashboard</h1>
                 <div className="mt-8 p-6">
                     <label className='text-xl text-amber-300'>E-mail :</label>
@@ -40,7 +50,7 @@ const Login = () => {
                 </div>
                 <div className="p-1">
                     <label className='text-xl text-amber-300'>Password :</label> 
-                    <input className='ml-5 p-1 w-1/2 rounded-lg' type={showPassword ? 'text' : 'password'} name='password' value={user.password} onChange={handleInput} placeholder='enter your password'></input>
+                    <input className='ml-5 p-1 w-[42%] rounded-lg' type={showPassword ? 'text' : 'password'} name='password' value={user.password} onChange={handleInput} placeholder='enter your password'></input>
                     {/* Eye Icon */}
                     <span
                         onClick={togglePasswordVisibility}
@@ -50,7 +60,8 @@ const Login = () => {
                     </span>
                 </div>
                 <div className='p-5'>
-                    <Link to='/recon'><button className='text-2xl font-bold rounded-lg border-amber-600  hover:bg-white border-2 text-amber-300 p-1 mt5 w-36' onClick={handleLogin}>Login</button></Link>
+                    <Link to='/recon'><button className='text-2xl font-bold rounded-lg border-amber-600  hover:bg-white border-2 text-amber-300  w-36'
+                    onClick={handleLogin}>Login</button></Link>
                 </div>
             </div>
         </form>
