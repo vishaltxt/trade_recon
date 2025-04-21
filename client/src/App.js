@@ -21,6 +21,7 @@ function App() {
         <Route path="/mappings" element={<Mapping/>}/>
         <Route path="/transactions" element={<Transactions/>}/>
         <Route path="/recon" element={<Recon/>}/>
+        <Route path="*" element={<Login/>}/>
         {/* <Route path="/sample" element={<Sample/>}/> */}
       </Routes>
     </Router>

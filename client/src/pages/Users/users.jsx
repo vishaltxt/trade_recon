@@ -5,10 +5,11 @@ import UserLanding from '../../components/Userlanding/userlanding';
 import Dashboard from '../../components/Dashboard/dashboard';
 
 const Users = () => {
-  // const [users, setUsers] = useState([
-  //   { id: '1', firstName: 'Alice', lastName: 'Brown', email: 'alice@example.com' },
-  //   { id: '2', firstName: 'Bob', lastName: 'Smith', email: 'bob@example.com' }
-  // ]);
+  const [users, setUsers] = useState([
+  {id: '1', firstName: "Vishal", lastName: "Sharma", email: "vis@gmail.com", role: "Admin" },
+  {id: '2', firstName: "Suraj", lastName: "Kumar", email: "suraj@gmail.com", role: "Manager" },
+  {id: '3', firstName: "Rahul", lastName: "Verma", email: "rahul@gmail.com", role: "Reader" },
+  ]);
 
   const [tabs, setTabs] = useState([]);
   const [activeKey, setActiveKey] = useState('landing');
@@ -17,7 +18,7 @@ const Users = () => {
     if (!tabs.find(tab => tab.key === key)) {
       setTabs(prev => [...prev, { key, title, content }]);
     }
-    setActiveKey(key);
+    setActiveKey(key);   
   };
 
   const handleAddUser = () => {
@@ -26,7 +27,41 @@ const Users = () => {
       key,
       'Create User',
       <UserForm
-        onSave={() => {
+      onSave={(newUser) => {
+        // Add the new user to state
+        const newUserWithId = { ...newUser, id: Date.now().toString() };
+        setUsers(prev => [...prev, newUserWithId]);
+
+        // Close the create tab
+        setTabs(tabs => tabs.filter(t => t.key !== key));
+        setActiveKey('landing');
+      }}
+      onClose={() => {
+        setTabs(tabs => tabs.filter(t => t.key !== key));
+        setActiveKey('landing');
+      }}
+    />
+      // <UserForm
+      //   onSave={() => {
+      //     setTabs(tabs => tabs.filter(t => t.key !== key));
+      //     setActiveKey('landing');
+      //   }}
+      //   onClose={() => {
+      //     setTabs(tabs => tabs.filter(t => t.key !== key));
+      //     setActiveKey('landing');
+      //   }}
+      // />
+    );
+  };
+  const handleEditUser = (user) => {
+    const key = user.id;
+    addTab(
+      key,
+      `Edit: ${user.firstName}`,
+      <UserForm
+        user={user}
+        onSave={(updatedUser) => {
+          setUsers(prev => prev.map(u => u.id === user.id ? { ...u, ...updatedUser } : u));
           setTabs(tabs => tabs.filter(t => t.key !== key));
           setActiveKey('landing');
         }}
@@ -38,26 +73,9 @@ const Users = () => {
     );
   };
 
-  // const handleEditUser = (user) => {
-  //   const key = user.id;
-  //   addTab(
-  //     key,
-  //     `${user.firstName} ${user.lastName}`,
-  //     <UserForm
-  //       user={user}
-  //       isCreateMode={false}
-  //       onSave={() => {
-  //         setTabs(tabs => tabs.filter(t => t.key !== key));
-  //         setActiveKey('landing');
-  //       }}
-  //       onClose={() => {
-  //         setTabs(tabs => tabs.filter(t => t.key !== key));
-  //         setActiveKey('landing');
-  //       }}
-  //     />
-  //   );
-  // };
-  // onEdit={handleEditUser}
+  const handleDeleteUser = (userId) => {
+    setUsers(prev => prev.filter(user => user.id !== userId));
+  };
   return (
     <div className='flex'>
       <div>
@@ -69,7 +87,7 @@ const Users = () => {
             {
               key: 'landing',
               title: 'User',
-              content: <UserLanding onAddNew={handleAddUser} />
+              content: <UserLanding data={users} onAddNew={handleAddUser} onEdit={handleEditUser}   onDelete={handleDeleteUser}/>
             },
             ...tabs
           ]}

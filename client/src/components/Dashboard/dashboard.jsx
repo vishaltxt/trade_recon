@@ -1,12 +1,24 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { RiLogoutCircleRLine } from "react-icons/ri";
+import axios from 'axios';
 
 const Dashboard = () => {
-    const Navigate = useNavigate();
-    const handleLogout = () => {
-        Navigate('/');
-    }
+    const navigate = useNavigate();
+    const handleLogout = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/auth/logout');
+            if (response.status === 200) {
+                // alert("Logout successful");
+                localStorage.removeItem('token');
+                navigate('/login');
+            } else {
+                console.log("Logout failed:", response);
+            }
+        } catch (error) {
+            console.log("Logout error:", error);
+        }
+    };
     return (
         <div className='bg-black flex flex-col h-screen border w-48 rounded-l-lg'>
             <div className='h-[96vh]'>
@@ -22,8 +34,8 @@ const Dashboard = () => {
                 </ul>
             </div>
             <div className='text-gray-400 font-normal text-lg text-center'>
-            <RiLogoutCircleRLine className='absolute cursor-pointer left-9 bottom-[13.5px]'/>
-            <p className='cursor-pointer' onClick={handleLogout}>Logout</p>
+                <RiLogoutCircleRLine className='absolute cursor-pointer left-9 bottom-[13.5px]' />
+                <p className='cursor-pointer' onClick={handleLogout}>Logout</p>
             </div>
         </div>
     )
