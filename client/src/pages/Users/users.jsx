@@ -87,7 +87,7 @@ const Users = () => {
             {
               key: 'landing',
               title: 'User',
-              content: <UserLanding data={users} onAddNew={handleAddUser} onEdit={handleEditUser}   onDelete={handleDeleteUser}/>
+              content: <UserLanding data={users} onAddNew={handleAddUser} onEdit={handleEditUser} onDelete={handleDeleteUser}/>
             },
             ...tabs
           ]}

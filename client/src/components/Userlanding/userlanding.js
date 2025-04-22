@@ -8,7 +8,7 @@ const UserLanding = ({ data = [], onAddNew, onEdit ,onDelete}) => {
     `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
 );
 console.log(filterData)
-
+ 
   return (
     <div className="w-full">
       <div className="flex justify-between">
@@ -20,7 +20,7 @@ console.log(filterData)
         <div>
           <MdSearch className="relative top-11 left-5 " />
           <input
-            type="text"
+            type="text"   
             placeholder="Search by User Name"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
