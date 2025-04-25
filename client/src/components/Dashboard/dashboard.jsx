@@ -31,6 +31,7 @@ const Dashboard = () => {
                     <Link to='/mappings'><li className='p-3 rounded-lg hover:bg-gray-900'>Mappings</li></Link>
                     <Link to='/transactions'><li className='p-2 rounded-lg hover:bg-gray-900'>Transaction History</li></Link>
                     <Link to='/recon'><li className='p-3 rounded-lg hover:bg-gray-900'>Recon</li></Link>
+                    <Link to='/searchdata'><li className='p-3 rounded-lg hover:bg-gray-900'>Search</li></Link>
                 </ul>
             </div>
             <div className='text-gray-400 font-normal text-lg text-center'>

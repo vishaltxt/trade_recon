@@ -23,7 +23,7 @@ const MasterLanding = ({ onAddNew , onEdit , onDelete }) => {
   }, []);
 
   const filterData = trades.filter((user) =>
-    user.trade_no?.toLowerCase().includes(searchTerm.toLowerCase())
+    user.order_no?.toLowerCase().includes(searchTerm.toLowerCase())
   );
   console.log("trades",trades)
 console.log("filterdata",filterData)
@@ -76,7 +76,7 @@ console.log("filterdata",filterData)
       {/* Table rows */}
       {paginatedData.map((master, index) => (
         <div key={master.id || index} className="flex w-[98%] m-auto hover:bg-gray-50">
-          <div className="border p-3 w-full md:w-1/3">{master.trade_no}</div>
+          <div className="border p-3 w-full md:w-1/3">{master.order_no}</div>
           <div className="border p-3 w-full md:w-1/3">{master.trade_no}</div>
           <div className="border p-3 w-full md:w-1/3">{master.order_time}</div>
           <div className="border p-3 w-full md:w-1/4">

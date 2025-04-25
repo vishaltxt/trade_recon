@@ -9,6 +9,7 @@ import Master from './pages/master/master';
 import Minion from './pages/Minions/minions';
 import Mapping from './pages/Mapping/mapping';
 import Transactions from './pages/Transactions/transactions';
+import Search from './pages/search';
 function App() {
   return (
     <div>
@@ -22,6 +23,7 @@ function App() {
         <Route path="/transactions" element={<Transactions/>}/>
         <Route path="/recon" element={<Recon/>}/>
         <Route path="*" element={<Login/>}/>
+        <Route path="/searchdata" element={<Search/>}/>
         {/* <Route path="/sample" element={<Sample/>}/> */}
       </Routes>
     </Router>
