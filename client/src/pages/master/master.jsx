@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Dashboard from '../../components/Dashboard/dashboard';
 import TabsContainer from '../../components/masterlanding/tabsContainer';
 import MasterLanding from '../../components/masterlanding/masterlanding';
 import Masterform from '../../components/masterlanding/masterform';
+import { createMasters, deleteMasters, getMasters, updateMasters } from '../apis/masterApi';
 
 const Master = () => {
     // const data = [
@@ -10,8 +11,22 @@ const Master = () => {
     //     { master_name: 'suraj', master_id: "223", created_at: "01-01-2025" },
     //     { master_name: 'rahul', master_id: "123", created_at: "10-04-2025" },
     // ]
+    const [master, setMasters] = useState([]);
     const [tabs, setTabs] = useState([]);
     const [activeKey, setActiveKey] = useState('landing');
+
+    const fetchMasters = async () => {
+        try {
+            const res = await getMasters();
+            setMasters(res.data);
+        } catch (error) {
+            console.error("Error fetching masters:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchMasters();
+    }, []);
 
     const addTab = (key, title, content) => {
         if (!tabs.find(tab => tab.key === key)) {
@@ -26,7 +41,13 @@ const Master = () => {
             key,
             'Create Master User',
             <Masterform
-                onSave={() => {
+                onSave={async (newMaster) => {
+                    try {
+                        await createMasters(newMaster);
+                        await fetchMasters();
+                    } catch (err) {
+                        console.error("Error creating master:", err);
+                    }
                     setTabs(tabs => tabs.filter(t => t.key !== key));
                     setActiveKey('landing');
                 }}
@@ -37,6 +58,39 @@ const Master = () => {
             />
         )
     }
+    const handleEditMaster = (master) => {
+        const key = `edit-${master._id}`;
+        addTab(
+            key,
+            `Edit Master ${master.masterName}`,
+            <Masterform
+                user={master}
+                onSave={async (updatedMaster) => {
+                    try {
+                        await updateMasters(master._id, updatedMaster);
+                        await fetchMasters();
+                    } catch (err) {
+                        console.error("Error updating master:", err);
+                    }
+                    setTabs(tabs => tabs.filter(t => t.key !== key));
+                    setActiveKey('landing');
+                }}
+                onClose={() => {
+                    setTabs(tabs => tabs.filter(t => t.key !== key));
+                    setActiveKey('landing');
+                }}
+            />
+        );
+    };
+
+    const handleDeleteMaster = async (masterId) => {
+        try {
+            await deleteMasters(masterId);
+            await fetchMasters();
+        } catch (err) {
+            console.error("Error deleting master:", err);
+        }
+    }
     return (
         <div className='flex h-full'>
             <Dashboard />
@@ -46,9 +100,9 @@ const Master = () => {
                         {
                             key: "landing",
                             title: "Master",
-                            content: <MasterLanding onAddNew={handleAddMaster} />
+                            content: <MasterLanding data={master} onAddNew={handleAddMaster} onEdit={handleEditMaster}  onDelete={handleDeleteMaster}/>
                         },
-                        ...tabs
+                            ...tabs
                     ]}
                     activeKey={activeKey}
                     onTabClick={setActiveKey}

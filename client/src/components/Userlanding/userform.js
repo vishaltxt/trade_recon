@@ -8,6 +8,8 @@ const UserForm = ({ user = {}, onSave, onClose }) => {
     password: user.password || "",
     role: user.role || "Reader",
   });
+  
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,13 +19,30 @@ const UserForm = ({ user = {}, onSave, onClose }) => {
     }));
   };
 
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
+    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
+    if (!formData.email.trim()) newErrors.email = "Email is required";
+    if (!formData.password.trim() && !user.id) newErrors.password = "Password is required";
+    if (!formData.role) newErrors.role = "Role is required";
+    return newErrors;
+  };
+
   const handleSave = () => {
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     onSave(formData);
   };
 
   return (
     <div>
-      <h3 className="mx-3 p-2 text-[#637f92] font-bold bg-[#f0f4f7]">User Details</h3>
+      <h3 className="mx-3 p-2 text-[#637f92] font-bold bg-[#f0f4f7]">
+        User Details
+      </h3>
       <form>
         <div className="m-3">
           <div className="p-4">
@@ -31,38 +50,46 @@ const UserForm = ({ user = {}, onSave, onClose }) => {
             <input
               className="border ml-6"
               name="firstName"
+              required
               value={formData.firstName}
               onChange={handleChange}
             />
           </div>
+          {errors.firstName && <p className="text-red-500">{errors.firstName}</p>}
           <div className="p-4">
             <label>Last Name: </label>
             <input
               className="border ml-6"
               name="lastName"
+              required
               value={formData.lastName}
               onChange={handleChange}
             />
           </div>
+          {errors.lastName && <p className="text-red-500">{errors.lastName}</p>}
           <div className="p-4">
             <label>Email: </label>
             <input
               className="border ml-16"
               name="email"
+              required
               value={formData.email}
               onChange={handleChange}
             />
           </div>
+          {errors.email && <p className="text-red-500">{errors.email}</p>}
           <div className="p-4">
             <label>Password: </label>
             <input
               className="border ml-8"
               type="password"
               name="password"
+              required
               value={formData.password}
               onChange={handleChange}
             />
           </div>
+          {errors.password && <p className="text-red-500">{errors.password}</p>}
           <div className="p-4">
             <label>Roles: </label>
             <select
@@ -76,6 +103,7 @@ const UserForm = ({ user = {}, onSave, onClose }) => {
               <option value="Admin">Admin</option>
             </select>
           </div>
+          {errors.role && <p className="text-red-500">{errors.role}</p>}
           <div className="mt-4">
             <button
               className="text-white bg-[#586f80] rounded-md text-lg p-0.5 w-32 mr-4"

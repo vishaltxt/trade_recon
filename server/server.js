@@ -1,7 +1,9 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
-import { router } from "./routes/auth-routes/auth-router.js";
+import { userRouter } from "./routes/auth-routes/auth-router.js";
+import {userFormRouter } from "./routes/Form-routes/userFormRoutes.js";
+import { masterFormRouter } from "./routes/Form-routes/masterFormRoutes.js";
 const app = express();
 import { connectDb } from "./utils/db.js";
 import { errorMiddleware } from "./middlewares/error-middleware.js";
@@ -16,9 +18,10 @@ app.use(cors(corsOptions));
 
 
 app.use(express.json());
-app.use("/api/auth", router);
-app.use("/api/data",router);
-app.use("/api/form",router);
+app.use("/api/auth", userRouter);
+app.use("/api/data",userRouter);
+app.use("/api/form",userFormRouter,masterFormRouter);
+// app.use("/api/form",masterFormRouter);
 app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 5000;

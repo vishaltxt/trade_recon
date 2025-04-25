@@ -1,14 +1,14 @@
 import express from "express";
 import { register, login, recon ,read, logout} from "../../controllers/authControllers/auth-controller.js";
-export const router = express.Router();
+export const userRouter = express.Router();
 import { signupSchema } from "../../Validators/auth-validator.js";
 import { validate } from "../../middlewares/validate-middleware.js";
 
-router.post("/register", validate(signupSchema), register);
-router.post("/login" ,login);
-router.get("/logout",logout)
-router.get("/recon", recon);
+userRouter.post("/register", validate(signupSchema), register);
+userRouter.post("/login" ,login);
+userRouter.get("/logout",logout)
+userRouter.get("/recon", recon);
 
 
-router.get('/master',read)
+userRouter.get('/master',read)
 // export default router;

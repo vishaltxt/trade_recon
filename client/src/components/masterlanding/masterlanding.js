@@ -3,7 +3,7 @@ import { MdSearch } from "react-icons/md";
 import axios from "axios";
 import { Pagination, Box} from "@mui/material";
 
-const MasterLanding = ({ onAddNew }) => {
+const MasterLanding = ({ onAddNew , onEdit , onDelete }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [trades, setTrades] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,7 +25,8 @@ const MasterLanding = ({ onAddNew }) => {
   const filterData = trades.filter((user) =>
     user.trade_no?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
+  console.log("trades",trades)
+console.log("filterdata",filterData)
   const totalPages = Math.ceil(filterData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedData = filterData.slice(startIndex, startIndex + itemsPerPage);
@@ -47,7 +48,7 @@ const MasterLanding = ({ onAddNew }) => {
           <MdSearch className="relative top-0.5 left-7 text-gray-500" />
           <input
             type="text"
-            placeholder="Search by Client Code"
+            placeholder="Search by Master Name"
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -69,14 +70,29 @@ const MasterLanding = ({ onAddNew }) => {
         <div className="border p-3 w-full md:w-1/3">Master Name</div>
         <div className="border p-3 w-full md:w-1/3">Master Id</div>
         <div className="border p-3 w-full md:w-1/3">Created At</div>
+        <div className="border p-3 w-full md:w-1/3">Actions</div>
       </div>
 
       {/* Table rows */}
-      {paginatedData.map((item, index) => (
-        <div key={index} className="flex w-[98%] m-auto hover:bg-gray-50">
-          <div className="border p-3 w-full md:w-1/3">{item.trade_no}</div>
-          <div className="border p-3 w-full md:w-1/3">{item.trade_no}</div>
-          <div className="border p-3 w-full md:w-1/3">{item.order_time}</div>
+      {paginatedData.map((master, index) => (
+        <div key={master.id || index} className="flex w-[98%] m-auto hover:bg-gray-50">
+          <div className="border p-3 w-full md:w-1/3">{master.trade_no}</div>
+          <div className="border p-3 w-full md:w-1/3">{master.trade_no}</div>
+          <div className="border p-3 w-full md:w-1/3">{master.order_time}</div>
+          <div className="border p-3 w-full md:w-1/4">
+            <button
+              onClick={() => onEdit && onEdit(master)}
+              className="text-blue-600 underline hover:text-blue-800"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => onDelete(master._id)}
+              className="text-red-600 underline hover:text-red-800 ml-2"
+            >
+              Delete
+            </button>
+          </div>
         </div>
       ))}
 

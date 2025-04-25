@@ -1,18 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import UserForm from '../../components/Userlanding/userform';
 import TabsContainer from '../../components/Userlanding/tabsContainer';
 import UserLanding from '../../components/Userlanding/userlanding';
 import Dashboard from '../../components/Dashboard/dashboard';
 
-const Users = () => {
-  const [users, setUsers] = useState([
-  {id: '1', firstName: "Vishal", lastName: "Sharma", email: "vis@gmail.com", role: "Admin" },
-  {id: '2', firstName: "Suraj", lastName: "Kumar", email: "suraj@gmail.com", role: "Manager" },
-  {id: '3', firstName: "Rahul", lastName: "Verma", email: "rahul@gmail.com", role: "Reader" },
-  ]);
+import {
+  getUsers,
+  createUser,
+  updateUser,
+  deleteUser
+} from '../apis/userApi'; // adjust the path if needed
 
+const Users = () => {
+  const [users, setUsers] = useState([]);
   const [tabs, setTabs] = useState([]);
   const [activeKey, setActiveKey] = useState('landing');
+
+  const fetchUsers = async () => {
+    try {
+      const res = await getUsers();
+      setUsers(res.data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const addTab = (key, title, content) => {
     if (!tabs.find(tab => tab.key === key)) {
@@ -27,41 +42,13 @@ const Users = () => {
       key,
       'Create User',
       <UserForm
-      onSave={(newUser) => {
-        // Add the new user to state
-        const newUserWithId = { ...newUser, id: Date.now().toString() };
-        setUsers(prev => [...prev, newUserWithId]);
-
-        // Close the create tab
-        setTabs(tabs => tabs.filter(t => t.key !== key));
-        setActiveKey('landing');
-      }}
-      onClose={() => {
-        setTabs(tabs => tabs.filter(t => t.key !== key));
-        setActiveKey('landing');
-      }}
-    />
-      // <UserForm
-      //   onSave={() => {
-      //     setTabs(tabs => tabs.filter(t => t.key !== key));
-      //     setActiveKey('landing');
-      //   }}
-      //   onClose={() => {
-      //     setTabs(tabs => tabs.filter(t => t.key !== key));
-      //     setActiveKey('landing');
-      //   }}
-      // />
-    );
-  };
-  const handleEditUser = (user) => {
-    const key = user.id;
-    addTab(
-      key,
-      `Edit: ${user.firstName}`,
-      <UserForm
-        user={user}
-        onSave={(updatedUser) => {
-          setUsers(prev => prev.map(u => u.id === user.id ? { ...u, ...updatedUser } : u));
+        onSave={async (newUser) => {
+          try {
+            await createUser(newUser);
+            await fetchUsers();
+          } catch (err) {
+            console.error("Error creating user:", err);
+          }
           setTabs(tabs => tabs.filter(t => t.key !== key));
           setActiveKey('landing');
         }}
@@ -73,9 +60,40 @@ const Users = () => {
     );
   };
 
-  const handleDeleteUser = (userId) => {
-    setUsers(prev => prev.filter(user => user.id !== userId));
+  const handleEditUser = (user) => {
+    const key = user._id; // Assuming your API returns `_id`
+    addTab(
+      key,
+      `Edit: ${user.firstName}`,
+      <UserForm
+        user={user}
+        onSave={async (updatedUser) => {
+          try {
+            await updateUser(user._id, updatedUser);
+            await fetchUsers();
+          } catch (err) {
+            console.error("Error updating user:", err);
+          }
+          setTabs(tabs => tabs.filter(t => t.key !== key));
+          setActiveKey('landing');
+        }}
+        onClose={() => {
+          setTabs(tabs => tabs.filter(t => t.key !== key));
+          setActiveKey('landing');
+        }}
+      />
+    );
   };
+
+  const handleDeleteUser = async (userId) => {
+    try {
+      await deleteUser(userId);
+      await fetchUsers();
+    } catch (err) {
+      console.error("Error deleting user:", err);
+    }
+  };
+
   return (
     <div className='flex'>
       <div>
@@ -87,7 +105,14 @@ const Users = () => {
             {
               key: 'landing',
               title: 'User',
-              content: <UserLanding data={users} onAddNew={handleAddUser} onEdit={handleEditUser} onDelete={handleDeleteUser}/>
+              content: (
+                <UserLanding
+                  data={users}
+                  onAddNew={handleAddUser}
+                  onEdit={handleEditUser}
+                  onDelete={handleDeleteUser}
+                />
+              )
             },
             ...tabs
           ]}

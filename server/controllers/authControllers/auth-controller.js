@@ -1,4 +1,4 @@
-import { User } from "../../modals/user-model.js";
+import { User } from "../../modals/userModels/user-model.js";
 import fs from 'fs'
 import path from 'path';
 

@@ -3,11 +3,11 @@ import { MdSearch } from "react-icons/md";
 
 const UserLanding = ({ data = [], onAddNew, onEdit ,onDelete}) => {
   const [searchTerm, setSearchTerm] = useState("");
-
   const filterData = data.filter((user) =>
     `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
 );
-console.log(filterData)
+console.log("data",data)
+console.log("filterdata",filterData)
  
   return (
     <div className="w-full">
@@ -55,7 +55,7 @@ console.log(filterData)
               Edit
             </button>
             <button
-              onClick={() => onDelete(user.id)}
+              onClick={() => onDelete(user._id)}
               className="text-red-600 underline hover:text-red-800 ml-2"
             >
               Delete
