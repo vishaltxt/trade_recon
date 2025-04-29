@@ -11,7 +11,7 @@ const MasterLanding = ({ onAddNew , onEdit , onDelete }) => {
   const itemsPerPage = 13;
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/auth/master")
+    axios.get("http://localhost:8000/api/auth/master/q")
       .then(res => {
         setTrades(res.data);                       
         setLoading(false);
