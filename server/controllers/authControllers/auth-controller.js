@@ -5,7 +5,7 @@ import path from 'path';
 export const register = async (req, res) => {
   try {
     // console.log(req.body);
-    const { username, email, phone, password } = req.body;
+    const { firstname, lastname , email, phone, password } = req.body;
     const userExist = await User.findOne({ email });
     if (userExist) {
       return res.status(400).json({ msg: "email already exists" });
@@ -13,11 +13,15 @@ export const register = async (req, res) => {
     // const saltRound = 10;
     // const hash_password = await bcrypt.hash(password, saltRound);
     const userCreated = await User.create({
-      username,
+      firstname,
+      lastname,
       email,
       phone,
       password,
+      role: "reader",      // normal registration
+      createdBy: "self",
     });
+    console.log(req.body);
     res.status(201).json({
       msg: "registration successfull",
       token: await userCreated.generateToken(),
@@ -49,6 +53,7 @@ export const login = async (req, res) => {
         msg: "Login successfull",
         token: await userExist.generateToken(),
         userId: userExist._id.toString(),
+        role: userExist.role,
       });
     } else {
       res.status(401).json({ message: "invalid email or password" });

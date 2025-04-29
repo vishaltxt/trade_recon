@@ -1,7 +1,7 @@
 // src/api/userApi.js
 import axios from "axios";
 
-const API_BASE = "http://localhost:8000/api/form/masters"; // update if needed
+const API_BASE = "http://localhost:8000/api/admin/masters"; // update if needed
 
 export const getMasters = () => axios.get(API_BASE);
 export const createMasters = (data) => axios.post(API_BASE, data);

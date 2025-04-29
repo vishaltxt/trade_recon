@@ -64,7 +64,7 @@ const Users = () => {
     const key = user._id; // Assuming your API returns `_id`
     addTab(
       key,
-      `Edit: ${user.firstName}`,
+      `Edit: ${user.firstname}`,
       <UserForm
         user={user}
         onSave={async (updatedUser) => {

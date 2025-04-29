@@ -9,10 +9,10 @@ const Search = ({ onAddNew}) => {
     const [trades, setTrades] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 13;
+    const itemsPerPage = 9;
 
     useEffect(() => {
-        axios.get("http://localhost:8000/api/data/master")
+        axios.get("http://localhost:8000/api/auth/master")
             .then(res => {
                 setTrades(res.data);
                 setLoading(false);

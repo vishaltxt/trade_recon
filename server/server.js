@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
-import { userRouter } from "./routes/auth-routes/auth-router.js";
-import {userFormRouter } from "./routes/Form-routes/userFormRoutes.js";
+import { authRouter } from "./routes/auth-routes/auth-router.js";
+import {addUserRouter } from "./routes/Form-routes/userFormRoutes.js";
 import { masterFormRouter } from "./routes/Form-routes/masterFormRoutes.js";
 const app = express();
 import { connectDb } from "./utils/db.js";
@@ -18,9 +18,10 @@ app.use(cors(corsOptions));
 
 
 app.use(express.json());
-app.use("/api/auth", userRouter);
-app.use("/api/data",userRouter);
-app.use("/api/form",userFormRouter,masterFormRouter);
+app.use("/api/auth", authRouter); // Authentication routes
+app.use("/api/users", addUserRouter);  // User form routes
+// app.use("/api/data",addUserRouter);
+app.use("/api/admin",masterFormRouter) // Master form routes;
 // app.use("/api/form",masterFormRouter);
 app.use(errorMiddleware);
 

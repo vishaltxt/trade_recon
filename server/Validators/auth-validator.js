@@ -1,8 +1,13 @@
 import { z } from "zod";
 
 export const signupSchema = z.object({
-  username: z
-    .string({ required_error: "Name is required" })
+  firstname: z
+    .string({ required_error: "firstname is required" })
+    .trim()
+    .min(3, { message: "Name must be atleast 3 characters" })
+    .max(100, { message: "Name must not be more than 100 characters long" }),
+    lastname: z
+    .string({ required_error: "lastname is required" }) 
     .trim()
     .min(3, { message: "Name must be atleast 3 characters" })
     .max(100, { message: "Name must not be more than 100 characters long" }),

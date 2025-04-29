@@ -11,9 +11,9 @@ const MasterLanding = ({ onAddNew , onEdit , onDelete }) => {
   const itemsPerPage = 13;
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/data/master")
+    axios.get("http://localhost:8000/api/auth/master")
       .then(res => {
-        setTrades(res.data);
+        setTrades(res.data);                       
         setLoading(false);
       })
       .catch(err => {
@@ -25,8 +25,8 @@ const MasterLanding = ({ onAddNew , onEdit , onDelete }) => {
   const filterData = trades.filter((user) =>
     user.order_no?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  console.log("trades",trades)
-console.log("filterdata",filterData)
+  // console.log("trades",trades)
+// console.log("filterdata",filterData)
   const totalPages = Math.ceil(filterData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedData = filterData.slice(startIndex, startIndex + itemsPerPage);

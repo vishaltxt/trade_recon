@@ -28,7 +28,7 @@ const Login = () => {
             //     headers: {
             //         'Content-Type': 'application/json',
             //     },
-            //     body: JSON.stringify(user),
+            //     body: JSON.stringify(user),+
             // });
             console.log("login form" ,response);
             if (response.status === 200) {

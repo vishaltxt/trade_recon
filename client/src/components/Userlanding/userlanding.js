@@ -4,11 +4,11 @@ import { MdSearch } from "react-icons/md";
 const UserLanding = ({ data = [], onAddNew, onEdit ,onDelete}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const filterData = data.filter((user) =>
-    `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+    `${user.firstname} ${user.lastname}`.toLowerCase().includes(searchTerm.toLowerCase())
 );
-console.log("data",data)
-console.log("filterdata",filterData)
- 
+// console.log("data",data)
+// console.log("filterdata",filterData)
+
   return (
     <div className="w-full">
       <div className="flex justify-between">
@@ -44,7 +44,7 @@ console.log("filterdata",filterData)
 
       {filterData.map((user, index) => (
         <div key={user.id || index} className="flex w-[98%] m-auto hover:bg-gray-50">
-          <div className="border p-3 w-full md:w-1/4">{`${user.firstName} ${user.lastName}`}</div>
+          <div className="border p-3 w-full md:w-1/4">{`${user.firstname} ${user.lastname}`}</div>
           <div className="border p-3 w-full md:w-1/4">{user.email}</div>
           <div className="border p-3 w-full md:w-1/4">{user.role}</div>
           <div className="border p-3 w-full md:w-1/4">

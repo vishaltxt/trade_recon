@@ -1,31 +1,38 @@
-import { UserForm } from "../../modals/formModels/userForm-model.js";
+// import { UserForm } from "../../modals/formModels/userForm-model.js";
+import { User } from "../../modals/userModels/user-model.js";
 import bcrypt from "bcrypt";
 
 export const createUser = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, role } = req.body;
+    const { firstname, lastname, email, password, role } = req.body;
+    if (req.user.role !== "admin" && role === "admin") {
+      return res.status(403).json({ msg: "Only admins can create admin users" });
+    }
+    const userExist = await User.findOne({ email });
+    if (userExist) {
+      return res.status(400).json({ msg: "Email already exists" });
+    }
     const saltRound = await bcrypt.genSalt(10);
     const hash_password = await bcrypt.hash(password, saltRound);
     // password = hash_password;
-    const newUser = new UserForm({
-      firstName,
-      lastName,
+    const userCreated = await User.create({
+      firstname,
+      lastname,
       email,
-      password:hash_password,
-      role,
+      password,
+      role: role || "reader",
+      createdBy: "admin",
     });
-    
-    await newUser.save();
-    res.status(201).json(newUser);
+    res.status(201).json({ msg: "User created successfully", userId: userCreated._id.toString() });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
 // Get all users
-export const getUsers = async (req, res) => {
+export const getAllUsers = async (req, res) => {
   try {
-    const users = await UserForm.find();
+    const users = await User.find().select("-password");
     res.json(users);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -36,7 +43,14 @@ export const getUsers = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const updatedUser = await UserForm.findByIdAndUpdate(id, req.body, {
+    const { password, ...updates } = req.body;
+
+    if (password) {
+      const saltRound = await bcrypt.genSalt(10);
+      updates.password = await bcrypt.hash(password, saltRound);
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(id, req.body, {
       new: true,
     });
     res.json(updatedUser);
@@ -49,8 +63,8 @@ export const updateUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    await UserForm.findByIdAndDelete(id);
-    res.json({ message: "User deleted" });
+    await User.findByIdAndDelete(id);
+    res.json({ message: "User deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
