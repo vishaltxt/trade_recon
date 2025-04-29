@@ -1,6 +1,6 @@
 import { User } from "../../modals/userModels/user-model.js";
 import fs from 'fs'
-import path from 'path';
+// import path from 'path';
 
 export const register = async (req, res) => {
   try {

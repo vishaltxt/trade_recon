@@ -21,7 +21,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(user);
+        // console.log(user);
         try {
             const response = await axios.post('http://localhost:8000/api/auth/login', user);
             //     method: 'POST',
@@ -30,7 +30,7 @@ const Login = () => {
             //     },
             //     body: JSON.stringify(user),+
             // });
-            console.log("login form" ,response);
+            // console.log("login form" ,response);
             if (response.status === 200) {
                  // Save token/userId if needed
             const { token } = response.data;         

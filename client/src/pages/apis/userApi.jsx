@@ -2,13 +2,14 @@ import axios from "axios";
 
 // Get token from localStorage or cookies (adjust based on your storage method)
 const getAuthToken = () => {
-  return localStorage.getItem('authToken'); // Change as needed
+  return localStorage.getItem('token'); // Change as needed
 };
 
 const API_BASE = "http://localhost:8000/api/users"; // Use base URL for convenience
 
 export const getUsers = () => {
   const token = getAuthToken();
+  // console.log(token)
   return axios.get(`${API_BASE}/users`, {
     headers: {
       Authorization: `Bearer ${token}` // Include token in Authorization header
@@ -18,6 +19,7 @@ export const getUsers = () => {
 
 export const createUser = (data) => {
   const token = getAuthToken();
+  // console.log(data)
   return axios.post(`${API_BASE}/add-user`, data, {
     headers: {
       Authorization: `Bearer ${token}` // Include token in Authorization header

@@ -2,11 +2,11 @@ import React, { useState } from "react";
 
 const UserForm = ({ user = {}, onSave, onClose }) => {
   const [formData, setFormData] = useState({
-    firstName: user.firstName || "",
-    lastName: user.lastName || "",
+    firstname: user.firstname || "",
+    lastname: user.lastname || "",
     email: user.email || "",
     password: user.password || "",
-    role: user.role || "Reader",
+    role: user.role || "reader",
   });
   
   const [errors, setErrors] = useState({});
@@ -21,8 +21,8 @@ const UserForm = ({ user = {}, onSave, onClose }) => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
-    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
+    if (!formData.firstname.trim()) newErrors.firstname = "First name is required";
+    if (!formData.lastname.trim()) newErrors.lastname = "Last name is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
     if (!formData.password.trim() && !user.id) newErrors.password = "Password is required";
     if (!formData.role) newErrors.role = "Role is required";
@@ -49,24 +49,24 @@ const UserForm = ({ user = {}, onSave, onClose }) => {
             <label>First Name: </label>
             <input
               className="border ml-6"
-              name="firstName"
+              name="firstname"
               required
-              value={formData.firstName}
+              value={formData.firstname}
               onChange={handleChange}
             />
           </div>
-          {errors.firstName && <p className="text-red-500">{errors.firstName}</p>}
+          {errors.firstname && <p className="text-red-500">{errors.firstname}</p>}
           <div className="p-4">
             <label>Last Name: </label>
             <input
               className="border ml-6"
-              name="lastName"
+              name="lastname"
               required
-              value={formData.lastName}
+              value={formData.lastname}
               onChange={handleChange}
             />
           </div>
-          {errors.lastName && <p className="text-red-500">{errors.lastName}</p>}
+          {errors.lastname && <p className="text-red-500">{errors.lastname}</p>}
           <div className="p-4">
             <label>Email: </label>
             <input
@@ -98,9 +98,9 @@ const UserForm = ({ user = {}, onSave, onClose }) => {
               value={formData.role}
               onChange={handleChange}
             >
-              <option value="Reader">Reader</option>
-              <option value="Manager">Manager</option>
-              <option value="Admin">Admin</option>
+              <option value="reader">Reader</option>
+              <option value="manager">Manager</option>
+              <option value="admin">Admin</option>
             </select>
           </div>
           {errors.role && <p className="text-red-500">{errors.role}</p>}

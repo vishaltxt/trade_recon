@@ -43,6 +43,7 @@ const Users = () => {
       'Create User',
       <UserForm
         onSave={async (newUser) => {
+          // console.log("NEWUSER",newUser)
           try {
             await createUser(newUser);
             await fetchUsers();
