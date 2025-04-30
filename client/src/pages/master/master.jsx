@@ -6,12 +6,7 @@ import Masterform from '../../components/masterlanding/masterform';
 import { createMasters, deleteMasters, getMasters, updateMasters } from '../apis/masterApi';
 
 const Master = () => {
-    // const data = [
-    //     { master_name: 'vishal', master_id: "544", created_at: "12-01-20250" },
-    //     { master_name: 'suraj', master_id: "223", created_at: "01-01-2025" },
-    //     { master_name: 'rahul', master_id: "123", created_at: "10-04-2025" },
-    // ]
-    const [master, setMasters] = useState([]);
+    const [masters, setMasters] = useState([]);
     const [tabs, setTabs] = useState([]);
     const [activeKey, setActiveKey] = useState('landing');
 
@@ -64,7 +59,7 @@ const Master = () => {
             key,
             `Edit Master ${master.masterName}`,
             <Masterform
-                user={master}
+                master={master}
                 onSave={async (updatedMaster) => {
                     try {
                         await updateMasters(master._id, updatedMaster);
@@ -100,9 +95,9 @@ const Master = () => {
                         {
                             key: "landing",
                             title: "Master",
-                            content: <MasterLanding data={master} onAddNew={handleAddMaster} onEdit={handleEditMaster}  onDelete={handleDeleteMaster}/>
+                            content: <MasterLanding data={masters} onAddNew={handleAddMaster} onEdit={handleEditMaster} onDelete={handleDeleteMaster} />
                         },
-                            ...tabs
+                        ...tabs
                     ]}
                     activeKey={activeKey}
                     onTabClick={setActiveKey}

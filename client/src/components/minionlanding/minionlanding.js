@@ -1,43 +1,28 @@
 import React, { useState } from "react";
 import { MdSearch } from "react-icons/md";
-import Pagination from "@mui/material/Pagination";
+import { Pagination, Box } from "@mui/material";
 
-const Minionlanding = ({ onAddNew, onEdit }) => {
+const Minionlanding = ({data = [], onAddNew, onEdit ,onDelete}) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 13;
 
-  const data = [
-    {
-      minion_name: "09",
-      minion_id: "544",
-      client_code: 12345,
-      created_at: "12-01-20250",
-      server: "---",
-    },
-    {
-      minion_name: "08",
-      minion_id: "223",
-      client_code: 2245,
-      created_at: "01-01-2025",
-      server: "---",
-    },
-    {
-      minion_name: "07",
-      minion_id: "123",
-      client_code: 33345,
-      created_at: "10-04-2025",
-      server: "---",
-    },
-  ];
-  const filterData = data.filter((user) =>
-    user.minion_name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filterData = data.filter((minion) =>
+    minion.minionName.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  const totalPages = Math.ceil(filterData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedData = filterData.slice(startIndex, startIndex + itemsPerPage);
 
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
   return (
     <div>
       <div className="w-full">
         <div className="flex justify-between">
           <div>
-            <h1 className="text-xl  font-bold m-4">Minions</h1>
+            <h1 className="text-xl  font-bold m-4">Minions <span className="text-sm text-gray-500">({filterData.length} items)</span></h1>
           </div>
           <div></div>
           <div>
@@ -46,7 +31,9 @@ const Minionlanding = ({ onAddNew, onEdit }) => {
               type="text"
               placeholder="Search by Minion Name"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {setSearchTerm(e.target.value);
+                setCurrentPage(1); // Reset page on new search
+              }}
               className="border rounded-lg p-1 m-4  text-center"
             />
             <button
@@ -64,23 +51,51 @@ const Minionlanding = ({ onAddNew, onEdit }) => {
             <div className="border p-3 w-full md:w-1/3">Client Code</div>
             <div className="border p-3 w-full md:w-1/3">Created At</div>
             <div className="border p-3 w-full md:w-1/3">Server</div>
+            <div className="border p-3 w-full md:w-1/3">Actions</div>
           </div>
         </div>
-        {filterData.map((items, index) => (
-          <div key={index} className="flex w-[98%] m-auto hover:bg-gray-50">
-            <div className="border p-3 w-full md:w-1/3 ">{items.minion_name}</div>
-            <div className="border p-3 w-full md:w-1/3 ">{items.minion_id}</div>
-            <div className="border p-3 w-full md:w-1/3">{items.client_code}</div>
-            <div className="border p-3 w-full md:w-1/3">{items.created_at}</div>
-            <div className="border p-3 w-full md:w-1/3">{items.server}</div>
+        {paginatedData.map((minion, index) => (
+          <div key={minion.id || index} className="flex w-[98%] m-auto hover:bg-gray-50">
+            <div className="border p-3 w-full md:w-1/3 ">
+              {minion.minionName}
+            </div>
+            <div className="border p-3 w-full md:w-1/3 ">{minion.minionTraderId}</div>
+            <div className="border p-3 w-full md:w-1/3">{minion.minionClientCode}</div>
+            <div className="border p-3 w-full md:w-1/3">{minion.createdAt}</div>
+            <div className="border p-3 w-full md:w-1/3">{minion.server}</div>
+            <div className="border p-3 w-full md:w-1/3">
+            <button
+              onClick={() => onEdit && onEdit(minion)}
+              className="text-blue-600 underline hover:text-blue-800"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => onDelete(minion._id)}
+              className="text-red-600 underline hover:text-red-800 ml-2"
+            >
+              Delete
+            </button>
+          </div>
           </div>
         ))}
       </div>
-      <div className="m-5">
-        {/* <Stack spacing={2}> */}
-        <Pagination count={10}  variant="outlined" shape="rounded"/>
-        {/* </Stack> */}
-      </div>
+
+      <Box mt={4} display="flex" justifyContent="center">
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={handlePageChange}
+          color="primary"
+          variant="outlined"
+          shape="rounded"
+        />
+      </Box>
+      {/* <div className="m-5"> */}
+      {/* <Stack spacing={2}> */}
+      {/* <Pagination count={10}  variant="outlined" shape="rounded"/> */}
+      {/* </Stack> */}
+      {/* </div> */}
     </div>
   );
 };

@@ -3,7 +3,7 @@ import { createMasters, deleteMasters, getMasters, updateMasters } from "../../c
 export const masterFormRouter = express.Router();
 
 // master form routes
-masterFormRouter.post('/masters',createMasters);
+masterFormRouter.post('/add-masters',createMasters);
 masterFormRouter.get('/masters', getMasters);
-masterFormRouter.put('/masters/:id',updateMasters);
-masterFormRouter.delete('/masters/:id',deleteMasters);
+masterFormRouter.put('/update-masters/:id',updateMasters);
+masterFormRouter.delete('/delete-masters/:id',deleteMasters);

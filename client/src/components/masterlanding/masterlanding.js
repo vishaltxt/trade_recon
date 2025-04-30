@@ -1,29 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import { MdSearch } from "react-icons/md";
-import axios from "axios";
+import dayjs from 'dayjs';
+// import axios from "axios";
 import { Pagination, Box} from "@mui/material";
 
-const MasterLanding = ({ onAddNew , onEdit , onDelete }) => {
+const MasterLanding = ({ data = [], onAddNew , onEdit , onDelete }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [trades, setTrades] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [trades, setTrades] = useState([]);
+  // const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 13;
 
-  useEffect(() => {
-    axios.get("http://localhost:8000/api/auth/master/q")
-      .then(res => {
-        setTrades(res.data);                       
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Error fetching trade data:", err);
-        setLoading(false);
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios.get("http://localhost:8000/api/auth/master/q")
+  //     .then(res => {
+  //       setTrades(res.data);                       
+  //       setLoading(false);
+  //     })
+  //     .catch(err => {
+  //       console.error("Error fetching trade data:", err);
+  //       setLoading(false);
+  //     });
+  // }, []);
 
-  const filterData = trades.filter((user) =>
-    user.order_no?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filterData = data.filter((master) =>
+    master.masterName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
   // console.log("trades",trades)
 // console.log("filterdata",filterData)
@@ -35,7 +36,7 @@ const MasterLanding = ({ onAddNew , onEdit , onDelete }) => {
     setCurrentPage(value);
   };
 
-  if (loading) return <div className="p-4">Loading...</div>;
+  // if (loading) return <div className="p-4">Loading...</div>;
 
   return (
     <div className="w-full">
@@ -76,10 +77,10 @@ const MasterLanding = ({ onAddNew , onEdit , onDelete }) => {
       {/* Table rows */}
       {paginatedData.map((master, index) => (
         <div key={master.id || index} className="flex w-[98%] m-auto hover:bg-gray-50">
-          <div className="border p-3 w-full md:w-1/3">{master.order_no}</div>
-          <div className="border p-3 w-full md:w-1/3">{master.trade_no}</div>
-          <div className="border p-3 w-full md:w-1/3">{master.order_time}</div>
-          <div className="border p-3 w-full md:w-1/4">
+          <div className="border p-3 w-full md:w-1/3">{master.masterName}</div>
+          <div className="border p-3 w-full md:w-1/3">{master.masterTraderId}</div>
+          <div className="border p-3 w-full md:w-1/3">{dayjs(master.createdAt).format("YYYY-MM-DD HH:mm:ss")}</div>
+          <div className="border p-3 w-full md:w-1/3">
             <button
               onClick={() => onEdit && onEdit(master)}
               className="text-blue-600 underline hover:text-blue-800"

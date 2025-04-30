@@ -4,6 +4,7 @@ import express from "express";
 import { authRouter } from "./routes/auth-routes/auth-router.js";
 import {addUserRouter } from "./routes/Form-routes/userFormRoutes.js";
 import { masterFormRouter } from "./routes/Form-routes/masterFormRoutes.js";
+import { minionFormRouter } from "./routes/Form-routes/minionFormRoutes.js";
 const app = express();
 import { connectDb } from "./utils/db.js";
 import { errorMiddleware } from "./middlewares/error-middleware.js";
@@ -21,7 +22,8 @@ app.use(express.json());
 app.use("/api/auth", authRouter); // Authentication routes
 app.use("/api/users", addUserRouter);  // User form routes
 // app.use("/api/data",addUserRouter);
-app.use("/api/admin",masterFormRouter) // Master form routes;
+app.use("/api/master",masterFormRouter) // Master form routes;
+app.use("/api/minion",minionFormRouter) // Minion form routes;
 // app.use("/api/form",masterFormRouter);
 app.use(errorMiddleware);
 

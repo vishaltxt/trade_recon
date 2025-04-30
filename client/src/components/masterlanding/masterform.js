@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 
-const Masterform = ({ user={}, onSave, onClose }) => {
+const Masterform = ({ master={}, onSave, onClose }) => {
   const [formData , setFormData] = useState({
-    masterName: user.masterName || "",
-    masterTraderId: user.masterTraderId || "",
+    masterName: master.masterName || "",
+    masterTraderId: master.masterTraderId || "",
   });
 
   const [errors, setErrors] = useState({});
+
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -52,7 +54,7 @@ const validate = () => {
               type="button"
               onClick={handleSave}
             >
-              Create
+              {master._id ? "Update" : "Create"}
             </button>
             <button
               className="text-white bg-[#586f80] rounded-md text-lg p-0.5 w-32 "

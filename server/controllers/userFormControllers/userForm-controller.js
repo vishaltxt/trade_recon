@@ -1,6 +1,6 @@
 // import { UserForm } from "../../modals/formModels/userForm-model.js";
 import { User } from "../../modals/userModels/user-model.js";
-import bcrypt from "bcrypt";
+// import bcrypt from "bcrypt";
 
 export const createUser = async (req, res) => {
   try {
@@ -12,8 +12,8 @@ export const createUser = async (req, res) => {
     if (userExist) {
       return res.status(400).json({ msg: "Email already exists" });
     }
-    const saltRound = await bcrypt.genSalt(10);
-    const hash_password = await bcrypt.hash(password, saltRound);
+    // const saltRound = await bcrypt.genSalt(10);
+    // const hash_password = await bcrypt.hash(password, saltRound);
     // password = hash_password;
     const userCreated = await User.create({
       firstname,
@@ -50,7 +50,7 @@ export const updateUser = async (req, res) => {
       updates.password = await bcrypt.hash(password, saltRound);
     }
 
-    const updatedUser = await User.findByIdAndUpdate(id, req.body, {
+    const updatedUser = await User.findByIdAndUpdate(id, updates, {
       new: true,
     });
     res.json(updatedUser);
@@ -64,7 +64,7 @@ export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
     await User.findByIdAndDelete(id);
-    res.json({ message: "User deleted successfully" });
+    res.json({ message: "User deleted successfully!" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -3,12 +3,12 @@ import { MasterForm } from "../../modals/formModels/masterFormModel.js";
 export const createMasters = async (req, res) => {
   try {
     const { masterName, masterTraderId } = req.body;
-    const newMaster = new MasterForm({
+    const newMaster = await MasterForm.create({
       masterName,
       masterTraderId,
     });
 
-    await newMaster.save();
+    // await newMaster.save();
     res.status(201).json(newMaster);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -43,7 +43,7 @@ export const deleteMasters = async (req, res) => {
   try {
     const { id } = req.params;
     await MasterForm.findByIdAndDelete(id);
-    res.json({ message: "Master deleted" });
+    res.json({ message: "Master deleted successfully!" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -11,6 +11,7 @@ const TabsContainer = ({ tabs, activeKey, onTabClick, onCloseTab }) => {
           </div>
         ))}
       </div>
+      <p></p>
       <div className='mt-7'>
         {tabs.find(tab => tab.key === activeKey)?.content}
       </div>
