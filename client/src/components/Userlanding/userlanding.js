@@ -1,14 +1,26 @@
 import React, { useState } from "react";
 import { MdSearch } from "react-icons/md";
+import { Pagination, Box } from "@mui/material";
 
-const UserLanding = ({ data = [], onAddNew, onEdit ,onDelete}) => {
+const UserLanding = ({ data = [], onAddNew, onEdit, onDelete }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const filterData = data.filter((user) =>
-    `${user.firstname} ${user.lastname}`.toLowerCase().includes(searchTerm.toLowerCase())
-);
-// console.log("data",data)
-// console.log("filterdata",filterData)
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 13;
 
+  const filterData = data.filter((user) =>
+    `${user.firstname} ${user.lastname}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
+  // console.log("data",data)
+  // console.log("filterdata",filterData)
+  const totalPages = Math.ceil(filterData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedData = filterData.slice(startIndex, startIndex + itemsPerPage);
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
   return (
     <div className="w-full">
       <div className="flex justify-between">
@@ -20,10 +32,13 @@ const UserLanding = ({ data = [], onAddNew, onEdit ,onDelete}) => {
         <div>
           <MdSearch className="relative top-11 left-5 " />
           <input
-            type="text"   
+            type="text"
             placeholder="Search by User Name"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
             className="border rounded-lg p-1 m-4 text-center"
           />
           <button
@@ -42,8 +57,11 @@ const UserLanding = ({ data = [], onAddNew, onEdit ,onDelete}) => {
         <div className="border p-3 w-full md:w-1/4">Actions</div>
       </div>
 
-      {filterData.map((user, index) => (
-        <div key={user.id || index} className="flex w-[98%] m-auto hover:bg-gray-50">
+      {paginatedData.map((user, index) => (
+        <div
+          key={user.id || index}
+          className="flex w-[98%] m-auto hover:bg-gray-50"
+        >
           <div className="border p-3 w-full md:w-1/4">{`${user.firstname} ${user.lastname}`}</div>
           <div className="border p-3 w-full md:w-1/4">{user.email}</div>
           <div className="border p-3 w-full md:w-1/4">{user.role}</div>
@@ -63,6 +81,16 @@ const UserLanding = ({ data = [], onAddNew, onEdit ,onDelete}) => {
           </div>
         </div>
       ))}
+      <Box mt={4} display="flex" justifyContent="center">
+              <Pagination
+                count={totalPages}
+                page={currentPage}
+                onChange={handlePageChange}
+                color="primary"
+                variant="outlined"
+                shape="rounded"
+              />
+            </Box>
     </div>
   );
 };

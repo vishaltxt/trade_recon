@@ -7,7 +7,6 @@ const Masterform = ({ master={}, onSave, onClose }) => {
   });
 
   const [errors, setErrors] = useState({});
-
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,8 +18,8 @@ const Masterform = ({ master={}, onSave, onClose }) => {
 
 const validate = () => {
     const newErrors = {};   
-    if (!formData.masterName.trim()) newErrors.masterName = "Master name is required";
-    if (!formData.masterTraderId.trim()) newErrors.masterTraderId = "Master trader id is required";
+    if (!formData.masterName?.trim()) newErrors.masterName = "Master name is required";
+    if (!formData.masterTraderId?.trim()) newErrors.masterTraderId = "Master trader id is required";
     return newErrors;
   };
   const handleSave = () => {

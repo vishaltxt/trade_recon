@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 import dayjs from 'dayjs';
 
 const masterFormSchema = new mongoose.Schema({
-  masterName: { type: String, required: true },
-  masterTraderId: { type: String, required: true },
+  masterName: { type: String, required: true ,unique: true},
+  masterTraderId: { type: String, required: true ,unique: true},
   createdBy: { type: String, enum: ["self", "admin"], default: "self" },
   createdAt: {
     type: String,

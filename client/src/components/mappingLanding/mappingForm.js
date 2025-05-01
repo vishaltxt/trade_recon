@@ -1,39 +1,81 @@
-import React from "react";
+import React, { useState } from "react";
 
-const MappingForm = ({ user,  onSave, onClose }) => {
+const MappingForm = ({ user, masterOptions = [], minionOptions = [], onSave, onClose }) => {
+  const [selectedMasterId, setSelectedMasterId] = useState("");
+  const [selectedMinionId, setSelectedMinionId] = useState("");
+  const [percentage, setPercentage] = useState("");
+
+  const handleSave = () => {
+    const mappingData = {
+      masterId: selectedMasterId,
+      minionId: selectedMinionId,
+      percentage,
+    };
+    onSave(mappingData);
+  };
+
   return (
     <div>
-      <h3 className="mx-3 p-2 text-[#637f92] font-bold bg-[#f0f4f7]">
-      Mapping Details
-      </h3>
+      <h3 className="mx-3 p-2 text-[#637f92] font-bold bg-[#f0f4f7]">Mapping Details</h3>
       <form>
         <div className="m-3">
           <div className="p-4">
             <label>Select Master ID: </label>
-            <input className="border ml-2" defaultValue={user?.firstName || ""} />
+            <select
+              className="border ml-3 p-1"
+              value={selectedMasterId}
+              onChange={(e) => setSelectedMasterId(e.target.value)}
+            >
+              <option value="">Click to select master id</option>
+              {masterOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </div>
+
           <div className="p-4">
             <label>Select Minion ID: </label>
-            <input className="border ml-2" defaultValue={user?.lastName || ""} />
+            <select
+              className="border ml-3 p-1"
+              value={selectedMinionId}
+              onChange={(e) => setSelectedMinionId(e.target.value)}
+            >
+              <option value="">Click to select minion id</option>
+              {minionOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </div>
+
           <div className="p-4">
             <label>Percentage for Replication: </label>
-            <input className="border ml-2" defaultValue={user?.email || ""} />
+            <input
+              className="border ml-3"
+              type="number"
+              value={percentage}
+              onChange={(e) => setPercentage(e.target.value)}
+            />
           </div>
+
           <div className="p-4">
             <label>Toggle for Replication: </label>
-            {/* <input className="border" defaultValue={user?.email || ""} /> */}
+            {/* Add toggle or checkbox here */}
           </div>
+
           <div className="mt-4">
             <button
               className="text-white bg-[#586f80] rounded-md text-lg p-0.5 w-32 mr-4"
               type="button"
-              onClick={onSave}
+              onClick={handleSave}
             >
               Create
             </button>
             <button
-              className="text-white bg-[#586f80] rounded-md text-lg p-0.5 w-32 "
+              className="text-white bg-[#586f80] rounded-md text-lg p-0.5 w-32"
               type="button"
               onClick={onClose}
             >
@@ -47,3 +89,54 @@ const MappingForm = ({ user,  onSave, onClose }) => {
 };
 
 export default MappingForm;
+
+
+// import React from "react";
+
+// const MappingForm = ({ user,  onSave, onClose }) => {
+//   return (
+//     <div>
+//       <h3 className="mx-3 p-2 text-[#637f92] font-bold bg-[#f0f4f7]">
+//       Mapping Details
+//       </h3>
+//       <form>
+//         <div className="m-3">
+//           <div className="p-4">
+//             <label>Select Master ID: </label>
+//             <input className="border ml-2"  />
+//           </div>
+//           <div className="p-4">
+//             <label>Select Minion ID: </label>
+//             <input className="border ml-2" />
+//           </div>
+//           <div className="p-4">
+//             <label>Percentage for Replication: </label>
+//             <input className="border ml-2" defaultValue={user?.email || ""} />
+//           </div>
+//           <div className="p-4">
+//             <label>Toggle for Replication: </label>
+//             {/* <input className="border" defaultValue={user?.email || ""} /> */}
+//           </div>
+//           <div className="mt-4">
+//             <button
+//               className="text-white bg-[#586f80] rounded-md text-lg p-0.5 w-32 mr-4"
+//               type="button"
+//               onClick={onSave}
+//             >
+//               Create
+//             </button>
+//             <button
+//               className="text-white bg-[#586f80] rounded-md text-lg p-0.5 w-32 "
+//               type="button"
+//               onClick={onClose}
+//             >
+//               Cancel
+//             </button>
+//           </div>
+//         </div>
+//       </form>
+//     </div>
+//   );
+// };
+
+// export default MappingForm;

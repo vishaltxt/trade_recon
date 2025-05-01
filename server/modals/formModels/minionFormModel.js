@@ -2,9 +2,9 @@ import mongoose from 'mongoose';
 import dayjs from 'dayjs';
 
 const minionFormSchema = new mongoose.Schema({
-  minionName: { type: String, required: true },
-  minionTraderId: { type: String, required: true },
-  minionClientCode: { type: String, required: true },
+  minionName: { type: String, required: true ,unique: true},
+  minionTraderId: { type: String, required: true ,unique: true},
+  minionClientCode: { type: String, required: true ,unique: true},
   createdBy: { type: String, enum: ["self", "admin"], default: "self" },
   createdAt: {
     type: String,
