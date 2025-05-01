@@ -1,6 +1,6 @@
 import React from "react";
 
-const Mappinglanding = ({ onAddNew }) => {
+const Mappinglanding = ({ onAddNew , onEdit, onDelete }) => {
   const data = [
     {
       master_id: "111",
@@ -62,22 +62,33 @@ const Mappinglanding = ({ onAddNew }) => {
         <div className="flex w-[98%] m-auto bg-gray-100 font-bold text-[#637f92]">
           <div className="border p-3 w-full md:w-1/3 ">Master ID</div>
           <div className="border p-3 w-full md:w-1/3 ">Minion Id</div>
-          <div className="border p-3 w-full md:w-1/3">
-            Percentage for Replication
-          </div>
+          <div className="border p-3 w-full md:w-1/3">Percentage for Replication</div>
           <div className="border p-3 w-full md:w-1/3">Replication</div>
           <div className="border p-3 w-full md:w-1/3">Created At</div>
+          <div className="border p-3 w-full md:w-1/3">Actions</div>
         </div>
       </div>
       {data.map((items, index) => (
         <div key={index} className="flex w-[98%] m-auto hover:bg-gray-50">
           <div className="border p-3 w-full md:w-1/3 ">{items.master_id}</div>
           <div className="border p-3 w-full md:w-1/3 ">{items.minion_id}</div>
-          <div className="border p-3 w-full md:w-1/3">
-            {items.percentage_replication}
-          </div>
+          <div className="border p-3 w-full md:w-1/3">{items.percentage_replication}</div>
           <div className="border p-3 w-full md:w-1/3">{items.replication}</div>
           <div className="border p-3 w-full md:w-1/3">{items.created_at}</div>
+          <div className="border p-3 w-full md:w-1/3">
+              <button
+                // onClick={() => onEdit && onEdit(mapping)}
+                className="text-blue-600 underline hover:text-blue-800"
+              >
+                Edit
+              </button>
+              <button
+                // onClick={() => onDelete(mapping._id)}
+                className="text-red-600 underline hover:text-red-800 ml-2"
+              >
+                Delete
+              </button>
+            </div>
         </div>
       ))}
     </div>

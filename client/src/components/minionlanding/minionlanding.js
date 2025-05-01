@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { MdSearch } from "react-icons/md";
 import { Pagination, Box } from "@mui/material";
 
-const Minionlanding = ({data = [], onAddNew, onEdit ,onDelete}) => {
+const Minionlanding = ({ data = [], onAddNew, onEdit, onDelete }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 13;
@@ -22,7 +22,12 @@ const Minionlanding = ({data = [], onAddNew, onEdit ,onDelete}) => {
       <div className="w-full">
         <div className="flex justify-between">
           <div>
-            <h1 className="text-xl  font-bold m-4">Minions <span className="text-sm text-gray-500">({filterData.length} items)</span></h1>
+            <h1 className="text-xl  font-bold m-4">
+              Minions{" "}
+              <span className="text-sm text-gray-500">
+                ({filterData.length} items)
+              </span>
+            </h1>
           </div>
           <div></div>
           <div>
@@ -31,11 +36,12 @@ const Minionlanding = ({data = [], onAddNew, onEdit ,onDelete}) => {
               type="text"
               placeholder="Search by Minion Name"
               value={searchTerm}
-              onChange={(e) => {setSearchTerm(e.target.value);
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
                 setCurrentPage(1); // Reset page on new search
               }}
               className="border rounded-lg p-1 m-4  text-center"
-            />
+            />  
             <button
               className="text-white bg-[#586f80] p-1 w-28 mr-5 rounded-md"
               onClick={onAddNew}
@@ -55,28 +61,35 @@ const Minionlanding = ({data = [], onAddNew, onEdit ,onDelete}) => {
           </div>
         </div>
         {paginatedData.map((minion, index) => (
-          <div key={minion.id || index} className="flex w-[98%] m-auto hover:bg-gray-50">
+          <div
+            key={minion.id || index}
+            className="flex w-[98%] m-auto hover:bg-gray-50"
+          >
             <div className="border p-3 w-full md:w-1/3 ">
               {minion.minionName}
             </div>
-            <div className="border p-3 w-full md:w-1/3 ">{minion.minionTraderId}</div>
-            <div className="border p-3 w-full md:w-1/3">{minion.minionClientCode}</div>
+            <div className="border p-3 w-full md:w-1/3 ">
+              {minion.minionTraderId}
+            </div>
+            <div className="border p-3 w-full md:w-1/3">
+              {minion.minionClientCode}
+            </div>
             <div className="border p-3 w-full md:w-1/3">{minion.createdAt}</div>
             <div className="border p-3 w-full md:w-1/3">{minion.server}</div>
             <div className="border p-3 w-full md:w-1/3">
-            <button
-              onClick={() => onEdit && onEdit(minion)}
-              className="text-blue-600 underline hover:text-blue-800"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => onDelete(minion._id)}
-              className="text-red-600 underline hover:text-red-800 ml-2"
-            >
-              Delete
-            </button>
-          </div>
+              <button
+                onClick={() => onEdit && onEdit(minion)}
+                className="text-blue-600 underline hover:text-blue-800"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => onDelete(minion._id)}
+                className="text-red-600 underline hover:text-red-800 ml-2"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         ))}
       </div>
