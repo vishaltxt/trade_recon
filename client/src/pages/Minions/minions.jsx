@@ -4,6 +4,7 @@ import MinionForm from '../../components/minionlanding/minionForm';
 import TabsContainer from '../../components/minionlanding/tabscontainer.js';
 import Minionlanding from '../../components/minionlanding/minionlanding';
 import { createMinions, deleteMinions, getMinions, updateMinions } from '../apis/minionApi.jsx';
+import { toast } from 'react-toastify';
 
 const Minion = () => {
 
@@ -41,6 +42,7 @@ const Minion = () => {
           try {
             await createMinions(newMinion);
             await fetchMinions();
+            toast.success('Minion Created Successfully!');
           } catch (err) {
             console.error("Error creating master:", err);
           }
@@ -66,6 +68,7 @@ const Minion = () => {
           try {
             await updateMinions(minion._id, updatedMinion);
             await fetchMinions();
+            toast.success('Minion Updated Successfully!');
           } catch (err) {
             console.error("Error updating minion:", err);
           }
@@ -84,6 +87,7 @@ const Minion = () => {
     try {
       await deleteMinions(masterId);
       await fetchMinions();
+      toast.success('Minion deleted successfully!');
     } catch (err) {
       console.error("Error deleting master:", err);
     }

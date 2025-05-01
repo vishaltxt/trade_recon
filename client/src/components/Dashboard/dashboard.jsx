@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { RiLogoutCircleRLine } from "react-icons/ri";
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -12,6 +13,7 @@ const Dashboard = () => {
                 // alert("Logout successful");
                 localStorage.removeItem('token');
                 navigate('/login');
+                toast.success('Logout successful!');
             } else {
                 console.log("Logout failed:", response);
             }

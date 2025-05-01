@@ -4,6 +4,7 @@ import TabsContainer from '../../components/masterlanding/tabsContainer';
 import MasterLanding from '../../components/masterlanding/masterlanding';
 import Masterform from '../../components/masterlanding/masterform';
 import { createMasters, deleteMasters, getMasters, updateMasters } from '../apis/masterApi';
+import { toast } from 'react-toastify';
 
 const Master = () => {
     const [masters, setMasters] = useState([]);
@@ -40,6 +41,7 @@ const Master = () => {
                     try {
                         await createMasters(newMaster);
                         await fetchMasters();
+                        toast.success('Master Created Successfully!');
                     } catch (err) {
                         console.error("Error creating master:", err);
                     }
@@ -64,6 +66,7 @@ const Master = () => {
                     try {
                         await updateMasters(master._id, updatedMaster);
                         await fetchMasters();
+                        toast.success('Master Updated Successfully!');
                     } catch (err) {
                         console.error("Error updating master:", err);
                     }
@@ -82,6 +85,7 @@ const Master = () => {
         try {
             await deleteMasters(masterId);
             await fetchMasters();
+            toast.success('Master deleted successfully!');
         } catch (err) {
             console.error("Error deleting master:", err);
         }

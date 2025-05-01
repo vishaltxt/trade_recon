@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -37,6 +38,7 @@ const Login = () => {
             // Optionally store token in localStorage/sessionStorage
             localStorage.setItem('token', token);
                 // alert("Login successful");
+                toast.success('Login successful!');
                 setUser({email: "", password: ""});
                 navigate('/recon');
             }

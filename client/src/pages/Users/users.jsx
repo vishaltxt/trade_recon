@@ -10,6 +10,7 @@ import {
   updateUser,
   deleteUser
 } from '../apis/userApi'; // adjust the path if needed
+import { toast } from 'react-toastify';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -47,6 +48,7 @@ const Users = () => {
           try {
             await createUser(newUser);
             await fetchUsers();
+            toast.success("User created successfully!");
           } catch (err) {
             console.error("Error creating user:", err);
           }
@@ -72,6 +74,7 @@ const Users = () => {
           try {
             await updateUser(user._id, updatedUser);
             await fetchUsers();
+            toast.success("User updated successfully!");
           } catch (err) {
             console.error("Error updating user:", err);
           }
@@ -90,6 +93,7 @@ const Users = () => {
     try {
       await deleteUser(userId);
       await fetchUsers();
+      toast.success("User deleted successfully!");
     } catch (err) {
       console.error("Error deleting user:", err);
     }
