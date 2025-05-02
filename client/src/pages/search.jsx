@@ -70,9 +70,9 @@ const Search = ({ onAddNew}) => {
 
                 {/* Table headers */}
                 <div className="flex w-[98%] m-auto bg-gray-100 font-bold text-[#637f92]">
-                    <div className="border p-1 w-full md:w-1/3">id</div>
-                    <div className="border p-1 w-full md:w-1/3">segment</div>
-                    <div className="border p-1 w-full md:w-1/3">instrument</div>
+                    {/* <div className="border p-1 w-full md:w-1/3">id</div> */}
+                    {/* <div className="border p-1 w-full md:w-1/3">segment</div> */}
+                    {/* <div className="border p-1 w-full md:w-1/3">instrument</div> */}
                     <div className="border p-1 w-full md:w-1/3">symbol</div>
                     <div className="border p-1 w-full md:w-1/3">expiry</div>
                     <div className="border p-1 w-full md:w-1/3">strike_price</div>
@@ -81,7 +81,7 @@ const Search = ({ onAddNew}) => {
                     <div className="border p-1 w-full md:w-1/3">product_type</div>
                     <div className="border p-1 w-full md:w-1/3">lot_size</div>
                     <div className="border p-1 w-full md:w-1/3">client_code</div>
-                    <div className="border p-1 w-full md:w-1/3">field_1</div>
+                    {/* <div className="border p-1 w-full md:w-1/3">field_1</div> */}
                     <div className="border p-1 w-full md:w-1/3">field_2</div>
                     <div className="border p-1 w-full md:w-1/3">price</div>
                     <div className="border p-1 w-full md:w-1/3">quantity</div>
@@ -96,15 +96,14 @@ const Search = ({ onAddNew}) => {
                     <div className="border p-1 w-full md:w-1/3">ref_no</div>
                     <div className="border p-1 w-full md:w-1/3">entry_time</div>
                     <div className="border p-1 w-full md:w-1/3">branch_code</div>
-
                 </div>
 
                 {/* Table rows */}
                 {paginatedData.map((master, index) => (
                     <div key={master.id || index} className="flex w-[98%] m-auto hover:bg-gray-50">
-                        <div className="border p-1 w-full md:w-1/3">{master.id}</div>
-                        <div className="border p-1 w-full md:w-1/3">{master.segment}</div>
-                        <div className="border p-1 w-full md:w-1/3">{master.instrument}</div>
+                        {/* <div className="border p-1 w-full md:w-1/3">{master.id}</div> */}
+                        {/* <div className="border p-1 w-full md:w-1/3">{master.segment}</div> */}
+                        {/* <div className="border p-1 w-full md:w-1/3">{master.instrument}</div> */}
                         <div className="border p-1 w-full md:w-1/3">{master.symbol}</div>
                         <div className="border p-1 w-full md:w-1/3">{master.expiry}</div>
                         <div className="border p-1 w-full md:w-1/3">{master.strike_price}</div>
@@ -113,7 +112,7 @@ const Search = ({ onAddNew}) => {
                         <div className="border p-1 w-full md:w-1/3">{master.product_type}</div>
                         <div className="border p-1 w-full md:w-1/3">{master.lot_size}</div>
                         <div className="border p-1 w-full md:w-1/3">{master.client_code}</div>
-                        <div className="border p-1 w-full md:w-1/3">{master.field_1}</div>
+                        {/* <div className="border p-1 w-full md:w-1/3">{master.field_1}</div> */}
                         <div className="border p-1 w-full md:w-1/3">{master.field_2}</div>
                         <div className="border p-1 w-full md:w-1/3">{master.price}</div>
                         <div className="border p-1 w-full md:w-1/3">{master.quantity}</div>

@@ -46,7 +46,7 @@ const Mappinglanding = ({ onAddNew , onEdit, onDelete }) => {
       <div className="flex justify-between">
         <div>
           <h1 className="text-xl  font-bold m-4">
-            All Mappings <span className="text-sm">10 items</span>
+            All Mappings <span className="text-sm">({data.length} items)</span>
           </h1>
         </div>
         <div>
@@ -77,13 +77,13 @@ const Mappinglanding = ({ onAddNew , onEdit, onDelete }) => {
           <div className="border p-3 w-full md:w-1/3">{items.created_at}</div>
           <div className="border p-3 w-full md:w-1/3">
               <button
-                // onClick={() => onEdit && onEdit(mapping)}
+                onClick={() => onEdit && onEdit()}
                 className="text-blue-600 underline hover:text-blue-800"
               >
                 Edit
               </button>
               <button
-                // onClick={() => onDelete(mapping._id)}
+                onClick={() => onDelete()}
                 className="text-red-600 underline hover:text-red-800 ml-2"
               >
                 Delete

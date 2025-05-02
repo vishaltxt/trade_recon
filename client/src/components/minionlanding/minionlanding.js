@@ -65,15 +65,9 @@ const Minionlanding = ({ data = [], onAddNew, onEdit, onDelete }) => {
             key={minion.id || index}
             className="flex w-[98%] m-auto hover:bg-gray-50"
           >
-            <div className="border p-3 w-full md:w-1/3 ">
-              {minion.minionName}
-            </div>
-            <div className="border p-3 w-full md:w-1/3 ">
-              {minion.minionTraderId}
-            </div>
-            <div className="border p-3 w-full md:w-1/3">
-              {minion.minionClientCode}
-            </div>
+            <div className="border p-3 w-full md:w-1/3 ">{minion.minionName}</div>
+            <div className="border p-3 w-full md:w-1/3 ">{minion.minionTraderId}</div>
+            <div className="border p-3 w-full md:w-1/3">{minion.minionClientCode}</div>
             <div className="border p-3 w-full md:w-1/3">{minion.createdAt}</div>
             <div className="border p-3 w-full md:w-1/3">{minion.server}</div>
             <div className="border p-3 w-full md:w-1/3">

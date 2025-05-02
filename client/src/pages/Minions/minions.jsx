@@ -7,7 +7,6 @@ import { createMinions, deleteMinions, getMinions, updateMinions } from '../apis
 import { toast } from 'react-toastify';
 
 const Minion = () => {
-
   const [minions, setMinions] = useState([]);
   const [tabs, setTabs] = useState([]);
   const [activeKey, setActiveKey] = useState('landing');
