@@ -83,9 +83,9 @@ const MappingForm = ({mapping = {} , onSave , onClose,}) => {
               onChange={handleChange}
             >
               <option value="">Click to select master id</option>
-              {masters.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.masterName}
+              {masters.map((master , index) => (
+                <option key={master.id || index} value={master.value}>
+                  {master.masterName}
                 </option>
               ))}
             </select>
@@ -101,9 +101,9 @@ const MappingForm = ({mapping = {} , onSave , onClose,}) => {
               onChange={handleChange}
             >
               <option value="">Click to select minion id</option>
-              {minions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.minionTraderId}
+              {minions.map((minion , index) => (
+                <option key={minion.id || index} value={minion.value}>
+                  {minion.minionTraderId}
                 </option>
               ))}
             </select>
