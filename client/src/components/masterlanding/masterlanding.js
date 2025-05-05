@@ -18,7 +18,7 @@ const MasterLanding = ({ data = [], onAddNew , onEdit , onDelete }) => {
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
-
+  
   return (
     <div className="w-full">
       <div className="flex justify-between items-center flex-wrap">

@@ -1,43 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
+import { Pagination ,Box} from "@mui/material";
+import dayjs from 'dayjs';
 
-const Mappinglanding = ({ onAddNew , onEdit, onDelete }) => {
-  const data = [
-    {
-      master_id: "111",
-      minion_id: "544",
-      percentage_replication: "100%",
-      replication: "Yes",
-      created_at: "12-01-20250",
-    },
-    {
-      master_id: "222",
-      minion_id: "223",
-      percentage_replication: "100%",
-      replication: "Yes",
-      created_at: "01-01-2025",
-    },
-    {
-      master_id: "333",
-      minion_id: "123",
-      percentage_replication: "100%",
-      replication: "Yes",
-      created_at: "10-04-2025",
-    },
-    {
-      master_id: "333",
-      minion_id: "123",
-      percentage_replication: "100%",
-      replication: "Yes",
-      created_at: "10-04-2025",
-    },
-    {
-      master_id: "333",
-      minion_id: "123",
-      percentage_replication: "100%",
-      replication: "Yes",
-      created_at: "10-04-2025",
-    },
-  ];
+
+const Mappinglanding = ({ data = [], onAddNew, onEdit, onDelete }) => {
+   
+  // const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 13;
+
+  // const filterData = data.filter((mapping) =>
+    // mapping.masterName?.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedData = data.slice(startIndex, startIndex + itemsPerPage);
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
 
   return (
     <div>
@@ -46,7 +27,8 @@ const Mappinglanding = ({ onAddNew , onEdit, onDelete }) => {
       <div className="flex justify-between">
         <div>
           <h1 className="text-xl  font-bold m-4">
-            All Mappings <span className="text-sm">({data.length} items)</span>
+            All Mappings{" "}
+            <span className="text-sm">({data.length} items)</span>
           </h1>
         </div>
         <div>
@@ -68,29 +50,43 @@ const Mappinglanding = ({ onAddNew , onEdit, onDelete }) => {
           <div className="border p-3 w-full md:w-1/3">Actions</div>
         </div>
       </div>
-      {data.map((items, index) => (
+      {paginatedData.map((mapping, index) => (
         <div key={index} className="flex w-[98%] m-auto hover:bg-gray-50">
-          <div className="border p-3 w-full md:w-1/3 ">{items.master_id}</div>
-          <div className="border p-3 w-full md:w-1/3 ">{items.minion_id}</div>
-          <div className="border p-3 w-full md:w-1/3">{items.percentage_replication}</div>
-          <div className="border p-3 w-full md:w-1/3">{items.replication}</div>
-          <div className="border p-3 w-full md:w-1/3">{items.created_at}</div>
+          <div className="border p-3 w-full md:w-1/3 ">{mapping.masterId}</div>
+          <div className="border p-3 w-full md:w-1/3 ">{mapping.minionId}</div>
+          <div className="border p-3 w-full md:w-1/3">{mapping.replicationPercentage} %</div>
+          <div className="border p-3 w-full md:w-1/3">{mapping.toggle}</div>
+          {/* <div className="border p-3 w-full md:w-1/3">{mapping.replication}</div> */}
           <div className="border p-3 w-full md:w-1/3">
-              <button
-                onClick={() => onEdit && onEdit()}
-                className="text-blue-600 underline hover:text-blue-800"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => onDelete()}
-                className="text-red-600 underline hover:text-red-800 ml-2"
-              >
-                Delete
-              </button>
-            </div>
+            {dayjs(mapping.createdAt).format("YYYY-MM-DD HH:mm:ss")}
+          </div>
+          <div className="border p-3 w-full md:w-1/3">
+            <button
+              onClick={() => onEdit && onEdit(mapping)}
+              className="text-blue-600 underline hover:text-blue-800"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => onDelete(mapping._id)}
+              className="text-red-600 underline hover:text-red-800 ml-2"
+            >
+              Delete
+            </button>
+          </div>
         </div>
       ))}
+      {/* Pagination Controls */}
+      <Box mt={4} display="flex" justifyContent="center">
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={handlePageChange}
+          color="primary"
+          variant="outlined"
+          shape="rounded"
+        />
+      </Box>
     </div>
   );
 };

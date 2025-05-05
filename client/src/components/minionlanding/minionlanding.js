@@ -72,7 +72,7 @@ const Minionlanding = ({ data = [], onAddNew, onEdit, onDelete }) => {
             <div className="border p-3 w-full md:w-1/3">{minion.server}</div>
             <div className="border p-3 w-full md:w-1/3">
               <button
-                onClick={() => onEdit && onEdit(minion)}
+                onClick={() => onEdit && onEdit(minion)}    
                 className="text-blue-600 underline hover:text-blue-800"
               >
                 Edit

@@ -16,7 +16,7 @@ const MinionForm = ({minion={}, user, onSave, onClose }) => {
         [name]: value,
       }));
     };
-  
+         
   const validate = () => {
       const newErrors = {};   
       if (!formData.minionName.trim()) newErrors.minionName = "Minion name is required";

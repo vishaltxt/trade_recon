@@ -35,7 +35,7 @@ const Minion = () => {
     const key = 'create';
     addTab(
       key,
-      'Create Minion User',
+      'Create Minion',
       <MinionForm
         onSave={async (newMinion) => {
           try {

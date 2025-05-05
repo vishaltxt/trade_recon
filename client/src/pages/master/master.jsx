@@ -35,7 +35,7 @@ const Master = () => {
         const key = 'create';
         addTab(
             key,
-            'Create Master User',
+            'Create Master',
             <Masterform
                 onSave={async (newMaster) => {
                     try {
