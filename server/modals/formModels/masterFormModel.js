@@ -22,6 +22,11 @@ masterFormSchema.pre('save', function (next) {
 });
 
 export const MasterForm = mongoose.model('MasterForm', masterFormSchema);
+// After defining the schema and model
+// MasterForm.syncIndexes()
+//   .then(() => console.log("Indexes synced"))
+// .catch((err) => console.error("Index sync failed:", err));
+
 
 
 // import mongoose from 'mongoose';
@@ -54,14 +59,3 @@ export const MasterForm = mongoose.model('MasterForm', masterFormSchema);
 // export const MasterForm = mongoose.model('MasterForm', masterFormSchema);
 ;
 
-// import mongoose from 'mongoose';
-
-// const masterFormSchema = new mongoose.Schema({
-//   masterName : { type: String, required: true },
-//   masterTraderId: { type: String, required: true },
-//   createdBy: { type: String, enum: ["self", "admin"], default: "self" },
-//   createdAt: { type: Date, default: Date.now },
-//   updatedAt: { type: Date, default: Date.now },
-// });
-
-// export const MasterForm = new mongoose.model('MasterForm', masterFormSchema);

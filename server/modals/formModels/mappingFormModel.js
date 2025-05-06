@@ -32,3 +32,8 @@ mappingFormSchema.pre('save', function (next) {
 });
 
 export const MappingForm = mongoose.model('MappingForm', mappingFormSchema);
+
+
+// MappingForm.syncIndexes()
+//   .then(() => console.log("Indexes synced"))
+  // .catch((err) => console.error("Index sync failed:", err));

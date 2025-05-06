@@ -59,7 +59,7 @@ const Mapping = () => {
         const key = `edit-${mapping._id}`;
         addTab(
             key,
-            `Edit Mapping ${mapping.mappingName}`,
+            `Edit Mapping ${mapping.masterId}`,
             <MappingForm
                 mapping={mapping}
                 onSave={async (updatedMapping) => {
