@@ -29,6 +29,7 @@ const Recon = () => {
         fetchMasters();
         fetchMinions();
     }, []);
+
     const [searchMasters, setSearchMasters] = useState("");
     const [searchMinions, setSearchMinions] = useState("");
 
@@ -95,7 +96,7 @@ const Recon = () => {
                             </div>
                         </div>
                         <hr />
-                    
+
                         <table className="p-3 w-full text-gray-600 ">
                             <thead>
                                 <tr className='bg-gray-100'>

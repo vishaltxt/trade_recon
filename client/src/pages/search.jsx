@@ -3,7 +3,7 @@ import { MdSearch } from "react-icons/md";
 import axios from "axios";
 import { Pagination, Box } from "@mui/material";
 import Dashboard from "../components/Dashboard/dashboard";
-
+  
 const Search = ({ onAddNew }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [trades, setTrades] = useState([]);
