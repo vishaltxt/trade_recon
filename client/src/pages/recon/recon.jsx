@@ -143,7 +143,7 @@ const Recon = () => {
                     {/* Minions */}
                     <div className='border-2 w-1/2 rounded-md'>
                         <div className='flex justify-between items-center p-2'>
-                            <h2 className='font-semibold'>Mapped Minions</h2>
+                            <h2 className='font-semibold'>Minions</h2>
                             <div className='relative'>
                                 <MdSearch className="absolute left-2 top-2 text-gray-500" />
                                 <input
@@ -159,7 +159,8 @@ const Recon = () => {
                         <table className="w-full text-gray-600">
                             <thead className='bg-gray-100'>
                                 <tr className='flex p-2 justify-around'>
-                                    <th className="w-1/2 text-left">System ID</th>
+                                    <th className="w-1/3 text-left">Checkbox</th>
+                                    <th className="w-1/2 text-left">Client ID</th>
                                     <th className="w-1/2 text-left">Name</th>
                                 </tr>
                             </thead>
@@ -231,7 +232,7 @@ const Recon = () => {
                         </div>
                         <div className='border rounded-md'>
                             <h2 className='font-bold text-gray-700 mb-2'>Selected Minion Codes</h2>
-                            <div className='flex justify-around bg-gray-100  p-3'>
+                            <div className='flex justify-around bg-gray-100 p-3'>
                                 <p>Security Name</p>
                                 <p>Type</p>
                                 <p>Total quantity of masters</p>
