@@ -46,6 +46,7 @@ async function seedTrades(filename) {
     console.log("Connected to MongoDB");
 
     const data = fs.readFileSync(filename, "utf8");
+    console.log(data)
     const lines = data.trim().split("\n").slice(0); // No header assumed
                 
     const trades = lines
@@ -89,9 +90,9 @@ async function seedTrades(filename) {
             entry_time: fields[25],
             branch_code: Number(fields[26]),
           };
-        } catch (err) {
+        } catch (err) {                   
           console.warn(`Error parsing line ${index + 1}:`, err.message);
-          return null;
+          return null;    
         }
       })
       .filter((t) => t !== null);
@@ -111,7 +112,7 @@ async function seedTrades(filename) {
   }
 }
 
-seedTrades("TradeFo_09052025.txt");
+seedTrades("TradeFo_12052025.txt");
 
 // import mongoose from "mongoose";
 // import fs from "fs";

@@ -44,3 +44,18 @@ export const deleteMappings = (id) => {
     }
   });
 };
+
+
+// POST: Get all minions mapped to given masterTraderIds
+export const getMinionsByMasterIds = (masterIds) => {
+  const token = getAuthToken();
+  return axios.post(
+    `${API_BASE}/get-minions-by-masterIds`,
+    { masterIds },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};

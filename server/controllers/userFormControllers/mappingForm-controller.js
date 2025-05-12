@@ -1,4 +1,5 @@
 import { MappingForm } from "../../modals/formModels/mappingFormModel.js";
+import { MinionForm } from "../../modals/formModels/minionFormModel.js";
 
 export const createMappings = async (req, res) => {
   try {
@@ -46,5 +47,41 @@ export const deleteMappings = async (req, res) => {
     res.json({ message: "Mapping deleted successfully!" });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+// code for Recon mappings to get minions based on masters selected checkboxes
+export const getMinionsByMasterIds = async (req, res) => {
+  try {
+    const { masterIds } = req.body;
+
+    if (!masterIds || !Array.isArray(masterIds) || masterIds.length === 0) {
+      return res
+        .status(400)
+        .json({ error: "masterIds must be a non-empty array" });
+    }
+
+    // Fetch mappings for these masters
+    const mappings = await MappingForm.find({ masterId: { $in: masterIds } });
+
+    // Extract all unique minion codes (assuming string codes like "MIN001")
+    const minionCodes = [...new Set(mappings.map((m) => m.minionId))];
+    // console.log("Mapped minion IDs:", mappings.map((m) => m.minionId));
+    
+    
+    if (minionCodes.length === 0) {
+      return res.status(200).json(["no minions mapped"]);
+    }
+    
+    // Fetch minions by TraderId
+    const minions = await MinionForm.find({
+      minionTraderId: { $in: minionCodes },
+    });
+    // console.log("Minions fetched:", minions.map(m => m.minionTraderId));
+
+    res.status(200).json(minions);
+  } catch (error) {
+    console.error("Error in getMinionsByMasterIds:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
