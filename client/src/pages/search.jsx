@@ -92,7 +92,7 @@ const Search = ({ onAddNew }) => {
                     <div className="border p-1 w-full md:w-1/5">Strike Price</div>
                     <div className="border p-1 w-full md:w-1/5">Contract</div>
                     <div className="border p-1 w-full md:w-1/5">Quantities</div>
-                    <div className="border p-1 w-full md:w-1/5">Order No</div>
+                    <div className="border p-1 w-full md:w-1/5">master id</div>
                 </div>
 
                 {/* Table rows */}

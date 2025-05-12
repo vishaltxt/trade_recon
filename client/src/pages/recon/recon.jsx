@@ -9,8 +9,10 @@ const Recon = () => {
     const [masters, setMasters] = useState([]);
     const [searchMasters, setSearchMasters] = useState("");
     const [searchMinions, setSearchMinions] = useState("");
-
+    const [showResults, setShowResults] = useState(false);
     const [selectedMasters, setSelectedMasters] = useState([]);
+    const [selectedMinions, setSelectedMinions] = useState([]);
+
     const [filteredMinions, setFilteredMinions] = useState([]);
     const [masterDetails, setMasterDetails] = useState([]);
     const [minionDetails, setMinionDetails] = useState([]);
@@ -58,11 +60,26 @@ const Recon = () => {
     };
 
     const fetchResults = () => {
-        if (selectedMasters.length > 0 && filteredMinions.length > 0) {
-            setMasterDetails(selectedMasters);
-            setMinionDetails(filteredMinions);
+        if (selectedMasters.length > 0 && selectedMinions.length > 0) {
+            setShowResults(true);
         } else {
-            toast.warning("Please select at least one master with mapped minions.");
+            toast.warning("Please select at least one master and one minion.");
+        }
+    };
+
+    useEffect(() => {
+        if (showResults) {
+            setMasterDetails(selectedMasters);
+            setMinionDetails(selectedMinions);
+        }
+    }, [selectedMasters, selectedMinions, showResults]);
+
+    const handleMinionSelect = (minion) => {
+        const exists = selectedMinions.some(m => m.minionClientCode === minion.minionClientCode);
+        if (exists) {
+            setSelectedMinions(selectedMinions.filter(m => m.minionClientCode !== minion.minionClientCode));
+        } else {
+            setSelectedMinions([...selectedMinions, minion]);
         }
     };
 
@@ -155,11 +172,19 @@ const Recon = () => {
                                             (minion.minionName || "").toLowerCase().includes(searchMinions.toLowerCase()))
                                         .map((minion, index) => (
                                             <tr key={index} className='flex justify-around p-2'>
-                                                <td className="w-1/2 pl-2">{minion.minionClientCode}</td>
-                                                <td className="w-1/2 pl-2">{minion.minionName}</td>
+                                                <td className="w-1/3 pl-2">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedMinions.some(m => m.minionClientCode === minion.minionClientCode)}
+                                                        onChange={() => handleMinionSelect(minion)}
+                                                    />
+                                                </td>
+                                                <td className="w-1/3 pl-2">{minion.minionClientCode}</td>
+                                                <td className="w-1/3 pl-2">{minion.minionName}</td>
                                             </tr>
                                         ))}
                                 </tbody>
+
                             </table>
                         </div>
                     </div>
