@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { MdSearch } from "react-icons/md";
 import axios from "axios";
 import { Pagination, Box } from "@mui/material";
 import Dashboard from "../components/Dashboard/dashboard";
-  
+
 const Search = ({ onAddNew }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [trades, setTrades] = useState([]);
@@ -24,7 +24,8 @@ const Search = ({ onAddNew }) => {
     }, []);
 
     const filterData = trades.filter((user) =>
-        user.order_no?.toLowerCase().includes(searchTerm.toLowerCase())
+        user.order_no?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.strike_price?.toString().includes(searchTerm.toLowerCase())
     );
 
     // Group and aggregate data
@@ -41,6 +42,25 @@ const Search = ({ onAddNew }) => {
             groupedData[key].price += Number(item.price) || 0;
         }
     });
+
+    // filterData.forEach(item => {
+    //     const key = `${item.order_no}_${item.symbol}_${item.expiry}_${item.strike_price}_${item.contract}`;
+    //     const transactionQuantity = Number(item.price) || 0;
+
+    //     if (!groupedData[key]) {
+    //         groupedData[key] = {
+    //             ...item,
+    //             price: transactionQuantity, // Set initial quantity
+    //         };
+    //     } else {
+    //         // Infer buy/sell based on contract type
+    //         if (item.contract === 'CE') { // Call option - Treat as Buy
+    //             groupedData[key].price += transactionQuantity;
+    //         } else if (item.contract === 'PE') { // Put option - Treat as Sell
+    //             groupedData[key].price -= transactionQuantity;
+    //         }
+    //     }
+    // });
 
     const groupedList = Object.values(groupedData);
 

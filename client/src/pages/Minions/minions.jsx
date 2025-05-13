@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Dashboard from '../../components/Dashboard/dashboard';
 import MinionForm from '../../components/minionlanding/minionForm';
 import TabsContainer from '../../components/minionlanding/tabscontainer.js';

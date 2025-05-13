@@ -58,7 +58,7 @@ const Recon = () => {
             setSelectedMasters([...selectedMasters, master]);
         }
     };
-
+    
     const fetchResults = () => {
         if (selectedMasters.length > 0 && selectedMinions.length > 0) {
             setShowResults(true);
@@ -687,9 +687,3 @@ export default Recon;
 // };
 
 // export default Recon;
-
-
-
-
-
-

@@ -112,7 +112,7 @@ async function seedTrades(filename) {
   }
 }
 
-seedTrades("TradeFo_12052025.txt");
+seedTrades("TradeFo_13052025.txt");
 
 // import mongoose from "mongoose";
 // import fs from "fs";

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Dashboard from '../../components/Dashboard/dashboard';
 import TabsContainer from '../../components/masterlanding/tabsContainer';
 import MasterLanding from '../../components/masterlanding/masterlanding';
