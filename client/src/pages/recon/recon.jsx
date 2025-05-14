@@ -58,7 +58,7 @@ const Recon = () => {
             setSelectedMasters([...selectedMasters, master]);
         }
     };
-    
+
     const fetchResults = () => {
         if (selectedMasters.length > 0 && selectedMinions.length > 0) {
             setShowResults(true);
@@ -185,7 +185,6 @@ const Recon = () => {
                                             </tr>
                                         ))}
                                 </tbody>
-
                             </table>
                         </div>
                     </div>
@@ -203,65 +202,90 @@ const Recon = () => {
 
                 {/* Results Section */}
                 {masterDetails.length > 0 && minionDetails.length > 0 && (
-                    <div className='grid grid-cols-3 gap-4 p-4'>
-                        <div className='border rounded-md'>
+                    // <div className='grid grid-cols-3 gap-4 p-4'>
+                    <div className='flex flex-wrap gap-4 p-4'>
+                        <div className='border rounded-md w-1/4'>
                             <h2 className='font-bold text-gray-700 mb-2'>Selected Master Codes</h2>
-                            <div className='flex justify-around bg-gray-100 p-3'>
+                            <div className='flex justify-around bg-gray-100 p-2'>
                                 <p>Security Name</p>
                                 <p>Quantity</p>
                                 <p>Type</p>
                             </div>
-                            {masterDetails.map((m, idx) => (
-                                <div key={idx} className='text-sm text-gray-800 p-2'>
-                                    {m.masterTraderId}
-                                </div>
-                            ))}
+                            <div className="max-h-[140px] overflow-y-auto">
+                                {masterDetails.map((m, idx) => (
+                                    <div key={idx} className='flex justify-around text-sm text-gray-800 p-2'>
+                                        <div>{m.masterTraderId}</div>
+                                        <div>{m.masterTraderId}</div>
+                                        <div>{m.masterTraderId}</div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                        <div className='border rounded-md'>
+                        <div className='border rounded-md w-1/4'>
                             <h2 className='font-bold text-gray-700 mb-2'>Mapped Minion Codes</h2>
-                            <div className='flex justify-around bg-gray-100 p-3'>
+                            <div className='flex justify-around bg-gray-100 p-2'>
                                 <p>Security Name</p>
                                 <p>Quantity</p>
                                 <p>Type</p>
                             </div>
-                            {minionDetails.map((m, idx) => (
-                                <div key={idx} className='text-sm text-gray-800 p-2'>
-                                    {m.minionClientCode}
-                                </div>
-                            ))}
-                        </div>
-                        <div className='border rounded-md'>
-                            <h2 className='font-bold text-gray-700 mb-2'>Selected Minion Codes</h2>
-                            <div className='flex justify-around bg-gray-100 p-3'>
-                                <p>Security Name</p>
-                                <p>Type</p>
-                                <p>Total quantity of masters</p>
-                                <p>Total quantity of minion</p>
-                                <p>Quantities in progress</p>
+                            <div className="max-h-[140px] overflow-y-auto">
+                                {minionDetails.map((m, idx) => (
+                                    <div key={idx} className='flex justify-around text-sm text-gray-800 p-2'>
+                                        <div>{m.minionClientCode}</div>
+                                        <div>{m.minionClientCode}</div>
+                                        <div>{m.minionClientCode}</div>
+                                    </div>
+                                ))}
                             </div>
-                            {minionDetails.map((m, idx) => (
-                                <div key={idx} className='text-sm text-gray-800 p-2'>
-                                    {m.minionClientCode}
-                                </div>
-                            ))}
                         </div>
-                        <h1>Trade Difference</h1>
-                        <div className='border rounded-md'>
+                        <div className='border rounded-md w-[48%]'>
                             <h2 className='font-bold text-gray-700 mb-2'>Selected Minion Codes</h2>
-                            <div className='flex justify-around bg-gray-100  p-3'>
-                                <p>Security Name</p>
-                                <p>Type</p>
-                                <p>Total quantity of masters</p>
-                                <p>Total quantity of minion</p>
-                                <p>Quantities in progress</p>
-                                <p>Difference of quantities</p>
-                                <p></p>
+                            <div className='flex justify-around bg-gray-100 p-2'>
+                                <div>Security Name</div>
+                                <div>Type</div>
+                                <div>Total quantity of masters</div>
+                                <div>Total quantity of minion</div>
+                                <div>Quantities in progress</div>
                             </div>
-                            {minionDetails.map((m, idx) => (
-                                <div key={idx} className='text-sm text-gray-800 p-2'>
-                                    {m.minionClientCode}
+                            <div className="max-h-[140px] overflow-y-auto">
+                                {minionDetails.map((m, idx) => (
+                                    <div key={idx} className='flex justify-around text-sm text-gray-800 p-2'>
+                                        <div>{m.minionClientCode}</div>
+                                        <div>{m.minionClientCode}</div>
+                                        <div>{m.minionClientCode}</div>
+                                        <div>{m.minionClientCode}</div>
+                                        <div>{m.minionClientCode}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className='w-full'>
+                            <h1>Trade Difference</h1>
+                            <div className='border rounded-md mt-3'>
+                                <h2 className='font-bold text-gray-700 mb-2'>Selected Minion Codes</h2>
+                                <div className='flex justify-around bg-gray-100 p-2'>
+                                    <div>Security Name</div>
+                                    <div>Type</div>
+                                    <div>Total quantity of masters</div>
+                                    <div>Total quantity of minion</div>
+                                    <div>Quantities in progress</div>
+                                    <div>Difference of quantities</div>
+                                    <div>CALL</div>
                                 </div>
-                            ))}
+                                <div className="max-h-[145px] overflow-y-auto">
+                                    {minionDetails.map((m, idx) => (
+                                        <div key={idx} className='flex justify-around text-sm text-gray-800 p-2'>
+                                            <div>{m.minionClientCode}</div>
+                                            <div>{m.minionClientCode}</div>
+                                            <div>{m.minionClientCode}</div>
+                                            <div>{m.minionClientCode}</div>
+                                            <div>{m.minionClientCode}</div>
+                                            <div>{m.minionClientCode}</div>
+                                            <div>{m.minionClientCode}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -687,3 +711,9 @@ export default Recon;
 // };
 
 // export default Recon;
+
+
+
+
+
+

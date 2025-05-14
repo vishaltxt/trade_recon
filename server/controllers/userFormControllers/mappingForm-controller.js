@@ -68,7 +68,7 @@ export const getMinionsByMasterIds = async (req, res) => {
     const minionCodes = [...new Set(mappings.map((m) => m.minionId))];
     // console.log("Mapped minion IDs:", mappings.map((m) => m.minionId));
     
-    
+      
     if (minionCodes.length === 0) {
       return res.status(200).json(["no minions mapped"]);
     }

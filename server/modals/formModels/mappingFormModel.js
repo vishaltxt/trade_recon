@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 
 const mappingFormSchema = new mongoose.Schema({
   masterId: { type: String, required: true },
-  minionId: { type: String, required: true },
+  minionId: { type: String, required: true , unique:true},
   replicationPercentage: { type: Number, required: true },
   toggle :{ type: Boolean, default: false },
   createdBy: { type: String, enum: ["self", "admin"], default: "self" },
