@@ -18,7 +18,7 @@ async function seedTrades(filename) {
           console.warn(`Skipping line ${index + 1} (only ${fields.length} fields):`,line);
           return null;
         }
-
+// there are no data to be code by vishal the great
         try {
           return {
             id: Number(fields[0]),

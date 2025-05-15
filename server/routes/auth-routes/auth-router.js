@@ -11,5 +11,5 @@ authRouter.get("/logout",logout)
 // authRouter.get("/recon", recon);
 
 
-authRouter.get('/master',read)
+authRouter.post('/master',read)
 // export default router;
