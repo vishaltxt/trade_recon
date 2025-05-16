@@ -126,7 +126,7 @@ const Recon = () => {
     return (
         <div className='flex h-full'>
             <Dashboard />
-            <div className='w-full'>
+            <div className='w-full max-h-[950px] overflow-y-auto '>
                 <h1 className='text-xl mt-3 ml-3 font-bold text-gray-500'>Recon</h1>
                 <hr className='h-0.5 bg-gray-300 w-[99%] m-auto' />
 
@@ -229,10 +229,10 @@ const Recon = () => {
                 {/* Show Results Button */}
                 <div className='text-center mt-2'>
                     <button
-                        className='bg-black text-white rounded-lg text-lg w-5/6 p-2'
+                        className='bg-black text-white rounded-lg text-lg w-5/6 p'
                         onClick={fetchResults}
                     >
-                        Show Results
+                        Show Result
                     </button>
                 </div>
 
@@ -241,16 +241,23 @@ const Recon = () => {
                     <div className='flex flex-wrap gap-4 p-4'>
                         {/* Master Details */}
                         <div className='border rounded-md w-1/4'>
-                            <h2 className='font-bold text-gray-700 mb-2 p-2'>Selected Master Codes</h2>
-                            <div className='flex justify-around bg-gray-100 p-2 text-sm font-semibold'>
-                                <p>Security Name</p><p>Quantity</p><p>Type</p>
+                            {/* <h2 className='font-bold text-gray-700 mb-2 p-2'>Selected Master Codes</h2> */}
+                            <div className='flex p-3 mb-2 font-bold gap-5'>
+                                <p>40596</p>
+                                <p>41306</p>
+                                <p>41222</p>
                             </div>
-                            <div className="max-h-[140px] overflow-y-auto">
+                            <div className='grid grid-cols-3 bg-gray-100 p-2 text-sm font-semibold'>
+                                <p className='ml-4'>Security Name</p>
+                                <p className='ml-4'>Quantity</p>
+                                <p className='ml-4'>Type</p>
+                            </div>
+                            <div className="max-h-[185px] overflow-y-auto">
                                 {masterDetails.map((m, idx) => (
-                                    <div key={idx} className='flex justify-around text-sm text-gray-800 p-2'>
-                                        <div>{m.contract}</div>
-                                        <div>{m.price}</div>
-                                        <div>{m.call}</div>
+                                    <div key={idx} className='grid grid-cols-3 gap-12 text-sm text-gray-800 p-2 border-t'>
+                                        <div className='break-words whitespace-normal ml-4' title={m.contract}>{m.contract}</div>
+                                        <div className='break-words whitespace-normal ml-4'>{m.price}</div>
+                                        <div className='break-words whitespace-normal'>{m.call}</div>
                                     </div>
                                 ))}
                             </div>
@@ -258,39 +265,52 @@ const Recon = () => {
 
                         {/* Minion Details */}
                         <div className='border rounded-md w-1/4'>
-                            <h2 className='font-bold text-gray-700 mb-2 p-2'>Mapped Minion Codes</h2>
-                            <div className='flex justify-around bg-gray-100 p-2 text-sm font-semibold'>
-                                <p>Security Name</p><p>Quantity</p><p>Type</p>
+                            {/* <h2 className='font-bold text-gray-700 mb-2 p-3'>Mapped Minion Codes</h2> */}
+                            <div className='flex p-3 mb-2 font-bold gap-5'>
+                                <p>01280</p>
+                                <p>41191</p>
+                                <p>4444</p>
                             </div>
-                            <div className="max-h-[140px] overflow-y-auto">
+                            <div className='grid grid-cols-3 bg-gray-100 p-2 text-sm font-semibold'>
+                                <p className='ml-4'>Security Name</p>
+                                <p className='ml-4'>Quantity</p>
+                                <p className='ml-6'>Type</p>
+                            </div>
+                            <div className="max-h-[185px] overflow-y-auto">
                                 {minionDetails.map((m, idx) => (
-                                    <div key={idx} className='flex justify-around text-sm text-gray-800 p-2'>
-                                        <div>{m.contract}</div>
-                                        <div>{m.price}</div>
-                                        <div>{m.call}</div>
+                                    <div key={idx} className='grid grid-cols-3 gap-14 text-sm text-gray-800 p-2 border-t'>
+                                        <div className="break-words whitespace-normal ml-4">{m.contract}</div>
+                                        <div className="break-words whitespace-normal ml-4">{m.price}</div>
+                                        <div className="break-words whitespace-normal">{m.call}</div>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
+
                         {/* Minion Summary */}
                         <div className='border rounded-md w-[48%]'>
-                            <h2 className='font-bold text-gray-700 mb-2 p-2'>Minion Summary</h2>
-                            <div className='flex justify-around bg-gray-100 p-2 text-sm font-semibold'>
-                                <div>Security Name</div>
-                                <div>Type</div>
-                                <div>Total quantity of Masters</div>
-                                <div>Total quantity of Minion</div>
-                                <div>Difference in quantities</div>
+                            {/* <h2 className='font-bold text-gray-700 mb-2 p-2'>Minion Summary</h2> */}
+                            <div className='flex p-3 mb-2 font-bold gap-5'>
+                                <p>01280</p>
+                                <p>41191</p>
+                                <p>4444</p>
                             </div>
-                            <div className="max-h-[140px] overflow-y-auto">
+                            <div className='grid grid-cols-5 gap-5 bg-gray-100 p-2 text-sm font-semibold'>
+                                <div className='ml-4'>Security Name</div>
+                                <div className=' ml-4'>Type</div>
+                                <div className=''>Total quantity of Masters</div>
+                                <div className=''>Total quantity of Minion</div>
+                                <div className=''>Difference in quantities</div>
+                            </div>
+                            <div className="max-h-[170px] overflow-y-auto">
                                 {minionDetails.map((m, idx) => (
-                                    <div key={idx} className='flex justify-around text-sm text-gray-800 p-2'>
-                                        <div>{m.contract}</div>
-                                        <div>{m.call}</div>
-                                        <div>{m.price}</div>
-                                        <div>{m.price*2}</div>
-                                        <div>{m.price*2 - m.price}</div>
+                                    <div key={idx} className='grid grid-cols-5 text-sm text-gray-800 p-2 border-t'>
+                                        <div className='break-words whitespace-normal ml-1'>{m.contract}</div>
+                                        <div className='ml-7'>{m.call}</div>
+                                        <div className='ml-10'>{m.price}</div>
+                                        <div className='ml-10'>{m.price * 2}</div>
+                                        <div className='ml-10'>{m.price * 2 - m.price}</div>
                                     </div>
                                 ))}
                             </div>
@@ -300,8 +320,8 @@ const Recon = () => {
                         <div className='w-full'>
                             <h1 className='text-xl font-bold mb-2'>Trade Difference</h1>
                             <div className='border rounded-md'>
-                                <div className='flex justify-around bg-gray-100 p-2 text-sm font-semibold'>
-                                    <div>Security</div>
+                                <div className='grid grid-cols-7 gap-8 bg-gray-100 p-2 text-sm font-semibold'>
+                                    <div className='ml-10'>Security</div>
                                     <div>Type</div>
                                     <div>Total quantity of Masters</div>
                                     <div>Total quantity of Minion</div>
@@ -309,16 +329,17 @@ const Recon = () => {
                                     <div>Difference in quantities</div>
                                     <div>Action</div>
                                 </div>
-                                <div className="max-h-[180px] overflow-y-auto">
+                                <div className="max-h-[220px] overflow-y-auto">
                                     {minionDetails.map((m, idx) => (
-                                        <div key={idx} className='flex justify-around text-sm text-gray-800 p-2'>
-                                            <div>{m.contract}</div>
+                                        <div key={idx} className='grid grid-cols-7 gap-12 text-sm text-gray-800 p-2 border-t'>
+                                            <div className='break-words whitespace-normal ml-2'>{m.contract}</div>
                                             <div>{m.call}</div>
-                                            <div>{m.price}</div>
-                                            <div>{m.price*2}</div>
-                                            <div>{m.inProgress}</div>
-                                            <div>{m.price*2 - m.price}</div>
-                                            <div>{m.call || "-"}</div>
+                                            <div className='ml-10'>{m.price}</div>
+                                            <div className='ml-10'>{m.price * 2}</div>
+                                            <div className='ml-10'>{m.inProgress}</div>
+                                            <div className='ml-10'>{m.price * 2 - m.price}</div>
+                                            {/* <div>{m.call || "-"}</div> */}
+                                            <div><button className='text-white bg-green-500 w-12 rounded-md'>Buy</button></div>
                                         </div>
                                     ))}
                                 </div>

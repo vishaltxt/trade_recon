@@ -176,7 +176,7 @@ export const read = async (req, res) => {
 
     // Previous valid file
     const previousFilePath = await findLatestAvailableFile(today);
-
+ 
     const keys = [
       "id", "segment", "instrument", "symbol", "expiry", "strike_price",
       "option_type", "contract", "multiplier", "product_type", "lot_size",
