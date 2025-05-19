@@ -117,14 +117,17 @@ export const TradeFileData = async (req, res) => {
       const existing = await TradeFile.countDocuments({ fileDate: dateStr });
 
       if (existing === 0 && dateData.length > 0) {
+        const cleanString = (str) =>
+          typeof str === "string" ? str.trim().replace(/\s+/g, " ") : str;
+
         const transformed = dateData.map((item) => ({
-          symbol: item.symbol,
-          expiry: item.expiry,
+          symbol: cleanString(item.symbol),
+          expiry: cleanString(item.expiry),
           strike_price: parseFloat(item.strike_price),
-          contract_Name: item.contract_Name,
-          buy_sell: item.buy_sell,
+          contract_Name: cleanString(item.contract_Name),
+          buy_sell: Number(item.buy_sell),
           quantity: parseInt(item.quantity) || 0,
-          master_id: item.master_id,
+          master_id: Number(item.master_id),
           fileDate: item.fileDate,
         }));
 

@@ -11,12 +11,13 @@ const groupData = (data, isMinion = false) => {
     const grouped = {};
     // console.log(data)
     data.forEach(item => {
-        const key = `${item.contract_Name}-${item.buy_sell}-${item.quantity}`;
+        const key = `${item.contract_Name}-${item.buy_sell}-${item.quantity}-${item.master_id}`;
         if (!grouped[key]) {
             grouped[key] = {
                 contract_Name: item.contract_Name,
                 quantity: item.quantity,
                 buy_sell: item.buy_sell,
+                master_id: item.master_id,
                 // quantity: 0,
                 // totalQtyMaster: 0,
                 // totalQtyMinion: 0,
