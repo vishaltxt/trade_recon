@@ -11,6 +11,9 @@ const app = express();
 import { connectDb } from "./utils/db.js";
 import { errorMiddleware } from "./middlewares/error-middleware.js";
 import cors from 'cors';
+import cron from 'node-cron';
+import { TradeFileData } from "./controllers/dataControlllers/tradeFile-controller.js";
+
 
 const corsOptions = {
   origin: process.env.FRONTEND_URL,
@@ -30,6 +33,20 @@ app.use("/api/mapping",mappingFormRouter) // Mapping form routes;
 app.use("/api/data", tradeDataRouter);
 // app.use("/api/form",masterFormRouter);
 app.use(errorMiddleware);
+
+// Schedule the task every 10 minutes
+// cron.schedule('*/1 * * * *', async () => {
+cron.schedule('0 9 * * *', async () => {
+  console.log('Running scheduled job to read trade data');
+  try {
+    await TradeFileData({}, {
+      json: (data) => console.log("Inserted:", data),
+      status: () => ({ json: console.error })
+    });
+  } catch (err) {
+    console.error("Scheduled job error:", err);
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 connectDb().then(() => {

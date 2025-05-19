@@ -5,9 +5,10 @@ const tradeFileSchema = new mongoose.Schema({
   symbol: String,
   expiry: String,
   strike_price: Number,
-  contract: String,
-  price: Number,
-  order_no: Number,
+  contract_Name: String,
+  buy_sell: Number,
+  quantity: Number,
+  master_id: Number,
   createdAt: {
       type: String,
       default: () => dayjs().format("YYYY-MM-DD HH:mm:ss"),

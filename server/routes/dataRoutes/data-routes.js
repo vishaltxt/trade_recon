@@ -3,4 +3,4 @@ import { TradeFileData } from '../../controllers/dataControlllers/tradeFile-cont
 
 export const tradeDataRouter = express.Router();
 
-tradeDataRouter.get('/tradeData', TradeFileData);
+tradeDataRouter.post('/tradeData', TradeFileData);

@@ -12,10 +12,7 @@
 // controllers/tradeController.js
 import fs from "fs";
 import path from "path";
-// import dotenv from "dotenv";
 import { TradeFile } from "../../modals/tradeData/dataModel.js";
-
-// dotenv.config();
 
 const formatDate = (date) => {
   const dd = String(date.getDate()).padStart(2, "0");
@@ -74,17 +71,17 @@ export const TradeFileData = async (req, res) => {
       "expiry",
       "strike_price",
       "option_type",
-      "contract",
+      "contract_Name",
       "multiplier",
       "product_type",
       "lot_size",
       "client_code",
-      "field_1",
-      "field_2",
       "price",
+      "buy_sell",
       "quantity",
-      "field_3",
+      "quantitya",
       "order_no",
+      "master_id",
       "trade_no",
       "status",
       "cover",
@@ -104,7 +101,7 @@ export const TradeFileData = async (req, res) => {
     const combined = [...prevData, ...todayData];
     const validDates = [todayStr, previous?.dateStr].filter(Boolean);
 
-    // Delete all data not matching today's or previous date, or missing fileDate
+    // Clean up unwanted data
     await TradeFile.deleteMany({
       $or: [
         { fileDate: { $exists: false } },
@@ -113,29 +110,65 @@ export const TradeFileData = async (req, res) => {
     });
 
     let insertedCount = 0;
+    let insertedData = [];
 
     for (const dateStr of validDates) {
       const dateData = combined.filter((item) => item.fileDate === dateStr);
-
       const existing = await TradeFile.countDocuments({ fileDate: dateStr });
+
       if (existing === 0 && dateData.length > 0) {
         const transformed = dateData.map((item) => ({
           symbol: item.symbol,
           expiry: item.expiry,
           strike_price: parseFloat(item.strike_price),
-          contract: item.contract,
-          price: parseFloat(item.price),
-          order_no: item.order_no,
+          contract_Name: item.contract_Name,
+          buy_sell: item.buy_sell,
+          quantity: parseInt(item.quantity) || 0,
+          master_id: item.master_id,
           fileDate: item.fileDate,
         }));
-        await TradeFile.insertMany(transformed);
-        insertedCount += transformed.length;
+
+        const inserted = await TradeFile.insertMany(transformed);
+        insertedCount += inserted.length;
+        insertedData = insertedData.concat(inserted);
       }
     }
 
-    res.json({ inserted: insertedCount, keptDates: validDates });
+    res.json({
+      inserted: insertedCount,
+      keptDates: validDates,
+      insertedData, // Added this
+    });
   } catch (error) {
     console.error("Controller error:", error);
     res.status(500).json({ error: "Something went wrong" });
   }
 };
+
+// "id",
+//       "segment",
+//       "instrument",
+//       "symbol",
+//       "expiry",
+//       "strike_price",
+//       "option_type",
+//       "contract",
+//       "multiplier",
+//       "product_type",
+//       "lot_size",
+//       "client_code",
+//       "field_1",
+//       "field_2",
+//       "price",
+//       "quantity",
+//       "field_3",
+//       "order_no",
+//       "trade_no",
+//       "status",
+//       "cover",
+//       "order_time",
+//       "trade_time",
+//       "exchange_order_id",
+//       "ref_no",
+//       "entry_time",
+//       "branch_code",
