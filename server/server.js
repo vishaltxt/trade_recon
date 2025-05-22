@@ -35,12 +35,12 @@ app.use("/api/data", tradeDataRouter);
 app.use(errorMiddleware);
 
 // Schedule the task every 10 minutes
-// cron.schedule('*/1 * * * *', async () => {
-cron.schedule('0 9 * * *', async () => {
+// cron.schedule('0 9 * * *', async () => {
+cron.schedule('*/1 * * * *', async () => {
   console.log('Running scheduled job to read trade data');
   try {
     await TradeFileData({}, {
-      json: (data) => console.log("Inserted:", data),
+      json: (data) => console.log("Inserted:"),
       status: () => ({ json: console.error })
     });
   } catch (err) {

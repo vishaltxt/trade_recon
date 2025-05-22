@@ -32,7 +32,7 @@ const Search = ({ onAddNew }) => {
     const groupedData = {};
 
     filterData.forEach(item => {
-        const key = `${item.order_no}_${item.symbol}_${item.expiry}_${item.strike_price}_${item.contract}`;
+        const key = `${item.order_no}_${item.symbol}_${item.expiry}_${item.strike_price}_${item.contract_Name}`;
         if (!groupedData[key]) {
             groupedData[key] = {
                 ...item,
@@ -121,7 +121,7 @@ const Search = ({ onAddNew }) => {
                         <div className="border p-1 w-full md:w-1/5">{item.symbol}</div>
                         <div className="border p-1 w-full md:w-1/5">{item.expiry}</div>
                         <div className="border p-1 w-full md:w-1/5">{item.strike_price}</div>
-                        <div className="border p-1 w-full md:w-1/5">{item.contract}</div>
+                        <div className="border p-1 w-full md:w-1/5">{item.contract_Name}</div>
                         <div className="border p-1 w-full md:w-1/5">{item.price}</div>
                         <div className="border p-1 w-full md:w-1/5">{item.order_no}</div>
                     </div>

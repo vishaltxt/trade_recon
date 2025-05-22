@@ -1,11 +1,11 @@
 import { User } from "../../modals/userModels/user-model.js";
-import fs from 'fs'
-import path from 'path';
+import fs from "fs";
+import path from "path";
 
 export const register = async (req, res) => {
   try {
     // console.log(req.body);
-    const { firstname, lastname , email, phone, password } = req.body;
+    const { firstname, lastname, email, phone, password } = req.body;
     const userExist = await User.findOne({ email });
     if (userExist) {
       return res.status(400).json({ msg: "email already exists" });
@@ -18,7 +18,7 @@ export const register = async (req, res) => {
       email,
       phone,
       password,
-      role: "reader",      // normal registration
+      role: "reader", // normal registration
       createdBy: "self",
     });
     console.log(req.body);
@@ -63,21 +63,20 @@ export const login = async (req, res) => {
   }
 };
 
-export const logout = (async (req, res, next) => {
-    res
-      // .status(201)
-      // .cookie("token", "", {
-      //   httpOnly: true,
-      //   expires: new Date(Date.now()),
-      //   secure: true,
-      //   sameSite: "None",
-      // })
-      .json({
-        success: true,
-        message: "Logged Out Successfully.",
-      });
-  });
-
+export const logout = async (req, res, next) => {
+  res
+    // .status(201)
+    // .cookie("token", "", {
+    //   httpOnly: true,
+    //   expires: new Date(Date.now()),
+    //   secure: true,
+    //   sameSite: "None",
+    // })
+    .json({
+      success: true,
+      message: "Logged Out Successfully.",
+    });
+};
 
 // export const read = (req, res) => {
 //   try {
@@ -119,8 +118,6 @@ export const logout = (async (req, res, next) => {
 //   }
 // };
 
-
-
 // export const read = (req,res)=>{
 //   try {
 //     // const filePath = path.join(__dirname, 'data.txt');
@@ -144,12 +141,12 @@ export const logout = (async (req, res, next) => {
 
 export const read = async (req, res) => {
   try {
-    const baseDir = process.env.FILE_PATH || './data';
+    const baseDir = process.env.FILE_PATH || "./data";
 
     // Format date as DDMMYYYY
     const formatDate = (date) => {
-      const dd = String(date.getDate()).padStart(2, '0');
-      const mm = String(date.getMonth() + 1).padStart(2, '0');
+      const dd = String(date.getDate()).padStart(2, "0");
+      const mm = String(date.getMonth() + 1).padStart(2, "0");
       const yyyy = date.getFullYear();
       return `${dd}${mm}${yyyy}`;
     };
@@ -176,28 +173,53 @@ export const read = async (req, res) => {
 
     // Previous valid file
     const previousFilePath = await findLatestAvailableFile(today);
- 
+
     const keys = [
-      "id", "segment", "instrument", "symbol", "expiry", "strike_price",
-      "option_type", "contract", "multiplier", "product_type", "lot_size",
-      "client_code", "field_1", "field_2", "price", "quantity", "field_3",
-      "order_no", "trade_no", "status", "cover", "order_time", "trade_time",
-      "exchange_order_id", "ref_no", "entry_time", "branch_code"
+      "id",
+      "segment",
+      "instrument",
+      "symbol",
+      "expiry",
+      "strike_price",
+      "option_type",
+      "contract_Name",
+      "multiplier",
+      "product_type",
+      "lot_size",
+      "client_code",
+      "field_1",
+      "field_2",
+      "price",
+      "quantity",
+      "field_3",
+      "order_no",
+      "trade_no",
+      "status",
+      "cover",
+      "order_time",
+      "trade_time",
+      "exchange_order_id",
+      "ref_no",
+      "entry_time",
+      "branch_code",
     ];
 
     const readFileAndParse = (filePath) => {
       return new Promise((resolve, reject) => {
         if (!filePath) return resolve([]); // No file
 
-        fs.readFile(filePath, 'utf8', (err, data) => {
+        fs.readFile(filePath, "utf8", (err, data) => {
           if (err) {
-            console.warn(`Warning: Could not read file ${filePath}`, err.message);
+            console.warn(
+              `Warning: Could not read file ${filePath}`,
+              err.message
+            );
             return resolve([]);
           }
 
-          const lines = data.trim().split('\r\n').filter(Boolean);
-          const parsedData = lines.map(line => {
-            const values = line.split(',');
+          const lines = data.trim().split("\r\n").filter(Boolean);
+          const parsedData = lines.map((line) => {
+            const values = line.split(",");
             const obj = {};
             keys.forEach((key, i) => {
               obj[key] = values[i] || "";
@@ -217,12 +239,8 @@ export const read = async (req, res) => {
 
     const combined = [...prevData, ...todayData];
     res.json(combined);
-
   } catch (error) {
-    console.error('Controller error:', error);
-    res.status(500).json({ error: 'Something went wrong' });
+    console.error("Controller error:", error);
+    res.status(500).json({ error: "Something went wrong" });
   }
 };
-
-
-  
