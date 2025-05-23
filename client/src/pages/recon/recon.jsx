@@ -18,6 +18,10 @@ const Recon = () => {
     const [masterDetails, setMasterDetails] = useState([]);
     const [minionDetails, setMinionDetails] = useState([]);
 
+
+    const [selectedMasterCode, setSelectedMasterCode] = useState(null);
+const filteredDetails = masterDetails.filter(item => item.code === selectedMasterCode);
+    console.log("filtered dta ",filteredDetails)
     // Fetch all masters
     const fetchMasters = async () => {
         try {
@@ -33,7 +37,7 @@ const Recon = () => {
     }, []);
 
     useEffect(() => {
-        const fetchMappedMinions = async (masterIds) => {   
+        const fetchMappedMinions = async (masterIds) => {
             try {
                 const res = await getMinionsByMasterIds(masterIds);
                 setFilteredMinions(res.data); // Assuming API returns an array of minions
@@ -75,6 +79,7 @@ const Recon = () => {
             console.log("masterside data", masterSide);
             setMasterDetails(masterSide);
             setMinionDetails(minionSide);
+            setSelectedMasterCode();
 
         } catch (error) {
             console.error("Error fetching reconciliation data:", error);
@@ -98,6 +103,7 @@ const Recon = () => {
         }
     };
 
+    
     return (
         <div className='flex h-full'>
             <Dashboard />
@@ -219,27 +225,40 @@ const Recon = () => {
                     // <div className='grid grid-cols-3 gap-4 p-4'>
                     <div className='flex flex-wrap gap-4 p-4'>
                         <div className='border rounded-md w-1/4'>
+                            {/* Clickable Master Codes */}
                             <div className='flex p-3 mb-2 font-bold gap-5'>
-                                <p>01280</p>
-                                <p>41191</p>
-                                <p>4444</p>
+                                {Array.from(new Set(masters.map(item => item.masterTraderId))).map(code => (
+                                    <p
+                                        key={code}
+                                        className={`cursor-pointer ${selectedMasterCode === code ? 'text-blue-600 underline' : ''}`}
+                                        onClick={() => setSelectedMasterCode(code)}
+                                    >
+                                        {code}
+                                    </p>
+                                ))}
                             </div>
+
+                            {/* Table Header */}
                             <div className='grid grid-cols-3 bg-gray-100 p-2 text-sm font-semibold'>
                                 <p className='ml-4'>Security Name</p>
                                 <p className='ml-4'>Quantity</p>
                                 <p className='ml-4'>Type</p>
                             </div>
+
+                            {/* Filtered Data */}
                             <div className="max-h-[185px] overflow-y-auto">
-                                {masterDetails.map((m, idx) => (
+                                {filteredDetails.map((m, idx) => (
                                     <div key={idx} className='grid grid-cols-3 gap-12 text-sm text-gray-800 p-2 border-t'>
                                         <div className='break-words whitespace-normal ml-4'>{m.contract_Name}</div>
                                         <div className='break-words whitespace-normal ml-4'>{m.total_quantity}</div>
-                                        {/* <div className='break-words whitespace-normal'>{m.actionType}</div> */}
-                                        <div className={`break-words whitespace-normal font-semibold ${m.actionType === 'buy' ? 'text-green-600' : 'text-red-600'}`}> {(m.actionType || '').toUpperCase()}</div>
+                                        <div className={`break-words whitespace-normal font-semibold ${m.actionType === 'buy' ? 'text-green-600' : 'text-red-600'}`}>
+                                            {(m.actionType || '').toUpperCase()}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
+
                         <div className='border rounded-md w-1/4'>
                             <div className='flex p-3 mb-2 font-bold gap-5'>
                                 <p>01280</p>
@@ -278,7 +297,7 @@ const Recon = () => {
                                 {minionDetails.map((m, idx) => (
                                     <div key={idx} className='grid grid-cols-5 text-sm text-gray-800 p-2 border-t'>
                                         <div className='break-words whitespace-normal ml-1'>{m.contract_Name}</div>
-                                        <div className={`ml-7 font-semibold ${m.actionType === 'buy' ? 'text-green-600' : 'text-red-600'}` }> {(m.actionType || '').toUpperCase()}</div>
+                                        <div className={`ml-7 font-semibold ${m.actionType === 'buy' ? 'text-green-600' : 'text-red-600'}`}> {(m.actionType || '').toUpperCase()}</div>
                                         <div className='ml-10'>{m.master_quantity}</div>
                                         <div className='ml-10'>{m.total_quantity}</div>
                                         <div className='ml-10'>{m.master_quantity - m.total_quantity}</div>
