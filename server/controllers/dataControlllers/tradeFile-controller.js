@@ -466,11 +466,148 @@ export const TradeFileData = async (req, res) => {
 
 // With Difference of the masters and minions
 
+// export const getReconTradeData = async (req, res) => {
+//   try {
+//     const { masterTraderIds } = req.body;
+//     // const {minionClientCodes} = req.body
+//         console.log("Received body:", req.body);
+
+
+//     if (!Array.isArray(masterTraderIds) || masterTraderIds.length === 0) {
+//       return res.status(400).json({ error: "No master IDs provided" });
+//     }
+
+//     const masterIdStrings = masterTraderIds.map(String);
+
+//     const mappings = await MappingForm.find({
+//       masterId: { $in: masterIdStrings },
+//     });
+
+//     const minionIdStrings = mappings.map((m) => m.minionId);
+//     console.log("Mappings found:", mappings);
+//     console.log("Minion IDs:", minionIdStrings);
+
+//     const masterIdNums = masterIdStrings.map(Number);
+//     const minionIdNums = minionIdStrings.map(Number);
+
+//     const aggregateGroupedData = (ids) => [
+//       {
+//         $match: { master_id: { $in: ids } },
+//       },
+//       {
+//         $group: {
+//           _id: {
+//             contract_Name: "$contract_Name",
+//             buy_sell: "$buy_sell",
+//           },
+//           total_quantity: { $sum: "$quantity" },
+//         },
+//       },
+//       {
+//         $group: {
+//           _id: "$_id.contract_Name",
+//           quantities: {
+//             $push: {
+//               buy_sell: "$_id.buy_sell",
+//               total_quantity: "$total_quantity",
+//             },
+//           },
+//         },
+//       },
+//       {
+//         $project: {
+//           _id: 0,
+//           contract_Name: "$_id",
+//           total_quantity: {
+//             $subtract: [
+//               {
+//                 $sum: {
+//                   $map: {
+//                     input: {
+//                       $filter: {
+//                         input: "$quantities",
+//                         as: "item",
+//                         cond: { $eq: ["$$item.buy_sell", 1] },
+//                       },
+//                     },
+//                     as: "b",
+//                     in: "$$b.total_quantity",
+//                   },
+//                 },
+//               },
+//               {
+//                 $sum: {
+//                   $map: {
+//                     input: {
+//                       $filter: {
+//                         input: "$quantities",
+//                         as: "item",
+//                         cond: { $eq: ["$$item.buy_sell", 2] },
+//                       },
+//                     },
+//                     as: "s",
+//                     in: "$$s.total_quantity",
+//                   },
+//                 },
+//               },
+//             ],
+//           },
+//         },
+//       },
+//       {
+//         $match: { total_quantity: { $ne: 0 } },
+//       },
+//       {
+//         $addFields: {
+//           actionType: {
+//             $cond: [{ $gt: ["$total_quantity", 0] }, "buy", "sell"],
+//           },
+//         },
+//       },
+//     ];
+
+//     const [masterData, minionData] = await Promise.all([
+//       TradeFile.aggregate(aggregateGroupedData(masterIdNums)),
+//       TradeFile.aggregate(aggregateGroupedData(minionIdNums)),
+//     ]);
+
+//     // Map both sides for quick lookups
+//     const masterMap = Object.fromEntries(
+//       masterData.map((m) => [m.contract_Name, m.total_quantity])
+//     );
+//     const minionMap = Object.fromEntries(
+//       minionData.map((m) => [m.contract_Name, m.total_quantity])
+//     );
+
+//     // Enrich each minion record with corresponding master_quantity
+//     const enrichedMinionData = minionData.map((m) => ({
+//       ...m,
+//       master_quantity: masterMap[m.contract_Name] || 0,
+//     }));
+
+//     // Enrich each master record with corresponding minion_quantity
+//     const enrichedMasterData = masterData.map((m) => ({
+//       ...m,
+//       minion_quantity: minionMap[m.contract_Name] || 0,
+//     }));
+
+//     res.json({
+//       masterData: enrichedMasterData,
+//       minionData: enrichedMinionData,
+//     });
+//   } catch (err) {
+//     console.error("getReconTradeData error:", err);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+
+
+// with  master_id updation
 export const getReconTradeData = async (req, res) => {
   try {
     const { masterTraderIds } = req.body;
-        console.log("Received body:", req.body);
-
+    console.log("Received body:", req.body);
 
     if (!Array.isArray(masterTraderIds) || masterTraderIds.length === 0) {
       return res.status(400).json({ error: "No master IDs provided" });
@@ -489,88 +626,103 @@ export const getReconTradeData = async (req, res) => {
     const masterIdNums = masterIdStrings.map(Number);
     const minionIdNums = minionIdStrings.map(Number);
 
-    const aggregateGroupedData = (ids) => [
-      {
-        $match: { master_id: { $in: ids } },
-      },
-      {
-        $group: {
-          _id: {
-            contract_Name: "$contract_Name",
-            buy_sell: "$buy_sell",
-          },
-          total_quantity: { $sum: "$quantity" },
+    const aggregateGroupedData = (ids, includeMasterId = false) => {
+      const pipeline = [
+        {
+          $match: { master_id: { $in: ids } },
         },
-      },
-      {
-        $group: {
-          _id: "$_id.contract_Name",
-          quantities: {
-            $push: {
-              buy_sell: "$_id.buy_sell",
-              total_quantity: "$total_quantity",
+        ...(includeMasterId
+          ? [
+              {
+                $addFields: { group_master_id: "$master_id" }, // temporary field for grouping
+              },
+            ]
+          : []),
+        {
+          $group: {
+            _id: {
+              contract_Name: "$contract_Name",
+              buy_sell: "$buy_sell",
+              ...(includeMasterId ? { master_id: "$group_master_id" } : {}),
+            },
+            total_quantity: { $sum: "$quantity" },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              contract_Name: "$_id.contract_Name",
+              ...(includeMasterId ? { master_id: "$_id.master_id" } : {}),
+            },
+            quantities: {
+              $push: {
+                buy_sell: "$_id.buy_sell",
+                total_quantity: "$total_quantity",
+              },
             },
           },
         },
-      },
-      {
-        $project: {
-          _id: 0,
-          contract_Name: "$_id",
-          total_quantity: {
-            $subtract: [
-              {
-                $sum: {
-                  $map: {
-                    input: {
-                      $filter: {
-                        input: "$quantities",
-                        as: "item",
-                        cond: { $eq: ["$$item.buy_sell", 1] },
+        {
+          $project: {
+            _id: 0,
+            contract_Name: "$_id.contract_Name",
+            ...(includeMasterId ? { master_id: "$_id.master_id" } : {}),
+            total_quantity: {
+              $subtract: [
+                {
+                  $sum: {
+                    $map: {
+                      input: {
+                        $filter: {
+                          input: "$quantities",
+                          as: "item",
+                          cond: { $eq: ["$$item.buy_sell", 1] },
+                        },
                       },
+                      as: "b",
+                      in: "$$b.total_quantity",
                     },
-                    as: "b",
-                    in: "$$b.total_quantity",
                   },
                 },
-              },
-              {
-                $sum: {
-                  $map: {
-                    input: {
-                      $filter: {
-                        input: "$quantities",
-                        as: "item",
-                        cond: { $eq: ["$$item.buy_sell", 2] },
+                {
+                  $sum: {
+                    $map: {
+                      input: {
+                        $filter: {
+                          input: "$quantities",
+                          as: "item",
+                          cond: { $eq: ["$$item.buy_sell", 2] },
+                        },
                       },
+                      as: "s",
+                      in: "$$s.total_quantity",
                     },
-                    as: "s",
-                    in: "$$s.total_quantity",
                   },
                 },
-              },
-            ],
+              ],
+            },
           },
         },
-      },
-      {
-        $match: { total_quantity: { $ne: 0 } },
-      },
-      {
-        $addFields: {
-          actionType: {
-            $cond: [{ $gt: ["$total_quantity", 0] }, "buy", "sell"],
+        {
+          $match: { total_quantity: { $ne: 0 } },
+        },
+        {
+          $addFields: {
+            actionType: {
+              $cond: [{ $gt: ["$total_quantity", 0] }, "buy", "sell"],
+            },
           },
         },
-      },
-    ];
+      ];
+
+      return pipeline;
+    };
 
     const [masterData, minionData] = await Promise.all([
-      TradeFile.aggregate(aggregateGroupedData(masterIdNums)),
-      TradeFile.aggregate(aggregateGroupedData(minionIdNums)),
+      TradeFile.aggregate(aggregateGroupedData(masterIdNums, true)),  // Include master_id
+      TradeFile.aggregate(aggregateGroupedData(minionIdNums, false)), // Minion doesn't need master_id
     ]);
 
-    // Map both sides for quick lookups
     const masterMap = Object.fromEntries(
       masterData.map((m) => [m.contract_Name, m.total_quantity])
     );
@@ -578,13 +730,11 @@ export const getReconTradeData = async (req, res) => {
       minionData.map((m) => [m.contract_Name, m.total_quantity])
     );
 
-    // Enrich each minion record with corresponding master_quantity
     const enrichedMinionData = minionData.map((m) => ({
       ...m,
       master_quantity: masterMap[m.contract_Name] || 0,
     }));
 
-    // Enrich each master record with corresponding minion_quantity
     const enrichedMasterData = masterData.map((m) => ({
       ...m,
       minion_quantity: minionMap[m.contract_Name] || 0,

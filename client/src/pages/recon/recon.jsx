@@ -20,8 +20,8 @@ const Recon = () => {
 
 
     const [selectedMasterCode, setSelectedMasterCode] = useState(null);
-const filteredDetails = masterDetails.filter(item => item.code === selectedMasterCode);
-    console.log("filtered dta ",filteredDetails)
+    const filteredDetails = masterDetails.filter(item => item.code === selectedMasterCode);
+    console.log("filtered data ", filteredDetails)
     // Fetch all masters
     const fetchMasters = async () => {
         try {
@@ -69,6 +69,7 @@ const filteredDetails = masterDetails.filter(item => item.code === selectedMaste
             setShowResults(true);
         } else {
             toast.warning("Please select at least one master and one minion.");
+            return;
         }
         try {
             const masterTraderIds = selectedMasters.map(m => m.masterTraderId);
@@ -79,20 +80,24 @@ const filteredDetails = masterDetails.filter(item => item.code === selectedMaste
             console.log("masterside data", masterSide);
             setMasterDetails(masterSide);
             setMinionDetails(minionSide);
-            setSelectedMasterCode();
+// Set first master code from selectedMasters as default selected master code
+            if (selectedMasters.length > 0) {
+                setSelectedMasterCode(selectedMasters[0].masterTraderId);
+            }
 
+            setShowResults(true);
         } catch (error) {
             console.error("Error fetching reconciliation data:", error);
             toast.error("Failed to fetch reconciliation data.");
         }
     };
 
-    useEffect(() => {
-        if (showResults) {
-            setMasterDetails(selectedMasters);
-            setMinionDetails(selectedMinions);
-        }
-    }, [selectedMasters, selectedMinions, showResults]);
+    // useEffect(() => {
+    //     if (showResults) {
+    //         setMasterDetails(selectedMasters);
+    //         setMinionDetails(selectedMinions);
+    //     }
+    // }, [selectedMasters, selectedMinions, showResults]);
 
     const handleMinionSelect = (minion) => {
         const exists = selectedMinions.some(m => m.minionClientCode === minion.minionClientCode);
@@ -103,7 +108,7 @@ const filteredDetails = masterDetails.filter(item => item.code === selectedMaste
         }
     };
 
-    
+
     return (
         <div className='flex h-full'>
             <Dashboard />
@@ -221,19 +226,18 @@ const filteredDetails = masterDetails.filter(item => item.code === selectedMaste
                 </div>
 
                 {/* Results Section */}
-                {masterDetails.length > 0 && minionDetails.length > 0 && (
-                    // <div className='grid grid-cols-3 gap-4 p-4'>
+ {showResults && masterDetails.length > 0 && minionDetails.length > 0 && (                    // <div className='grid grid-cols-3 gap-4 p-4'>
                     <div className='flex flex-wrap gap-4 p-4'>
                         <div className='border rounded-md w-1/4'>
-                            {/* Clickable Master Codes */}
-                            <div className='flex p-3 mb-2 font-bold gap-5'>
-                                {Array.from(new Set(masters.map(item => item.masterTraderId))).map(code => (
+                           {/* Only show selected masters as clickable items */}
+                            <div className='flex p-3 mb-2 font-bold gap-5 flex-wrap'>
+                                {selectedMasters.map(master => (
                                     <p
-                                        key={code}
-                                        className={`cursor-pointer ${selectedMasterCode === code ? 'text-blue-600 underline' : ''}`}
-                                        onClick={() => setSelectedMasterCode(code)}
+                                        key={master.masterTraderId}
+                                        className={`cursor-pointer ${selectedMasterCode === master.masterTraderId ? 'text-blue-600 underline' : ''}`}
+                                        onClick={() => setSelectedMasterCode(master.masterTraderId)}
                                     >
-                                        {code}
+                                        {master.masterTraderId}
                                     </p>
                                 ))}
                             </div>
@@ -247,7 +251,7 @@ const filteredDetails = masterDetails.filter(item => item.code === selectedMaste
 
                             {/* Filtered Data */}
                             <div className="max-h-[185px] overflow-y-auto">
-                                {filteredDetails.map((m, idx) => (
+                                {masterDetails.map((m, idx) => (
                                     <div key={idx} className='grid grid-cols-3 gap-12 text-sm text-gray-800 p-2 border-t'>
                                         <div className='break-words whitespace-normal ml-4'>{m.contract_Name}</div>
                                         <div className='break-words whitespace-normal ml-4'>{m.total_quantity}</div>
