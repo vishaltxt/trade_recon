@@ -720,7 +720,7 @@ export const getReconTradeData = async (req, res) => {
 
     const [masterData, minionData] = await Promise.all([
       TradeFile.aggregate(aggregateGroupedData(masterIdNums, true)),  // Include master_id
-      TradeFile.aggregate(aggregateGroupedData(minionIdNums, false)), // Minion doesn't need master_id
+      TradeFile.aggregate(aggregateGroupedData(minionIdNums, true)), // Minion doesn't need master_id
     ]);
 
     const masterMap = Object.fromEntries(
