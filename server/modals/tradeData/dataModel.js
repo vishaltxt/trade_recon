@@ -1,22 +1,37 @@
+// import mongoose from "mongoose";
+// const tradeFileSchema = new mongoose.Schema({
+//   master_id: Number,
+//   symbol: String,
+//   expiry: String,
+//   strike_price: Number,
+//   quantity: Number,
+// });
+
+// export const TradeFile = mongoose.model("TradeFile", tradeFileSchema);
+
 import mongoose from "mongoose";
-import dayjs from "dayjs";
+// import dayjs from "dayjs";
 
 const tradeFileSchema = new mongoose.Schema({
   symbol: String,
   expiry: String,
   strike_price: Number,
-  contract_Name: String,
+  // contract_Name: String,
   buy_sell: Number,
   quantity: Number,
-  master_id: Number,
-  createdAt: {
-      type: String,
-      default: () => dayjs().format("YYYY-MM-DD HH:mm:ss"),
-    },
-    updatedAt: {
-      type: String,
-      default: () => dayjs().format("YYYY-MM-DD HH:mm:ss"),
-    },
+  master_id: String,
+  buy_quantity: Number,      // <--- Add this
+  sell_quantity: Number,     // <--- Add this
+  net_quantity: Number,      // <--- Add this
+  fileDate: String,   
+  // createdAt: {
+  //     type: String,
+  //     default: () => dayjs().format("YYYY-MM-DD HH:mm:ss"),
+  //   },
+  //   updatedAt: {
+  //     type: String,
+  //     default: () => dayjs().format("YYYY-MM-DD HH:mm:ss"),
+  //   },
 });
 
 export const TradeFile = mongoose.model("TradeFile", tradeFileSchema);

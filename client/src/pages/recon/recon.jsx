@@ -80,6 +80,7 @@ const Recon = () => {
             const masterSide = await res.data.masterData || [];
             const minionSide = await res.data.minionData;
             console.log("masterside data", masterSide);
+            console.log("minionside data", minionSide);
             setMasterDetails(masterSide);
             setMinionDetails(minionSide);
             // Set first master code from selectedMasters as default selected master code
@@ -256,7 +257,7 @@ const Recon = () => {
 
                             {/* Table Header */}
                             <div className='grid grid-cols-3 bg-gray-100 p-2 text-sm font-semibold'>
-                                <p className='ml-4'>Security Name</p>
+                                <p className='ml-4'>Security  Name</p>
                                 <p className='ml-4'>Quantity</p>
                                 <p className='ml-4'>Type</p>
                             </div>
@@ -267,7 +268,7 @@ const Recon = () => {
                                     .filter(m => m.master_id === selectedMasterCode) // 👈 Filter based on selected master
                                     .map((m, idx) => (
                                         <div key={idx} className='grid grid-cols-3 gap-12 text-sm text-gray-800 p-2 border-t'>
-                                            <div className='break-words whitespace-normal ml-4'>{m.contract_Name}</div>
+                                            <div className='break-words whitespace-normal ml-4'>{m.symbol + " " + m.strike_price}</div>
                                             <div className='break-words whitespace-normal ml-4'>{m.total_quantity}</div>
                                             <div className={`break-words whitespace-normal font-semibold ${m.actionType === 'buy' ? 'text-green-600' : 'text-red-600'}`}>
                                                 {(m.actionType || '').toUpperCase()}
@@ -308,7 +309,7 @@ const Recon = () => {
                                     .filter(m => m.master_id === selectedMinionMasterCode) // 👈 Filter based on selected master
                                     .map((m, idx) => (
                                         <div key={idx} className='grid grid-cols-3 gap-14 text-sm text-gray-800 p-2 border-t'>
-                                            <div className="break-words whitespace-normal">{m.contract_Name}</div>
+                                            <div className="break-words whitespace-normal">{m.symbol + " " + m.strike_price}</div>
                                             <div className="break-words whitespace-normal">{m.total_quantity}</div>
                                             <div className={`break-words whitespace-normal font-semibold ${m.actionType === 'buy' ? 'text-green-600' : 'text-red-600'}`}>
                                                 {(m.actionType || '').toUpperCase()}
@@ -316,13 +317,12 @@ const Recon = () => {
                                         </div>
                                     ))}
                             </div>
-
                         </div>
                         <div className='border rounded-md w-[48%]'>
                             <div className='flex flex-wrap p-3 mb-2 font-bold gap-5'>
                                 {[...new Set(minionDetails.map(m => m.master_id))].map((id) => (
                                     <p
-                                        key={id}
+                                        key={id}  
                                         className={`cursor-pointer ${selectedMinionMasterCodeDifference === id ? 'text-blue-600 underline' : ''}`}
                                         onClick={() => setSelectedMinionMasterCodeDifference(id)}
                                     >
@@ -342,11 +342,11 @@ const Recon = () => {
                                     .filter(m => m.master_id === selectedMinionMasterCodeDifference) // 👈 Filter based on selected master
                                     .map((m, idx) => (
                                         <div key={idx} className='grid grid-cols-5 text-sm text-gray-800 p-2 border-t'>
-                                            <div className='break-words whitespace-normal ml-1'>{m.contract_Name}</div>
+                                            <div className='break-words whitespace-normal ml-1'>{m.symbol + " " + m.strike_price}</div>
                                             <div className={`ml-7 font-semibold ${m.actionType === 'buy' ? 'text-green-600' : 'text-red-600'}`}> {(m.actionType || '').toUpperCase()}</div>
-                                            <div className='ml-10'>{m.master_quantity}</div>
+                                            <div className='ml-10'>{m.master_net_quantity}</div>
                                             <div className='ml-10'>{m.total_quantity}</div>
-                                            <div className='ml-10'>{m.master_quantity - m.total_quantity}</div>
+                                            <div className='ml-10'>{m.total_quantity - m.master_net_quantity}</div>
                                         </div>
                                     ))}
                             </div>
@@ -364,14 +364,16 @@ const Recon = () => {
                                     <div>CALL</div>
                                 </div>
                                 <div className="max-h-[220px] overflow-y-auto">
-                                    {masterDetails.map((m, idx) => (
+                                    {masterDetails
+                                    // .filter(m => m.total_quantity - m.minion_net_quantity !== 0)
+                                    .map((m, idx) => (
                                         <div key={idx} className='grid grid-cols-7 gap-12 text-sm text-gray-800 p-2 border-t'>
-                                            <div className='break-words whitespace-normal ml-2'>{m.contract_Name}</div>
+                                            <div className='break-words whitespace-normal ml-2'>{m.symbol + " " + m.strike_price}</div>
                                             <div className={`font-semibold ${m.actionType === 'buy' ? 'text-green-600' : 'text-red-600'}`}> {(m.actionType || '').toUpperCase()}</div>
                                             <div className='ml-12'>{m.total_quantity}</div>
-                                            <div className='ml-12'>{m.minion_quantity}</div>
+                                            <div className='ml-12'>{m.minion_net_quantity}</div>
                                             <div className='ml-12'>0</div>
-                                            <div className='ml-12'>{m.total_quantity - m.minion_quantity}</div>
+                                            <div className='ml-12'>{m.total_quantity - m.minion_net_quantity}</div>
                                             <div><button className='text-white bg-green-500 w-12 rounded-md'>Buy</button></div>
                                         </div>
                                     ))}
