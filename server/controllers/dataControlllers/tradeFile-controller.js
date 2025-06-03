@@ -63,7 +63,7 @@ const keys46 = [
   "expiry",
   "FininstrmActlXpryDt",
   "strike_price",
-  "OptnTp",
+  "option_type",
   "NewBrdLotQty",
   "OpngLngQty",
   "OpngLngVal",
@@ -135,7 +135,10 @@ const readFileAndParse = (filePath, dateStr, keys) => {
     if (ext === ".txt") {
       fs.readFile(filePath, "utf8", (err, data) => {
         if (err) {
-          console.warn(`Warning: Could not read text file ${filePath}`, err.message);
+          console.warn(
+            `Warning: Could not read text file ${filePath}`,
+            err.message
+          );
           return resolve([]);
         }
         const lines = data.trim().split("\r\n").filter(Boolean);
@@ -153,7 +156,10 @@ const readFileAndParse = (filePath, dateStr, keys) => {
     } else if (ext === ".csv") {
       fs.readFile(filePath, "utf8", (err, data) => {
         if (err) {
-          console.warn(`Warning: Could not read CSV file ${filePath}`, err.message);
+          console.warn(
+            `Warning: Could not read CSV file ${filePath}`,
+            err.message
+          );
           return resolve([]);
         }
         try {
@@ -162,13 +168,14 @@ const readFileAndParse = (filePath, dateStr, keys) => {
             skip_empty_lines: true,
             trim: true,
           });
- // 🚨 Skip the header row if necessary
+          // 🚨 Skip the header row if necessary
           let parsedData = records;
           if (parsedData.length > 0) {
             const firstRow = parsedData[0];
             const firstRowIsHeader = keys.some(
               (key) =>
-                firstRow[key] && firstRow[key].toLowerCase() === key.toLowerCase()
+                firstRow[key] &&
+                firstRow[key].toLowerCase() === key.toLowerCase()
             );
             if (firstRowIsHeader) {
               parsedData = parsedData.slice(1);
@@ -181,7 +188,10 @@ const readFileAndParse = (filePath, dateStr, keys) => {
           });
           resolve(parsedData);
         } catch (parseErr) {
-          console.warn(`Warning: Could not parse CSV file ${filePath}`, parseErr.message);
+          console.warn(
+            `Warning: Could not parse CSV file ${filePath}`,
+            parseErr.message
+          );
           resolve([]);
         }
       });
@@ -200,7 +210,10 @@ const readFileAndParse = (filePath, dateStr, keys) => {
         });
         resolve(parsedData);
       } catch (err) {
-        console.warn(`Warning: Could not read Excel file ${filePath}`, err.message);
+        console.warn(
+          `Warning: Could not read Excel file ${filePath}`,
+          err.message
+        );
         resolve([]);
       }
     } else {
@@ -217,10 +230,14 @@ export const TradeFileData = async (req, res) => {
     const todayStr = formatDate(today);
 
     const latestPrevDate = getLatestFileDate(baseDir);
-    const previousFileDate = latestPrevDate ? prevformatDate(latestPrevDate) : null;
+    const previousFileDate = latestPrevDate
+      ? prevformatDate(latestPrevDate)
+      : null;
 
     if (!previousFileDate) {
-      console.warn("No previous file found for Position_NCL_FO_0_CM_06432_*.csv");
+      console.warn(
+        "No previous file found for Position_NCL_FO_0_CM_06432_*.csv"
+      );
     }
 
     const todayFilePath = path.join(baseDir, `TradeFo_${todayStr}.txt`);
@@ -232,7 +249,9 @@ export const TradeFileData = async (req, res) => {
       : null;
 
     const [prevData, todayData] = await Promise.all([
-      previousFileDate ? readFileAndParse(previousFilePath, previousFileDate, keys46) : [],
+      previousFileDate
+        ? readFileAndParse(previousFilePath, previousFileDate, keys46)
+        : [],
       readFileAndParse(todayFilePath, todayStr, keys26),
     ]);
 
@@ -268,6 +287,7 @@ export const TradeFileData = async (req, res) => {
           const qty1 = parseInt(item.quantity1) || 0;
           const qty2 = parseInt(item.quantity2) || 0;
           transformedItem.quantity = qty1 - qty2;
+          // transformedItem.option_type = item.option_type || "";
           return transformedItem;
         });
         const inserted = await TradeFile.insertMany(transformedPrevData);
@@ -275,7 +295,7 @@ export const TradeFileData = async (req, res) => {
         insertedData = insertedData.concat(inserted);
       }
     }
-  // Aggregate today's data
+    // Aggregate today's data
     if (todayData.length > 0) {
       await TradeFile.deleteMany({ fileDate: todayStr });
 
@@ -300,17 +320,19 @@ export const TradeFileData = async (req, res) => {
 
         const net_quantity = buy_quantity - sell_quantity;
 
-        const [symbol, expiry, strike_price, master_id] = [
+        const [symbol, expiry, strike_price, master_id, option_type] = [
           cleanString(group[0].symbol),
           cleanString(group[0].expiry),
           cleanString(group[0].strike_price),
           cleanString(group[0].master_id),
+          cleanString(group[0].option_type),
         ];
 
         return {
           symbol,
           expiry,
           strike_price,
+          option_type,
           buy_quantity,
           sell_quantity,
           net_quantity,
@@ -335,7 +357,7 @@ export const TradeFileData = async (req, res) => {
   }
 };
 
- // savind data without buy_sell and quantity\
+// savind data without buy_sell and quantity\
 
 // import fs from "fs";
 // import path from "path";
