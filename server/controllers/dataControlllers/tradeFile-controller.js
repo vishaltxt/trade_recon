@@ -20,6 +20,33 @@ const prevformatDate = (date) => {
   return `${yyyy}${mm}${dd}`;
 };
 
+// 🔍 Helper to get the latest file date from the directory
+const getLatestFileDate = (baseDir) => {
+  const files = fs.readdirSync(baseDir);
+  const pattern = /^Position_NCL_FO_0_CM_06432_(\d{8})_F_0000\.csv$/;
+
+  const dates = files
+    .map((file) => {
+      const match = file.match(pattern);
+      if (match) {
+        const dateStr = match[1];
+        const yyyy = parseInt(dateStr.slice(0, 4), 10);
+        const mm = parseInt(dateStr.slice(4, 6), 10);
+        const dd = parseInt(dateStr.slice(6, 8), 10);
+        return new Date(yyyy, mm - 1, dd);
+      }
+      return null;
+    })
+    .filter(Boolean);
+
+  if (dates.length === 0) {
+    return null; // no files found
+  }
+
+  dates.sort((a, b) => b - a); // descending order
+  return dates[0];
+};
+
 const keys46 = [
   "Sgmt",
   "Src",
@@ -108,10 +135,7 @@ const readFileAndParse = (filePath, dateStr, keys) => {
     if (ext === ".txt") {
       fs.readFile(filePath, "utf8", (err, data) => {
         if (err) {
-          console.warn(
-            `Warning: Could not read text file ${filePath}`,
-            err.message
-          );
+          console.warn(`Warning: Could not read text file ${filePath}`, err.message);
           return resolve([]);
         }
         const lines = data.trim().split("\r\n").filter(Boolean);
@@ -129,10 +153,7 @@ const readFileAndParse = (filePath, dateStr, keys) => {
     } else if (ext === ".csv") {
       fs.readFile(filePath, "utf8", (err, data) => {
         if (err) {
-          console.warn(
-            `Warning: Could not read CSV file ${filePath}`,
-            err.message
-          );
+          console.warn(`Warning: Could not read CSV file ${filePath}`, err.message);
           return resolve([]);
         }
         try {
@@ -141,15 +162,13 @@ const readFileAndParse = (filePath, dateStr, keys) => {
             skip_empty_lines: true,
             trim: true,
           });
-
-          // 🚨 Skip the header row if necessary
+ // 🚨 Skip the header row if necessary
           let parsedData = records;
           if (parsedData.length > 0) {
             const firstRow = parsedData[0];
             const firstRowIsHeader = keys.some(
               (key) =>
-                firstRow[key] &&
-                firstRow[key].toLowerCase() === key.toLowerCase()
+                firstRow[key] && firstRow[key].toLowerCase() === key.toLowerCase()
             );
             if (firstRowIsHeader) {
               parsedData = parsedData.slice(1);
@@ -162,10 +181,7 @@ const readFileAndParse = (filePath, dateStr, keys) => {
           });
           resolve(parsedData);
         } catch (parseErr) {
-          console.warn(
-            `Warning: Could not parse CSV file ${filePath}`,
-            parseErr.message
-          );
+          console.warn(`Warning: Could not parse CSV file ${filePath}`, parseErr.message);
           resolve([]);
         }
       });
@@ -184,10 +200,7 @@ const readFileAndParse = (filePath, dateStr, keys) => {
         });
         resolve(parsedData);
       } catch (err) {
-        console.warn(
-          `Warning: Could not read Excel file ${filePath}`,
-          err.message
-        );
+        console.warn(`Warning: Could not read Excel file ${filePath}`, err.message);
         resolve([]);
       }
     } else {
@@ -202,21 +215,29 @@ export const TradeFileData = async (req, res) => {
     const baseDir = process.env.FILE_PATH || "./data";
     const today = new Date();
     const todayStr = formatDate(today);
-    const previousFileDate = prevformatDate(new Date(2025, 4, 30)); // Replace with dynamic date if needed
+
+    const latestPrevDate = getLatestFileDate(baseDir);
+    const previousFileDate = latestPrevDate ? prevformatDate(latestPrevDate) : null;
+
+    if (!previousFileDate) {
+      console.warn("No previous file found for Position_NCL_FO_0_CM_06432_*.csv");
+    }
 
     const todayFilePath = path.join(baseDir, `TradeFo_${todayStr}.txt`);
-    const previousFilePath = path.join(
-      baseDir,
-      `Position_NCL_FO_0_CM_06432_${previousFileDate}_F_0000.csv`
-    );
+    const previousFilePath = previousFileDate
+      ? path.join(
+          baseDir,
+          `Position_NCL_FO_0_CM_06432_${previousFileDate}_F_0000.csv`
+        )
+      : null;
 
     const [prevData, todayData] = await Promise.all([
-      readFileAndParse(previousFilePath, previousFileDate, keys46),
+      previousFileDate ? readFileAndParse(previousFilePath, previousFileDate, keys46) : [],
       readFileAndParse(todayFilePath, todayStr, keys26),
     ]);
 
     const validDates = [previousFileDate, todayStr].filter(Boolean);
-    // console.log("validDates:", validDates);
+    console.log("validDates:", validDates);
 
     // Clean up old records
     await TradeFile.deleteMany({
@@ -244,11 +265,9 @@ export const TradeFileData = async (req, res) => {
             transformedItem[key] = cleanString(item[key]);
           });
           transformedItem.fileDate = previousFileDate;
-          // 👇 ADD THIS: combine quantity1 and quantity2
-      const qty1 = parseInt(item.quantity1) || 0;
-      const qty2 = parseInt(item.quantity2) || 0;
-      transformedItem.quantity = qty1 + qty2; // total quantity
-
+          const qty1 = parseInt(item.quantity1) || 0;
+          const qty2 = parseInt(item.quantity2) || 0;
+          transformedItem.quantity = qty1 - qty2;
           return transformedItem;
         });
         const inserted = await TradeFile.insertMany(transformedPrevData);
@@ -256,19 +275,16 @@ export const TradeFileData = async (req, res) => {
         insertedData = insertedData.concat(inserted);
       }
     }
-
-    // Aggregate today's data
+  // Aggregate today's data
     if (todayData.length > 0) {
-      // Delete existing data for today
       await TradeFile.deleteMany({ fileDate: todayStr });
 
-      // Group and transform data
       const grouped = _.groupBy(todayData, (item) =>
         [
           cleanString(item.symbol),
           cleanString(item.expiry),
           cleanString(item.strike_price),
-          Number(item.master_id),
+          cleanString(item.master_id),
         ].join("|")
       );
 
@@ -288,7 +304,7 @@ export const TradeFileData = async (req, res) => {
           cleanString(group[0].symbol),
           cleanString(group[0].expiry),
           cleanString(group[0].strike_price),
-          Number(group[0].master_id),
+          cleanString(group[0].master_id),
         ];
 
         return {
@@ -319,7 +335,7 @@ export const TradeFileData = async (req, res) => {
   }
 };
 
-// savind data without buy_sell and quantity\
+ // savind data without buy_sell and quantity\
 
 // import fs from "fs";
 // import path from "path";
@@ -1360,6 +1376,7 @@ export const TradeFileData = async (req, res) => {
 //     res.status(500).json({ error: "Internal server error" });
 //   }
 // };
+
 export const getReconTradeData = async (req, res) => {
   try {
     const { masterTraderIds } = req.body;
@@ -1406,13 +1423,13 @@ export const getReconTradeData = async (req, res) => {
             total_buy_quantity: { $sum: "$buy_quantity" },
             total_sell_quantity: { $sum: "$sell_quantity" },
             total_quantity: {
-          $sum: {
-            $subtract: [
-              { $ifNull: ["$net_quantity", 0] },
-              { $ifNull: ["$quantity", 0] },
-            ],
-          },
-        },
+              $sum: {
+                $add: [
+                  { $ifNull: ["$net_quantity", 0] },
+                  { $ifNull: ["$quantity", 0] },
+                ],
+              },
+            },
           },
         },
         {
@@ -1487,4 +1504,3 @@ export const getReconTradeData = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
