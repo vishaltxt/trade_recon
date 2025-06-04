@@ -23,22 +23,47 @@ const prevformatDate = (date) => {
   const yyyy = date.getFullYear();
   return `${yyyy}${mm}${dd}`;
 };
-
 const standardizeExpiry = (expiry) => {
   if (!expiry) return "";
   expiry = expiry.trim().toUpperCase();
-  // Already in YYYY-MM-DD
+
   const isoMatch = /^\d{4}-\d{2}-\d{2}$/;
   if (isoMatch.test(expiry)) {
     return expiry;
   }
-  // Parse DDMMMYYYY
-  const parsed = dayjs(expiry, "DDMMMYYYY", true);
-  if (parsed.isValid()) {
-    return parsed.format("YYYY-MM-DD");
+
+  // Convert e.g. 26JUN2025 to 26Jun2025 (capitalize the month part)
+  const match = expiry.match(/^(\d{2})([A-Z]{3})(\d{4})$/);
+  if (match) {
+    const day = match[1];
+    const month = match[2].charAt(0) + match[2].slice(1).toLowerCase();
+    const year = match[3];
+    const newExpiry = `${day}${month}${year}`;
+    const parsed = dayjs(newExpiry, "DDMMMYYYY", true);
+    if (parsed.isValid()) {
+      return parsed.format("YYYY-MM-DD");
+    }
   }
-  return expiry; // fallback
+
+  // Fallback formats
+  const fallbackFormats = [
+    "DD-MMM-YYYY",
+    "DD/MMM/YYYY",
+    "DD MMM YYYY",
+    "DD MMM, YYYY"
+  ];
+  for (const fmt of fallbackFormats) {
+    const fallbackParsed = dayjs(expiry, fmt, true);
+    if (fallbackParsed.isValid()) {
+      return fallbackParsed.format("YYYY-MM-DD");
+    }
+  }
+
+  console.warn(`Warning: Could not parse expiry: ${expiry}`);
+  return expiry;
 };
+// Should output: "2025-06-26"
+// console.log(standardizeExpiry("26JUN2025"));
 
 // 🔍 Helper to get the latest file date from the directory
 const getLatestFileDate = (baseDir) => {
@@ -352,7 +377,7 @@ export const TradeFileData = async (req, res) => {
 
         const [symbol, expiry, strike_price, master_id, option_type] = [
           cleanString(group[0].symbol),
-          cleanString(standardizeExpiry(group[0].expiry)),
+          standardizeExpiry(cleanString(group[0].expiry)),
           cleanString(group[0].strike_price),
           cleanString(group[0].master_id),
           cleanString(group[0].option_type),

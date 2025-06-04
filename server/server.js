@@ -36,7 +36,7 @@ app.use(errorMiddleware);
 
 // Schedule the task every 10 minutes
 // cron.schedule('0 9 * * *', async () => {
-cron.schedule('*/1 * * * *', async () => {
+cron.schedule('*/10 * * * *', async () => {
   console.log('Running scheduled job to read trade data');
   try {
     await TradeFileData({}, {
