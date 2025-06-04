@@ -3,8 +3,12 @@ import path from "path";
 import xlsx from "xlsx";
 import { parse } from "csv-parse/sync";
 import _ from "lodash";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat.js";
 import { TradeFile } from "../../modals/tradeData/dataModel.js";
 import { MappingForm } from "../../modals/formModels/mappingFormModel.js";
+
+dayjs.extend(customParseFormat);
 
 const formatDate = (date) => {
   const dd = String(date.getDate()).padStart(2, "0");
@@ -18,6 +22,22 @@ const prevformatDate = (date) => {
   const mm = String(date.getMonth() + 1).padStart(2, "0");
   const yyyy = date.getFullYear();
   return `${yyyy}${mm}${dd}`;
+};
+
+const standardizeExpiry = (expiry) => {
+  if (!expiry) return "";
+  expiry = expiry.trim().toUpperCase();
+  // Already in YYYY-MM-DD
+  const isoMatch = /^\d{4}-\d{2}-\d{2}$/;
+  if (isoMatch.test(expiry)) {
+    return expiry;
+  }
+  // Parse DDMMMYYYY
+  const parsed = dayjs(expiry, "DDMMMYYYY", true);
+  if (parsed.isValid()) {
+    return parsed.format("YYYY-MM-DD");
+  }
+  return expiry; // fallback
 };
 
 // 🔍 Helper to get the latest file date from the directory
@@ -284,6 +304,7 @@ export const TradeFileData = async (req, res) => {
             transformedItem[key] = cleanString(item[key]);
           });
           transformedItem.fileDate = previousFileDate;
+          transformedItem.expiry = standardizeExpiry(item.expiry);
           const qty1 = parseInt(item.quantity1) || 0;
           const qty2 = parseInt(item.quantity2) || 0;
           transformedItem.quantity = qty1 - qty2;
@@ -299,14 +320,23 @@ export const TradeFileData = async (req, res) => {
     if (todayData.length > 0) {
       await TradeFile.deleteMany({ fileDate: todayStr });
 
-      const grouped = _.groupBy(todayData, (item) =>
-        [
-          cleanString(item.symbol),
-          cleanString(item.expiry),
-          cleanString(item.strike_price),
-          cleanString(item.master_id),
-        ].join("|")
-      );
+      // const grouped = _.groupBy(todayData, (item) =>
+      //   [
+      //     cleanString(item.symbol),
+      //     cleanString(item.expiry),
+      //     cleanString(item.strike_price),
+      //     cleanString(item.master_id),
+      //   ].join("|")
+      // );
+
+      const grouped = _.groupBy(todayData, (item) => {
+        const symbol = cleanString(item.symbol);
+        const expiry = standardizeExpiry(item.expiry);
+        const strike_price = cleanString(item.strike_price);
+        const master_id = cleanString(item.master_id);
+        const option_type = cleanString(item.option_type);
+        return [symbol, expiry, strike_price, master_id, option_type].join("|");
+      });
 
       const transformedTodayData = Object.values(grouped).map((group) => {
         let buy_quantity = 0;
@@ -322,7 +352,7 @@ export const TradeFileData = async (req, res) => {
 
         const [symbol, expiry, strike_price, master_id, option_type] = [
           cleanString(group[0].symbol),
-          cleanString(group[0].expiry),
+          cleanString(standardizeExpiry(group[0].expiry)),
           cleanString(group[0].strike_price),
           cleanString(group[0].master_id),
           cleanString(group[0].option_type),
@@ -1440,6 +1470,8 @@ export const getReconTradeData = async (req, res) => {
             _id: {
               symbol: "$symbol",
               strike_price: "$strike_price",
+              expiry: "$expiry",
+              option_type: "$option_type",
               ...(includeMasterId ? { master_id: "$group_master_id" } : {}),
             },
             total_buy_quantity: { $sum: "$buy_quantity" },
@@ -1469,6 +1501,8 @@ export const getReconTradeData = async (req, res) => {
             _id: 0,
             symbol: "$_id.symbol",
             strike_price: "$_id.strike_price",
+            expiry: "$_id.expiry",
+            option_type: "$_id.option_type",
             ...(includeMasterId ? { master_id: "$_id.master_id" } : {}),
             total_buy_quantity: 1,
             total_sell_quantity: 1,
@@ -1489,19 +1523,19 @@ export const getReconTradeData = async (req, res) => {
     // Create mappings for comparison
     const masterMap = {};
     masterData.forEach((m) => {
-      const key = `${m.symbol}_${m.strike_price}`;
+      const key = `${m.symbol}_${m.strike_price}_${m.expiry}_${m.option_type}`;
       masterMap[key] = m.total_quantity;
     });
 
     const minionMap = {};
     minionData.forEach((m) => {
-      const key = `${m.symbol}_${m.strike_price}`;
+      const key = `${m.symbol}_${m.strike_price}_${m.expiry}_${m.option_type}`;
       minionMap[key] = m.total_quantity;
     });
 
     // Enrich minion data with corresponding master quantity
     const enrichedMinionData = minionData.map((m) => {
-      const key = `${m.symbol}_${m.strike_price}`;
+      const key = `${m.symbol}_${m.strike_price}_${m.expiry}_${m.option_type}`;
       return {
         ...m,
         master_net_quantity: masterMap[key] || 0,
@@ -1510,7 +1544,7 @@ export const getReconTradeData = async (req, res) => {
 
     // Enrich master data with corresponding minion quantity
     const enrichedMasterData = masterData.map((m) => {
-      const key = `${m.symbol}_${m.strike_price}`;
+      const key = `${m.symbol}_${m.strike_price}_${m.expiry}_${m.option_type}`;
       return {
         ...m,
         minion_net_quantity: minionMap[key] || 0,
