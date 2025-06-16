@@ -72,7 +72,7 @@ const Mappinglanding = ({ data = [], onAddNew, onEdit, onDelete }) => {
           <div className="border p-3 w-full md:w-1/3 ">{mapping.masterId}</div>
           <div className="border p-3 w-full md:w-1/3 ">{mapping.minionId}</div>
           <div className="border p-3 w-full md:w-1/3">
-            {mapping.replicationPercentage} %
+            {mapping.replicationPercentage} 
           </div>
           <div className="border p-3 w-full md:w-1/3">{mapping.toggle}yes</div>
           {/* <div className="border p-3 w-full md:w-1/3">{mapping.replication}</div> */}

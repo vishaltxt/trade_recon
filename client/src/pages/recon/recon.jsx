@@ -233,7 +233,7 @@ const Recon = () => {
                 {/* Results Section */}
                 {showResults && masterDetails.length > 0 && minionDetails.length > 0 && (                    // <div className='grid grid-cols-3 gap-4 p-4'>
                     <div className='flex flex-wrap gap-4 p-4'>
-                        <div className='border rounded-md w-1/4'>
+                        <div className='border rounded-md w-[48%]'>
                             {/* Only show selected masters as clickable items */}
                             <div className='flex p-3 mb-2 font-bold gap-5 flex-wrap'>
                                 {[...new Set(masterDetails.map(m => m.master_id))].map((id) => (
@@ -291,7 +291,7 @@ const Recon = () => {
                             </div>
                         </div>
 
-                        <div className='border rounded-md w-1/4'>
+                        <div className='border rounded-md w-[48%]'>
                             <div className='flex flex-wrap p-3 mb-2 font-bold gap-5'>
                                 {[...new Set(minionDetails.map(m => m.master_id))].map((id) => (
                                     <p
@@ -331,7 +331,10 @@ const Recon = () => {
                                     ))}
                             </div>
                         </div>
-                        <div className='border rounded-md w-[48%]'>
+
+                        <h1 className='text-2xl font-bold text-red-600'>Trade Difference</h1>
+
+                        <div className='border rounded-md w-[98%]'>
                             <div className='flex flex-wrap p-3 mb-2 font-bold gap-5'>
                                 {[...new Set(minionDetails.map(m => m.master_id))].map((id) => (
                                     <p
@@ -343,29 +346,33 @@ const Recon = () => {
                                     </p>
                                 ))}
                             </div>
-                            <div className='grid grid-cols-5 gap-5 bg-gray-100 p-2 text-sm font-semibold'>
+                            <div className='grid grid-cols-6 gap-5 bg-gray-100 p-2 text-sm font-semibold'>
                                 <div className='ml-4'>Security Name</div>
                                 <div>Type</div>
                                 <div>Total quantity of masters</div>
                                 <div>Total quantity of minion</div>
                                 <div>Difference in quantities</div>
+                                <div className='ml-1'>CALL</div>
+
                             </div>
                             <div className="max-h-[170px] overflow-y-auto">
                                 {minionDetails
                                     // .filter(m => m.master_id === selectedMinionMasterCodeDifference) // 👈 Filter based on selected master
                                     .filter(m => m.master_id === selectedMinionMasterCodeDifference && m.master_net_quantity !== 0) // 🚨 Only show items with non-zero master_net_quantity
                                     .map((m, idx) => (
-                                        <div key={idx} className='grid grid-cols-5 text-sm text-gray-800 p-2 border-t'>
+                                        <div key={idx} className='grid grid-cols-6 text-sm text-gray-800 p-2 border-t'>
                                             <div className='break-words whitespace-normal ml-1'>{m.symbol + " " + m.strike_price + m.option_type + " " + m.expiry}</div>
                                             <div className={`ml-3 font-semibold ${m.actionType === 'buy' ? 'text-green-600' : 'text-red-600'}`}> {(m.actionType || '').toUpperCase()}</div>
                                             <div className='ml-10'>{m.master_net_quantity}</div>
                                             <div className='ml-10'>{m.total_quantity}</div>
                                             <div className='ml-10'>{m.master_net_quantity - m.total_quantity}</div>
+                                            <div><button className='text-white ml-7 bg-green-500 w-12 rounded-md'>Buy</button></div>
+
                                         </div>
                                     ))}
                             </div>
                         </div>
-                        <div className='w-full'>
+                        {/* <div className='w-full'>
                             <h1 className='text-xl font-bold mb-2'>Trade Difference</h1>
                             <div className='border rounded-md'>
                                 <div className='grid grid-cols-7 gap-8 bg-gray-100 p-2 text-sm font-semibold'>
@@ -393,7 +400,7 @@ const Recon = () => {
                                         ))}
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 )}
             </div>
