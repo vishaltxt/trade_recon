@@ -71,11 +71,11 @@ const standardizeExpiry = (expiry) => {
     }
   }
 
-if (!standardizeExpiry.warned) standardizeExpiry.warned = new Set();
-if (!standardizeExpiry.warned.has(expiry)) {
-  console.warn(`Warning: Could not parse expiry: ${expiry}`);
-  standardizeExpiry.warned.add(expiry);
-}
+  if (!standardizeExpiry.warned) standardizeExpiry.warned = new Set();
+  if (!standardizeExpiry.warned.has(expiry)) {
+    console.warn(`Warning: Could not parse expiry: ${expiry}`);
+    standardizeExpiry.warned.add(expiry);
+  }
   return expiry;
 };
 // Should output: "2025-06-26"
@@ -363,7 +363,7 @@ export const TradeFileData = async (req, res) => {
         ? readFileAndParse(custposFilePath, previousFileDate, keys37)
         : [],
     ]);
-
+// console.log(newPrevData);
     const validDates = [previousFileDate, todayStr].filter(Boolean);
     console.log("validDates:", validDates);
 
@@ -412,6 +412,7 @@ export const TradeFileData = async (req, res) => {
         fileDate: previousFileDate,
         // source: "newPrevData",
       });
+      console.log(existingNew);
       if (existingNew === 0) {
         const transformedNewPrevData = newPrevData.map((item) => {
           const transformedItem = {};
@@ -432,6 +433,7 @@ export const TradeFileData = async (req, res) => {
         // console.log("custpos dta ", inserted);
       }
     }
+
     // Aggregate today's data
     if (todayData.length > 0) {
       await TradeFile.deleteMany({ fileDate: todayStr });
@@ -956,8 +958,6 @@ export const TradeFileData = async (req, res) => {
 //   }
 // };
 
-
-
 // export const getReconTradeData = async (req, res) => {
 //   try {
 //     const { masterTraderIds } = req.body;
@@ -1097,10 +1097,7 @@ export const TradeFileData = async (req, res) => {
 //   }
 // };
 
-
-
 // before replicationPercentage  final
-
 
 // export const getReconTradeData = async (req, res) => {
 //   try {
@@ -1212,20 +1209,19 @@ export const TradeFileData = async (req, res) => {
 //       minionToMastersMap[minionId].add(masterId);
 //     });
 
-    
 //     // Enrich minion data with corresponding master quantity (sum only mapped masters)
 //     const enrichedMinionData = minionData.map((minion) => {
 //       let totalMasterNetQty = 0;
-      
+
 //       const mappedMasters = minionToMastersMap[minion.master_id]
 //       ? Array.from(minionToMastersMap[minion.master_id])
 //       : [];
-      
+
 //       mappedMasters.forEach((masterId) => {
 //         const key = `${masterId}_${minion.symbol}_${minion.strike_price}_${minion.expiry}_${minion.option_type}`;
 //         totalMasterNetQty += masterMap[key] || 0;
 //       });
-      
+
 //       console.log("mappedmasters",mappedMasters);
 //       return {
 //         ...minion,
@@ -1257,8 +1253,6 @@ export const TradeFileData = async (req, res) => {
 //     res.status(500).json({ error: "Internal server error" });
 //   }
 // };
-
-
 
 // with replicationPercentage update
 
@@ -1366,6 +1360,7 @@ export const getReconTradeData = async (req, res) => {
       }
       minionMappingMap[minionId].push({ masterId, replicationPercentage });
     });
+    // console.log("minionMappingMap",minionMappingMap)
 
     // Enrich minion data with replication-adjusted master_net_quantity
     const enrichedMinionData = minionData.map((minion) => {
@@ -1382,7 +1377,9 @@ export const getReconTradeData = async (req, res) => {
       return {
         ...minion,
         master_net_quantity: totalMasterNetQty,
-        replicationPercentages: mappingEntries.map((e) => e.replicationPercentage),
+        replicationPercentages: mappingEntries.map(
+          (e) => e.replicationPercentage
+        ),
       };
     });
 

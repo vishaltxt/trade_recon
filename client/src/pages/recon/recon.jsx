@@ -280,7 +280,7 @@ const Recon = () => {
                                 {masterDetails
                                     .filter(m => m.master_id === selectedMasterCode && (m.strike_price?.toString() || '').includes(strikeFilter))
                                     .map((m, idx) => (
-                                        <div key={idx} className='grid grid-cols-3 gap-12 text-sm text-gray-800 p-2 border-t'>
+                                        <div key={idx} className='grid grid-cols-3 gap-12 text-sm text-gray-800 p-2 border-t hover:bg-blue-100'>
                                             <div className='break-words whitespace-normal ml-4'>{m.symbol + " " + m.strike_price + m.option_type + " " + m.expiry}</div>
                                             <div className='break-words whitespace-normal ml-4'>{m.total_quantity}</div>
                                             <div className={`break-words whitespace-normal font-semibold ${m.actionType === 'buy' ? 'text-green-600' : 'text-red-600'}`}>
@@ -321,7 +321,7 @@ const Recon = () => {
                                 {minionDetails
                                     .filter(m => m.master_id === selectedMinionMasterCode) // 👈 Filter based on selected master
                                     .map((m, idx) => (
-                                        <div key={idx} className='grid grid-cols-3 gap-14 text-sm text-gray-800 p-2 border-t'>
+                                        <div key={idx} className='grid grid-cols-3 gap-14 text-sm text-gray-800 p-2 border-t hover:bg-blue-100'>
                                             <div className="break-words whitespace-normal">{m.symbol + " " + m.strike_price + m.option_type + " " + m.expiry}</div>
                                             <div className="break-words whitespace-normal ml-2">{m.total_quantity}</div>
                                             <div className={`break-words whitespace-normal font-semibold ${m.actionType === 'buy' ? 'text-green-600' : 'text-red-600'}`}>
@@ -355,12 +355,12 @@ const Recon = () => {
                                 <div className='ml-1'>CALL</div>
 
                             </div>
-                            <div className="max-h-[170px] overflow-y-auto">
+                            <div className="max-h-[500px] overflow-y-auto">
                                 {minionDetails
                                     // .filter(m => m.master_id === selectedMinionMasterCodeDifference) // 👈 Filter based on selected master
                                     .filter(m => m.master_id === selectedMinionMasterCodeDifference && m.master_net_quantity !== 0) // 🚨 Only show items with non-zero master_net_quantity
                                     .map((m, idx) => (
-                                        <div key={idx} className='grid grid-cols-6 text-sm text-gray-800 p-2 border-t'>
+                                        <div key={idx} className='grid grid-cols-6 text-sm text-gray-800 p-2 border-t hover:bg-blue-100'>
                                             <div className='break-words whitespace-normal ml-1'>{m.symbol + " " + m.strike_price + m.option_type + " " + m.expiry}</div>
                                             <div className={`ml-3 font-semibold ${m.actionType === 'buy' ? 'text-green-600' : 'text-red-600'}`}> {(m.actionType || '').toUpperCase()}</div>
                                             <div className='ml-10'>{m.master_net_quantity}</div>
