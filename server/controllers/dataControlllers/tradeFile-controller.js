@@ -350,18 +350,21 @@ export const TradeFileData = async (req, res) => {
       : null;
 
     // Add the new file path:
-    const custposFilePath = previousFileDate
-      ? path.join(baseDir, `custpos.csv`)
-      : null;
+    // const custposFilePath = previousFileDate
+    //   ? path.join(baseDir, `custpos.csv`)
+    //   : null;
+const custposFilePath = path.join(baseDir, `custpos.csv`);
+const custposFileDate = "custpos"; // or use a custom label or todayStr
 
     const [prevData, todayData, newPrevData] = await Promise.all([
       previousFileDate
         ? readFileAndParse(previousFilePath, previousFileDate, keys46)
         : [],
       readFileAndParse(todayFilePath, todayStr, keys26),
-      previousFileDate
-        ? readFileAndParse(custposFilePath, previousFileDate, keys37)
-        : [],
+      // previousFileDate
+      //   ? readFileAndParse(custposFilePath, previousFileDate, keys37)
+      //   : [],
+      readFileAndParse(custposFilePath, custposFileDate, keys37)
     ]);
 // console.log(newPrevData);
     const validDates = [previousFileDate, todayStr].filter(Boolean);
@@ -386,6 +389,7 @@ export const TradeFileData = async (req, res) => {
       const existing = await TradeFile.countDocuments({
         fileDate: previousFileDate,
       });
+      console.log(existing);
       if (existing === 0) {
         const transformedPrevData = prevData.map((item) => {
           const transformedItem = {};
@@ -409,7 +413,7 @@ export const TradeFileData = async (req, res) => {
     // Insert new file:
     if (newPrevData.length > 0) {
       const existingNew = await TradeFile.countDocuments({
-        fileDate: previousFileDate,
+        fileDate: custposFileDate,
         // source: "newPrevData",
       });
       console.log(existingNew);
@@ -419,7 +423,7 @@ export const TradeFileData = async (req, res) => {
           keys37.forEach((key) => {
             transformedItem[key] = cleanString(item[key]);
           });
-          transformedItem.fileDate = previousFileDate;
+          transformedItem.fileDate = custposFileDate;
           transformedItem.expiry = standardizeExpiry(item.expiry);
           const qty1 = parseInt(item.quantity1) || 0;
           const qty2 = parseInt(item.quantity2) || 0;

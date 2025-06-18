@@ -25,5 +25,5 @@ const tradeFileSchema = new mongoose.Schema({
 });
 
 export const TradeFile = mongoose.model("TradeFile", tradeFileSchema);
-
+ 
 

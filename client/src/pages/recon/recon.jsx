@@ -352,7 +352,7 @@ const Recon = () => {
                                 <div>Total quantity of masters</div>
                                 <div>Total quantity of minion</div>
                                 <div>Difference in quantities</div>
-                                <div className='ml-1'>CALL</div>
+                                <div className='ml-1'>ACTION</div>
 
                             </div>
                             <div className="max-h-[500px] overflow-y-auto">
