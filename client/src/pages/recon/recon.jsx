@@ -117,7 +117,7 @@ const Recon = () => {
     return (
         <div className='flex h-full'>
             <Dashboard />
-            <div className='w-full max-h-[950px] overflow-y-auto'>
+            <div className='w-full max-h-[950px] overflow-y-auto bg-amber-50'>
                 <h1 className='text-xl mt-3 ml-3 font-bold text-gray-500'>Recon</h1>
                 <hr className='h-0.5 bg-gray-300 w-[99%] m-auto' />
                 <div className='flex mt-3 w-full p-3'>
@@ -190,8 +190,8 @@ const Recon = () => {
                             <thead className='bg-gray-100'>
                                 <tr className='flex p-2 justify-around'>
                                     <th className="w-1/3 text-left">Checkbox</th>
-                                    <th className="w-1/2 text-left">Client ID</th>
-                                    <th className="w-1/2 text-left">Name</th>
+                                    <th className="w-1/3 text-left">Client ID</th>
+                                    <th className="w-1/3 text-left">Name</th>
                                 </tr>
                             </thead>
                         </table>
@@ -319,7 +319,7 @@ const Recon = () => {
                             </div>
                             <div className="max-h-[185px] overflow-y-auto">
                                 {minionDetails
-                                    .filter(m => m.master_id === selectedMinionMasterCode) // 👈 Filter based on selected master
+                                    .filter(m => m.master_id === selectedMinionMasterCode && (m.strike_price?.toString() || '').includes(strikeFilter)) // 👈 Filter based on selected master
                                     .map((m, idx) => (
                                         <div key={idx} className='grid grid-cols-3 gap-14 text-sm text-gray-800 p-2 border-t hover:bg-blue-100'>
                                             <div className="break-words whitespace-normal">{m.symbol + " " + m.strike_price + m.option_type + " " + m.expiry}</div>
@@ -346,19 +346,32 @@ const Recon = () => {
                                     </p>
                                 ))}
                             </div>
+
+
+                             <div className="ml-2 mb-2">
+                                <input
+                                    type="text"
+                                    placeholder="Filter by strike price"
+                                    value={strikeFilter}
+                                    onChange={(e) => setStrikeFilter(e.target.value)}
+                                    className="border rounded-md px-3 py-1 text-sm"
+                                />
+                            </div>
+
+
                             <div className='grid grid-cols-6 gap-5 bg-gray-100 p-2 text-sm font-semibold'>
                                 <div className='ml-4'>Security Name</div>
                                 <div>Type</div>
                                 <div>Total quantity of masters</div>
                                 <div>Total quantity of minion</div>
                                 <div>Difference in quantities</div>
-                                <div className='ml-1'>ACTION</div>
+                                <div>ACTION</div>
 
                             </div>
                             <div className="max-h-[500px] overflow-y-auto">
                                 {minionDetails
                                     // .filter(m => m.master_id === selectedMinionMasterCodeDifference) // 👈 Filter based on selected master
-                                    .filter(m => m.master_id === selectedMinionMasterCodeDifference && m.master_net_quantity !== 0) // 🚨 Only show items with non-zero master_net_quantity
+                                    .filter(m => m.master_id === selectedMinionMasterCodeDifference && m.master_net_quantity !== 0 && (m.strike_price?.toString() || '').includes(strikeFilter)) // 🚨 Only show items with non-zero master_net_quantity
                                     .map((m, idx) => (
                                         <div key={idx} className='grid grid-cols-6 text-sm text-gray-800 p-2 border-t hover:bg-blue-100'>
                                             <div className='break-words whitespace-normal ml-1'>{m.symbol + " " + m.strike_price + m.option_type + " " + m.expiry}</div>
@@ -367,7 +380,6 @@ const Recon = () => {
                                             <div className='ml-10'>{m.total_quantity}</div>
                                             <div className='ml-10'>{m.master_net_quantity - m.total_quantity}</div>
                                             <div><button className='text-white ml-7 bg-green-500 w-12 rounded-md'>Buy</button></div>
-
                                         </div>
                                     ))}
                             </div>

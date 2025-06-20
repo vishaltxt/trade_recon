@@ -353,20 +353,20 @@ export const TradeFileData = async (req, res) => {
     // const custposFilePath = previousFileDate
     //   ? path.join(baseDir, `custpos.csv`)
     //   : null;
-const custposFilePath = path.join(baseDir, `custpos.csv`);
-const custposFileDate = "custpos"; // or use a custom label or todayStr
+    const custposFilePath = path.join(baseDir, `custpos.csv`);
+    const custposFileDate = "custpos"; // or use a custom label or todayStr
 
     const [prevData, todayData, newPrevData] = await Promise.all([
       previousFileDate
         ? readFileAndParse(previousFilePath, previousFileDate, keys46)
         : [],
       readFileAndParse(todayFilePath, todayStr, keys26),
+      readFileAndParse(custposFilePath, custposFileDate, keys37),
       // previousFileDate
       //   ? readFileAndParse(custposFilePath, previousFileDate, keys37)
       //   : [],
-      readFileAndParse(custposFilePath, custposFileDate, keys37)
     ]);
-// console.log(newPrevData);
+    // console.log(newPrevData);
     const validDates = [previousFileDate, todayStr].filter(Boolean);
     console.log("validDates:", validDates);
 
@@ -508,6 +508,127 @@ const custposFileDate = "custpos"; // or use a custom label or todayStr
     res.status(500).json({ error: "Something went wrong" });
   }
 };
+
+// export const TradeFileData = async (req, res) => {
+//   try {
+//     const baseDir = process.env.FILE_PATH || "./data";
+//     const today = new Date();
+//     const todayStr = formatDate(today);
+//     const latestPrevDate = getLatestFileDate(baseDir);
+//     const previousFileDate = latestPrevDate ? prevformatDate(latestPrevDate) : null;
+
+//     const todayFilePath = path.join(baseDir, `TradeFo_${todayStr}.txt`);
+//     const previousFilePath = previousFileDate ? path.join(baseDir, `Position_NCL_FO_0_CM_06432_${previousFileDate}_F_0000.csv`) : null;
+//     const custposFilePath = path.join(baseDir, `custpos.csv`);
+
+//     const [prevData, todayData, newPrevData] = await Promise.all([
+//       previousFileDate ? readFileAndParse(previousFilePath, previousFileDate, keys46) : [],
+//       readFileAndParse(todayFilePath, todayStr, keys26),
+//       readFileAndParse(custposFilePath, "custpos", keys37),
+//     ]);
+
+//     const validDates = [previousFileDate, todayStr].filter(Boolean);
+//     await TradeFile.deleteMany({ $or: [{ fileDate: { $exists: false } }, { fileDate: { $nin: validDates } }] });
+
+//     const cleanString = (s) => typeof s === "string" ? s.trim().replace(/\s+/g, " ") : s;
+
+//     const buildBulkOps = (data, keys, dateStr) => {
+//       return data.map(d => {
+//         const t = Object.fromEntries(keys.map(k => [k, cleanString(d[k])]));
+//         const expiry = standardizeExpiry(d.expiry);
+//         const quantity = (parseInt(d.quantity1) || 0) - (parseInt(d.quantity2) || 0);
+//         return {
+//           updateOne: {
+//             filter: {
+//               master_id: cleanString(d.master_id),
+//               symbol: cleanString(d.symbol),
+//               strike_price: cleanString(d.strike_price),
+//               expiry,
+//               fileDate: dateStr,
+//             },
+//             update: { $set: { ...t, expiry, quantity, fileDate: dateStr } },
+//             upsert: true,
+//           },
+//         };
+//       });
+//     };
+
+//     let insertedCount = 0;
+
+//     const prevBulkOps = buildBulkOps(prevData, keys46, previousFileDate);
+//     const custBulkOps = buildBulkOps(newPrevData, keys37, "custpos");
+
+//     if (prevBulkOps.length) {
+//       const { upsertedCount, modifiedCount } = await TradeFile.bulkWrite(prevBulkOps);
+//       insertedCount += (upsertedCount || 0) + (modifiedCount || 0);
+//     }
+
+//     if (custBulkOps.length) {
+//       const { upsertedCount, modifiedCount } = await TradeFile.bulkWrite(custBulkOps);
+//       insertedCount += (upsertedCount || 0) + (modifiedCount || 0);
+//     }
+
+//     if (todayData.length > 0) {
+//       const grouped = _.groupBy(todayData, item => [
+//         cleanString(item.symbol),
+//         standardizeExpiry(item.expiry),
+//         cleanString(item.strike_price),
+//         cleanString(item.master_id),
+//         cleanString(item.option_type),
+//       ].join("|"));
+
+//       const bulkOps = Object.values(grouped).map(group => {
+//         let buyQty = 0, sellQty = 0;
+//         group.forEach(g => {
+//           const q = parseInt(g.quantity) || 0;
+//           const bs = Number(g.buy_sell);
+//           if (bs === 1) buyQty += q;
+//           else if (bs === 2) sellQty += q;
+//         });
+
+//         const netQty = buyQty - sellQty;
+//         const g0 = group[0];
+//         const expiry = standardizeExpiry(cleanString(g0.expiry));
+
+//         return {
+//           updateOne: {
+//             filter: {
+//               symbol: cleanString(g0.symbol),
+//               expiry,
+//               strike_price: cleanString(g0.strike_price),
+//               master_id: cleanString(g0.master_id),
+//               option_type: cleanString(g0.option_type),
+//               fileDate: todayStr,
+//             },
+//             update: {
+//               $set: {
+//                 buy_quantity: buyQty,
+//                 sell_quantity: sellQty,
+//                 net_quantity: netQty,
+//                 expiry,
+//               },
+//             },
+//             upsert: true,
+//           },
+//         };
+//       });
+
+//       if (bulkOps.length) {
+//         const { upsertedCount, modifiedCount } = await TradeFile.bulkWrite(bulkOps);
+//         insertedCount += (upsertedCount || 0) + (modifiedCount || 0);
+//       }
+//     }
+
+//     res.json({ inserted: insertedCount, keptDates: validDates });
+//   } catch (error) {
+//     console.error("Controller error:", error);
+//     res.status(500).json({ error: "Something went wrong" });
+//   }
+// };
+
+
+
+
 
 // savind data without buy_sell and quantity\
 
@@ -1411,3 +1532,4 @@ export const getReconTradeData = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
