@@ -113,11 +113,62 @@ const Recon = () => {
         }
     };
 
+    const handleSelectAllMasters = () => {
+        const filtered = masters.filter(master =>
+            master.masterName.toLowerCase().includes(searchMasters.toLowerCase())
+        );
+        const allSelected = filtered.every(master =>
+            selectedMasters.some(m => m.masterTraderId === master.masterTraderId)
+        );
+
+        if (allSelected) {
+            // Unselect all in filtered list
+            const updated = selectedMasters.filter(m =>
+                !filtered.some(f => f.masterTraderId === m.masterTraderId)
+            );
+            setSelectedMasters(updated);
+        } else {
+            // Add only missing ones from filtered
+            const updated = [...selectedMasters];
+            filtered.forEach(master => {
+                if (!updated.some(m => m.masterTraderId === master.masterTraderId)) {
+                    updated.push(master);
+                }
+            });
+            setSelectedMasters(updated);
+        }
+    };
+
+    const handleSelectAllMinions = () => {
+        const filtered = filteredMinions.filter(minion =>
+            (minion.minionName || "").toLowerCase().includes(searchMinions.toLowerCase())
+        );
+        const allSelected = filtered.every(minion =>
+            selectedMinions.some(m => m.minionClientCode === minion.minionClientCode)
+        );
+
+        if (allSelected) {
+            // Unselect all in filtered list
+            const updated = selectedMinions.filter(m =>
+                !filtered.some(f => f.minionClientCode === m.minionClientCode)
+            );
+            setSelectedMinions(updated);
+        } else {
+            // Add only missing ones from filtered
+            const updated = [...selectedMinions];
+            filtered.forEach(minion => {
+                if (!updated.some(m => m.minionClientCode === minion.minionClientCode)) {
+                    updated.push(minion);
+                }
+            });
+            setSelectedMinions(updated);
+        }
+    };
 
     return (
         <div className='flex h-full'>
             <Dashboard />
-            <div className='w-full max-h-[950px] overflow-y-auto bg-amber-50'>
+            <div className='w-full max-h-[950px] overflow-y-auto bg-amber50'>
                 <h1 className='text-xl mt-3 ml-3 font-bold text-gray-500'>Recon</h1>
                 <hr className='h-0.5 bg-gray-300 w-[99%] m-auto' />
                 <div className='flex mt-3 w-full p-3'>
@@ -140,7 +191,20 @@ const Recon = () => {
                         <table className="w-full text-gray-600">
                             <thead className='bg-gray-100'>
                                 <tr className='flex p-2 justify-around'>
-                                    <th className="w-1/3 text-left">Checkbox</th>
+                                    <th className="w-1/3 text-left ml-2">
+                                        <input
+                                            type="checkbox"
+                                            onChange={handleSelectAllMasters}
+                                            checked={
+                                                masters.filter(master =>
+                                                    master.masterName.toLowerCase().includes(searchMasters.toLowerCase())
+                                                ).every(master =>
+                                                    selectedMasters.some(m => m.masterTraderId === master.masterTraderId)
+                                                )
+                                            }
+                                        />
+                                    </th>
+                                    {/* <th className="w-1/3 text-left">Checkbox</th> */}
                                     <th className="w-1/3 text-left">System ID</th>
                                     <th className="w-1/3 text-left">Name</th>
                                 </tr>
@@ -189,7 +253,20 @@ const Recon = () => {
                         <table className="w-full text-gray-600">
                             <thead className='bg-gray-100'>
                                 <tr className='flex p-2 justify-around'>
-                                    <th className="w-1/3 text-left">Checkbox</th>
+                                    <th className="w-1/3 text-left ml-2">
+                                        <input
+                                            type="checkbox"
+                                            onChange={handleSelectAllMinions}
+                                            checked={
+                                                filteredMinions.filter(minion =>
+                                                    (minion.minionName || "").toLowerCase().includes(searchMinions.toLowerCase())
+                                                ).every(minion =>
+                                                    selectedMinions.some(m => m.minionClientCode === minion.minionClientCode)
+                                                )
+                                            }
+                                        />
+                                    </th>
+                                    {/* <th className="w-1/3 text-left">Checkbox</th> */}
                                     <th className="w-1/3 text-left">Client ID</th>
                                     <th className="w-1/3 text-left">Name</th>
                                 </tr>
@@ -232,8 +309,8 @@ const Recon = () => {
 
                 {/* Results Section */}
                 {showResults && masterDetails.length > 0 && minionDetails.length > 0 && (                    // <div className='grid grid-cols-3 gap-4 p-4'>
-                    <div className='flex flex-wrap gap-4 p-4'>
-                        <div className='border rounded-md w-[48%]'>
+                    <div className='flex flex-wrap gap-5 p-4'>
+                        <div className='border rounded-md w-[49%]'>
                             {/* Only show selected masters as clickable items */}
                             <div className='flex p-3 mb-2 font-bold gap-5 flex-wrap'>
                                 {[...new Set(masterDetails.map(m => m.master_id))].map((id) => (
@@ -291,7 +368,7 @@ const Recon = () => {
                             </div>
                         </div>
 
-                        <div className='border rounded-md w-[48%]'>
+                        <div className='border rounded-md w-[49%]'>
                             <div className='flex flex-wrap p-3 mb-2 font-bold gap-5'>
                                 {[...new Set(minionDetails.map(m => m.master_id))].map((id) => (
                                     <p
@@ -334,7 +411,7 @@ const Recon = () => {
 
                         <h1 className='text-2xl font-bold text-red-600'>Trade Difference</h1>
 
-                        <div className='border rounded-md w-[98%]'>
+                        <div className='border rounded-md w[98%]'>
                             <div className='flex flex-wrap p-3 mb-2 font-bold gap-5'>
                                 {[...new Set(minionDetails.map(m => m.master_id))].map((id) => (
                                     <p
@@ -348,7 +425,7 @@ const Recon = () => {
                             </div>
 
 
-                             <div className="ml-2 mb-2">
+                            <div className="ml-2 mb-2">
                                 <input
                                     type="text"
                                     placeholder="Filter by strike price"
