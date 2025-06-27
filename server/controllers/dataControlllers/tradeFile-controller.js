@@ -371,12 +371,12 @@ export const TradeFileData = async (req, res) => {
     console.log("validDates:", validDates);
 
     // Clean up old records
-    await TradeFile.deleteMany({
-      $or: [
-        { fileDate: { $exists: false } },
-        { fileDate: { $nin: validDates } },
-      ],
-    });
+    // await TradeFile.deleteMany({
+    //   $or: [
+    //     { fileDate: { $exists: false } },
+    //     { fileDate: { $nin: validDates } },
+    //   ],
+    // });
 
     let insertedCount = 0;
     let insertedData = [];
@@ -407,6 +407,18 @@ export const TradeFileData = async (req, res) => {
         const inserted = await TradeFile.insertMany(transformedPrevData);
         insertedCount += inserted.length;
         insertedData = insertedData.concat(inserted);
+
+        // ❌ Delete entries where expiry === fileDate
+        const fileDateAsExpiry = dayjs(previousFileDate, "YYYYMMDD").format(
+          "YYYY-MM-DD"
+        );
+        await TradeFile.deleteMany({
+          fileDate: previousFileDate,
+          expiry: fileDateAsExpiry,
+        });
+        console.log(
+          `Deleted entries of yesterday FO file where expiry === fileDate (${fileDateAsExpiry})`
+        );
       }
     }
 
@@ -435,6 +447,17 @@ export const TradeFileData = async (req, res) => {
         insertedCount += inserted.length;
         insertedData = insertedData.concat(inserted);
         // console.log("custpos dta ", inserted);
+
+        // const custposExpiryDate = dayjs(previousFileDate, "YYYYMMDD").format(
+        //   "YYYY-MM-DD"
+        // );
+        // await TradeFile.deleteMany({
+        //   fileDate: custposFileDate,
+        //   expiry: custposExpiryDate,
+        // });
+        // console.log(
+        //   `Deleted custpos entries where expiry === previous file date (${custposExpiryDate})`
+        // );
       }
     }
 
@@ -496,6 +519,7 @@ export const TradeFileData = async (req, res) => {
       const inserted = await TradeFile.insertMany(transformedTodayData);
       insertedCount += inserted.length;
       insertedData = insertedData.concat(inserted);
+      console.log(insertedCount)
     }
 
     res.json({
@@ -625,10 +649,6 @@ export const TradeFileData = async (req, res) => {
 //     res.status(500).json({ error: "Something went wrong" });
 //   }
 // };
-
-
-
-
 
 // savind data without buy_sell and quantity\
 
@@ -1532,4 +1552,3 @@ export const getReconTradeData = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
