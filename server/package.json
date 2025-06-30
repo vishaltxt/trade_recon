@@ -18,14 +18,20 @@
     "csv-parser": "^3.2.0",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
+    "events": "^3.3.0",
     "express": "^5.1.0",
+    "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
+    "logger": "^0.0.1",
     "mongoose": "^8.13.2",
     "multer": "^2.0.0",
     "node-cron": "^3.0.2",
     "nodemon": "^3.1.9",
+    "request-promise": "^4.2.6",
+    "socket.io-client": "^4.8.1",
     "xlsx": "^0.18.5",
+    "xts-interactive-api": "^3.0.3",
     "zod": "^3.24.2"
   }
 }
