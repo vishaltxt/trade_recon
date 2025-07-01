@@ -371,12 +371,12 @@ export const TradeFileData = async (req, res) => {
     console.log("validDates:", validDates);
 
     // Clean up old records
-    // await TradeFile.deleteMany({
-    //   $or: [
-    //     { fileDate: { $exists: false } },
-    //     { fileDate: { $nin: validDates } },
-    //   ],
-    // });
+    await TradeFile.deleteMany({
+      $or: [
+        { fileDate: { $exists: false } },
+        { fileDate: { $nin: validDates } },
+      ],
+    });
 
     let insertedCount = 0;
     let insertedData = [];
@@ -428,7 +428,7 @@ export const TradeFileData = async (req, res) => {
         fileDate: custposFileDate,
         // source: "newPrevData",
       });
-      console.log(existingNew);
+      // console.log(existingNew);
       if (existingNew === 0) {
         const transformedNewPrevData = newPrevData.map((item) => {
           const transformedItem = {};
@@ -446,7 +446,7 @@ export const TradeFileData = async (req, res) => {
         const inserted = await TradeFile.insertMany(transformedNewPrevData);
         insertedCount += inserted.length;
         insertedData = insertedData.concat(inserted);
-        // console.log("custpos dta ", inserted);
+        console.log("custpos data ", insertedCount);
 
         // const custposExpiryDate = dayjs(previousFileDate, "YYYYMMDD").format(
         //   "YYYY-MM-DD"

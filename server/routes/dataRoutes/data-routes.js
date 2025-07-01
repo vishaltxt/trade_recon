@@ -10,4 +10,4 @@ export const tradeDataRouter = express.Router();
 const upload = multer({ dest: "uploads/" });
 tradeDataRouter.post("/tradeData", upload.single("file"), TradeFileData);
 tradeDataRouter.post("/tradeDatareconcile", getReconTradeData);
-tradeDataRouter.get("/tradeDatareconcileBuyQuantity", placeOrder);
+tradeDataRouter.post("/place_order", placeOrder);

@@ -165,6 +165,44 @@ const Recon = () => {
         }
     };
 
+    const handlePlaceOrder = async (m) => {
+        const diffQty = m.master_net_quantity - m.total_quantity;
+        const orderSide = diffQty > 0 ? 'BUY' : 'SELL';
+        const requestBody = {
+            symbol: m.symbol + m.strike_price + m.option_type + m.expiry,
+            exchangeSegment: m.exchange_segment || 'NSEFO',
+            exchangeInstrumentID: m.instrument_token, // replace with actual token from your symbol map
+            productType: 'NRML',
+            orderType: 'MARKET',
+            orderSide,
+            timeInForce: 'DAY',
+            disclosedQuantity: 0,
+            orderQuantity: diffQty,
+            limitPrice: m.price || 0,
+            stopPrice: m.price || 0,
+            orderUniqueIdentifier: `client-${Date.now()}`,
+            apiOrderSource: 'TradeReconFrontend'
+        };
+        try {
+            const response = await fetch('http://localhost:8000/api/data/place_order', {
+                method: 'POST',
+                headers: {
+                    // 'Authorization': `Bearer ${bearerToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
+            });
+
+            const result = await response.json();
+            console.log("Order response:", result);
+            toast.success(`Order placed: ${result?.orderID || 'Check console'}`);
+        } catch (error) {
+            console.error("Error placing order", error);
+            toast.error("Order failed.");
+        }
+    };
+
+
     return (
         <div className='flex h-full'>
             <Dashboard />
@@ -456,7 +494,14 @@ const Recon = () => {
                                             <div className='ml-10'>{m.master_net_quantity}</div>
                                             <div className='ml-10'>{m.total_quantity}</div>
                                             <div className='ml-10'>{m.master_net_quantity - m.total_quantity}</div>
-                                            <div><button className='text-white ml-7 bg-green-500 w-12 rounded-md'>Buy</button></div>
+                                            {/* <div><button className='text-white ml-7 bg-green-500 w-12 rounded-md'>Buy</button></div> */}
+                                            <button
+                                                className='text-white ml-7 bg-green-500 w-12 rounded-md'
+                                                onClick={() => handlePlaceOrder(m)}
+                                            >
+                                                Buy
+                                            </button>
+
                                         </div>
                                     ))}
                             </div>
