@@ -427,6 +427,18 @@ const Recon = () => {
                                     </p>
                                 ))} */}
                             </div>
+
+                            <div className="ml-2 mb-2">
+                                <input
+                                    type="text"
+                                    placeholder="Filter by strike price"
+                                    value={strikeFilter}
+                                    onChange={(e) => setStrikeFilter(e.target.value)}
+                                    className="border rounded-md px-3 py-1 text-sm"
+                                />
+                            </div>
+
+                            
                             <div className='grid grid-cols-3 bg-gray-100 p-2 text-sm font-semibold'>
                                 <p className='ml-4'>Security Name</p>
                                 <p className='ml-4'>Quantity</p>
@@ -485,8 +497,8 @@ const Recon = () => {
                             </div>
                             <div className="max-h-[500px] overflow-y-auto">
                                 {minionDetails
-                                    // .filter(m => m.master_id === selectedMinionMasterCodeDifference) // 👈 Filter based on selected master
-                                    .filter(m => m.master_id === selectedMinionMasterCodeDifference && m.master_net_quantity !== 0 && (m.strike_price?.toString() || '').includes(strikeFilter)) // 🚨 Only show items with non-zero master_net_quantity
+                                    .filter(m => m.master_id === selectedMinionMasterCodeDifference && (m.strike_price?.toString() || '').includes(strikeFilter)) // 👈 Filter based on selected master
+                                    // .filter(m => m.master_id === selectedMinionMasterCodeDifference && m.master_net_quantity !== 0 && (m.strike_price?.toString() || '').includes(strikeFilter)) // 🚨 Only show items with non-zero master_net_quantity
                                     .map((m, idx) => (
                                         <div key={idx} className='grid grid-cols-6 text-sm text-gray-800 p-2 border-t hover:bg-blue-100'>
                                             <div className='break-words whitespace-normal ml-1'>{m.symbol + " " + m.strike_price + m.option_type + " " + m.expiry}</div>

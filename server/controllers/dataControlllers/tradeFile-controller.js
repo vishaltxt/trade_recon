@@ -209,7 +209,7 @@ const keys26 = [
   "multiplier",
   "product_type",
   "lot_size",
-  "client_code",
+  "master_neet",
   "price",
   "buy_sell",
   "quantity",
@@ -224,7 +224,7 @@ const keys26 = [
   "exchange_order_id",
   "ref_no",
   "entry_time",
-  "branch_code",
+  "master_twelve",
 ];
 
 const readFileAndParse = (filePath, dateStr, keys) => {
@@ -460,14 +460,15 @@ export const TradeFileData = async (req, res) => {
         // );
       }
     }
-
+    // Sensex file:
+    
     // Aggregate today's data
     if (todayData.length > 0) {
       await TradeFile.deleteMany({ fileDate: todayStr });
 
       // const grouped = _.groupBy(todayData, (item) =>
       //   [
-      //     cleanString(item.symbol),
+9      //     cleanString(item.symbol),
       //     cleanString(item.expiry),
       //     cleanString(item.strike_price),
       //     cleanString(item.master_id),
@@ -479,8 +480,10 @@ export const TradeFileData = async (req, res) => {
         const expiry = standardizeExpiry(item.expiry);
         const strike_price = cleanString(item.strike_price);
         const master_id = cleanString(item.master_id);
+        const master_neet = cleanString(item.master_neet);
+        const master_twelve = cleanString(item.master_twelve);
         const option_type = cleanString(item.option_type);
-        return [symbol, expiry, strike_price, master_id, option_type].join("|");
+        return [symbol, expiry, strike_price, master_id, master_neet , master_twelve ,  option_type].join("|");
       });
 
       const transformedTodayData = Object.values(grouped).map((group) => {
@@ -495,11 +498,13 @@ export const TradeFileData = async (req, res) => {
 
         const net_quantity = buy_quantity - sell_quantity;
 
-        const [symbol, expiry, strike_price, master_id, option_type] = [
+        const [symbol, expiry, strike_price, master_id , master_neet , master_twelve, option_type] = [
           cleanString(group[0].symbol),
           standardizeExpiry(cleanString(group[0].expiry)),
           cleanString(group[0].strike_price),
           cleanString(group[0].master_id),
+          cleanString(group[0].master_neet),
+          cleanString(group[0].master_twelve),
           cleanString(group[0].option_type),
         ];
 
@@ -512,6 +517,8 @@ export const TradeFileData = async (req, res) => {
           sell_quantity,
           net_quantity,
           master_id,
+          master_neet,
+          master_twelve,
           fileDate: todayStr,
         };
       });
@@ -519,7 +526,7 @@ export const TradeFileData = async (req, res) => {
       const inserted = await TradeFile.insertMany(transformedTodayData);
       insertedCount += inserted.length;
       insertedData = insertedData.concat(inserted);
-      console.log(insertedCount)
+      console.log(insertedCount);
     }
 
     res.json({
@@ -1400,6 +1407,7 @@ export const TradeFileData = async (req, res) => {
 // };
 
 // with replicationPercentage update
+// and perfect code without neet and twelve digit
 
 export const getReconTradeData = async (req, res) => {
   try {
@@ -1552,3 +1560,8 @@ export const getReconTradeData = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
+
+
+// code updated with added master_id , master_neet and master_twelve
