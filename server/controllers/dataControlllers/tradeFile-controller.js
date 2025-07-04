@@ -461,14 +461,14 @@ export const TradeFileData = async (req, res) => {
       }
     }
     // Sensex file:
-    
+
     // Aggregate today's data
     if (todayData.length > 0) {
       await TradeFile.deleteMany({ fileDate: todayStr });
 
       // const grouped = _.groupBy(todayData, (item) =>
       //   [
-9      //     cleanString(item.symbol),
+       //     cleanString(item.symbol),
       //     cleanString(item.expiry),
       //     cleanString(item.strike_price),
       //     cleanString(item.master_id),
@@ -483,7 +483,15 @@ export const TradeFileData = async (req, res) => {
         const master_neet = cleanString(item.master_neet);
         const master_twelve = cleanString(item.master_twelve);
         const option_type = cleanString(item.option_type);
-        return [symbol, expiry, strike_price, master_id, master_neet , master_twelve ,  option_type].join("|");
+        return [
+          symbol,
+          expiry,
+          strike_price,
+          master_id,
+          master_neet,
+          master_twelve,
+          option_type,
+        ].join("|");
       });
 
       const transformedTodayData = Object.values(grouped).map((group) => {
@@ -498,13 +506,22 @@ export const TradeFileData = async (req, res) => {
 
         const net_quantity = buy_quantity - sell_quantity;
 
-        const [symbol, expiry, strike_price, master_id , master_neet , master_twelve, option_type] = [
+        const [
+          symbol,
+          expiry,
+          strike_price,
+          master_id,
+          master_neet,
+          master_twelve,
+          option_type,
+        ] = [
           cleanString(group[0].symbol),
           standardizeExpiry(cleanString(group[0].expiry)),
           cleanString(group[0].strike_price),
           cleanString(group[0].master_id),
           cleanString(group[0].master_neet),
-          cleanString(group[0].master_twelve),
+          // cleanString(group[0].master_twelve),
+          cleanString(group[0].master_twelve).slice(0, 12),
           cleanString(group[0].option_type),
         ];
 
@@ -539,6 +556,7 @@ export const TradeFileData = async (req, res) => {
     res.status(500).json({ error: "Something went wrong" });
   }
 };
+
 
 // export const TradeFileData = async (req, res) => {
 //   try {
@@ -1406,8 +1424,10 @@ export const TradeFileData = async (req, res) => {
 //   }
 // };
 
-// with replicationPercentage update
-// and perfect code without neet and twelve digit
+
+
+// -------------------------------with replicationPercentage update  and perfect code without neet and twelve digit----------------------------------------------------->>
+
 
 export const getReconTradeData = async (req, res) => {
   try {
@@ -1563,5 +1583,166 @@ export const getReconTradeData = async (req, res) => {
 
 
 
+// --------------------------------------------code updated with added master_id , master_neet and master_twelve------------------------------------------------------>>>>>>
 
-// code updated with added master_id , master_neet and master_twelve
+
+// export const getReconTradeData = async (req, res) => {
+//   try {
+//     const { masterTraderIds } = req.body;
+//     if (!Array.isArray(masterTraderIds) || masterTraderIds.length === 0) {
+//       return res.status(400).json({ error: "No master IDs provided" });
+//     }
+
+//     const masterIdStrings = masterTraderIds.map(String);
+//     const mappings = await MappingForm.find({ masterId: { $in: masterIdStrings } });
+//     const mappedMinionIds = mappings.map((m) => m.minionId);
+
+//     const resolveIdsFromAnyField = async (ids) => {
+//       const docs = await TradeFile.find({
+//         $or: [
+//           { master_id: { $in: ids } },
+//           { master_neet: { $in: ids } },
+//           { master_twelve: { $in: ids } },
+//         ],
+//       }).select("master_id master_neet master_twelve -_id");
+
+//       const result = new Set();
+//       docs.forEach((doc) => {
+//         [doc.master_id, doc.master_neet, doc.master_twelve].forEach((val) => {
+//           if (val) result.add(val.toString());
+//         });
+//       });
+//       return Array.from(result);
+//     };
+
+//     const resolvedMasterIds = await resolveIdsFromAnyField(masterIdStrings);
+//     const resolvedMinionIds = await resolveIdsFromAnyField(mappedMinionIds);
+
+//     const buildAggregationPipeline = (ids) => [
+//       {
+//         $match: {
+//           $or: [
+//             { master_id: { $in: ids } },
+//             { master_neet: { $in: ids } },
+//             { master_twelve: { $in: ids } },
+//           ],
+//         },
+//       },
+//       {
+//         $addFields: {
+//           resolved_master_id: {
+//             $ifNull: [
+//               "$master_id",
+//               { $ifNull: ["$master_neet", "$master_twelve"] },
+//             ],
+//           },
+//         },
+//       },
+//       {
+//         $group: {
+//           _id: {
+//             master_id: "$resolved_master_id",
+//             symbol: "$symbol",
+//             strike_price: "$strike_price",
+//             expiry: "$expiry",
+//             option_type: "$option_type",
+//           },
+//           total_buy_quantity: { $sum: "$buy_quantity" },
+//           total_sell_quantity: { $sum: "$sell_quantity" },
+//           total_quantity: {
+//             $sum: {
+//               $add: [
+//                 { $ifNull: ["$net_quantity", 0] },
+//                 { $ifNull: ["$quantity", 0] },
+//               ],
+//             },
+//           },
+//         },
+//       },
+//       {
+//         $match: { total_quantity: { $ne: 0 } },
+//       },
+//       {
+//         $addFields: {
+//           actionType: {
+//             $cond: [{ $gt: ["$total_quantity", 0] }, "buy", "sell"],
+//           },
+//         },
+//       },
+//       {
+//         $project: {
+//           _id: 0,
+//           master_id: "$_id.master_id",
+//           symbol: "$_id.symbol",
+//           strike_price: "$_id.strike_price",
+//           expiry: "$_id.expiry",
+//           option_type: "$_id.option_type",
+//           total_buy_quantity: 1,
+//           total_sell_quantity: 1,
+//           total_quantity: 1,
+//           actionType: 1,
+//         },
+//       },
+//     ];
+
+//     const [masterRaw, minionRaw] = await Promise.all([
+//       TradeFile.aggregate(buildAggregationPipeline(resolvedMasterIds)),
+//       TradeFile.aggregate(buildAggregationPipeline(resolvedMinionIds)),
+//     ]);
+
+//     // Filter out only actual masters/minions from mappings
+//     const masterData = masterRaw.filter((m) => masterIdStrings.includes(m.master_id));
+//     const minionData = minionRaw.filter((m) => mappedMinionIds.includes(m.master_id));
+
+//     const masterMap = {};
+//     masterData.forEach((m) => {
+//       const key = `${m.master_id}_${m.symbol}_${m.strike_price}_${m.expiry}_${m.option_type}`;
+//       masterMap[key] = m.total_quantity;
+//     });
+
+//     const minionMappingMap = {};
+//     mappings.forEach(({ masterId, minionId, replicationPercentage }) => {
+//       if (!minionMappingMap[minionId]) minionMappingMap[minionId] = [];
+//       minionMappingMap[minionId].push({ masterId, replicationPercentage });
+//     });
+
+//     const enrichedMinionData = minionData.map((minion) => {
+//       let totalMasterNetQty = 0;
+//       const mappings = minionMappingMap[minion.master_id] || [];
+
+//       mappings.forEach(({ masterId, replicationPercentage }) => {
+//         const key = `${masterId}_${minion.symbol}_${minion.strike_price}_${minion.expiry}_${minion.option_type}`;
+//         const masterQty = masterMap[key] || 0;
+//         totalMasterNetQty += masterQty * (replicationPercentage || 1);
+//       });
+
+//       return {
+//         ...minion,
+//         master_net_quantity: totalMasterNetQty,
+//         replicationPercentages: mappings.map((e) => e.replicationPercentage),
+//       };
+//     });
+
+//     const minionMap = {};
+//     minionData.forEach((m) => {
+//       const key = `${m.symbol}_${m.strike_price}_${m.expiry}_${m.option_type}`;
+//       minionMap[key] = (minionMap[key] || 0) + m.total_quantity;
+//     });
+
+//     const enrichedMasterData = masterData.map((m) => {
+//       const key = `${m.symbol}_${m.strike_price}_${m.expiry}_${m.option_type}`;
+//       return {
+//         ...m,
+//         minion_net_quantity: minionMap[key] || 0,
+//       };
+//     });
+
+//     res.json({
+//       masterData: enrichedMasterData,
+//       minionData: enrichedMinionData,
+//     });
+//   } catch (err) {
+//     console.error("getReconTradeData error:", err);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
