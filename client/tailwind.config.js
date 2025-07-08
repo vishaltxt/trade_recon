@@ -13,8 +13,17 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {},
-  },
+  extend: {
+      animation: {
+        blink: 'blink 1s linear infinite',
+      },
+      keyframes: {
+        blink: {
+          '0%, 100%': { backgroundColor: 'transparent' },
+          '50%': { backgroundColor: '#fde68a' }, // amber-200
+        },
+      },
+    },  },
   plugins: [],
 }
 

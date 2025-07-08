@@ -468,7 +468,7 @@ export const TradeFileData = async (req, res) => {
 
       // const grouped = _.groupBy(todayData, (item) =>
       //   [
-       //     cleanString(item.symbol),
+      //     cleanString(item.symbol),
       //     cleanString(item.expiry),
       //     cleanString(item.strike_price),
       //     cleanString(item.master_id),
@@ -556,7 +556,6 @@ export const TradeFileData = async (req, res) => {
     res.status(500).json({ error: "Something went wrong" });
   }
 };
-
 
 // export const TradeFileData = async (req, res) => {
 //   try {
@@ -1424,305 +1423,136 @@ export const TradeFileData = async (req, res) => {
 //   }
 // };
 
-
-
 // -------------------------------with replicationPercentage update  and perfect code without neet and twelve digit----------------------------------------------------->>
-
-
-export const getReconTradeData = async (req, res) => {
-  try {
-    const { masterTraderIds } = req.body;
-    console.log("Received body:", req.body);
-
-    if (!Array.isArray(masterTraderIds) || masterTraderIds.length === 0) {
-      return res.status(400).json({ error: "No master IDs provided" });
-    }
-
-    const masterIdStrings = masterTraderIds.map(String);
-
-    // Fetch mappings for minion IDs
-    const mappings = await MappingForm.find({
-      masterId: { $in: masterIdStrings },
-    });
-
-    const minionIdStrings = mappings.map((m) => m.minionId);
-    const masterIdNums = masterIdStrings.map(String);
-    const minionIdNums = minionIdStrings.map(String);
-
-    // Aggregation pipeline function
-    const aggregateGroupedData = (ids, includeMasterId = false) => {
-      const pipeline = [
-        {
-          $match: { master_id: { $in: ids } },
-        },
-        ...(includeMasterId
-          ? [
-              {
-                $addFields: { group_master_id: "$master_id" },
-              },
-            ]
-          : []),
-        {
-          $group: {
-            _id: {
-              symbol: "$symbol",
-              strike_price: "$strike_price",
-              expiry: "$expiry",
-              option_type: "$option_type",
-              ...(includeMasterId ? { master_id: "$group_master_id" } : {}),
-            },
-            total_buy_quantity: { $sum: "$buy_quantity" },
-            total_sell_quantity: { $sum: "$sell_quantity" },
-            total_quantity: {
-              $sum: {
-                $add: [
-                  { $ifNull: ["$net_quantity", 0] },
-                  { $ifNull: ["$quantity", 0] },
-                ],
-              },
-            },
-          },
-        },
-        {
-          $match: { total_quantity: { $ne: 0 } },
-        },
-        {
-          $addFields: {
-            actionType: {
-              $cond: [{ $gt: ["$total_quantity", 0] }, "buy", "sell"],
-            },
-          },
-        },
-        {
-          $project: {
-            _id: 0,
-            symbol: "$_id.symbol",
-            strike_price: "$_id.strike_price",
-            expiry: "$_id.expiry",
-            option_type: "$_id.option_type",
-            ...(includeMasterId ? { master_id: "$_id.master_id" } : {}),
-            total_buy_quantity: 1,
-            total_sell_quantity: 1,
-            total_quantity: 1,
-            actionType: 1,
-          },
-        },
-      ];
-
-      return pipeline;
-    };
-
-    // Run both master and minion data aggregations
-    const [masterData, minionData] = await Promise.all([
-      TradeFile.aggregate(aggregateGroupedData(masterIdNums, true)),
-      TradeFile.aggregate(aggregateGroupedData(minionIdNums, true)),
-    ]);
-
-    // Create master quantity map
-    const masterMap = {};
-    masterData.forEach((m) => {
-      const key = `${m.master_id}_${m.symbol}_${m.strike_price}_${m.expiry}_${m.option_type}`;
-      masterMap[key] = m.total_quantity;
-    });
-
-    // Map minionId => [{ masterId, replicationPercentage }]
-    const minionMappingMap = {};
-    mappings.forEach(({ masterId, minionId, replicationPercentage }) => {
-      if (!minionMappingMap[minionId]) {
-        minionMappingMap[minionId] = [];
-      }
-      minionMappingMap[minionId].push({ masterId, replicationPercentage });
-    });
-    // console.log("minionMappingMap",minionMappingMap)
-
-    // Enrich minion data with replication-adjusted master_net_quantity
-    const enrichedMinionData = minionData.map((minion) => {
-      let totalMasterNetQty = 0;
-
-      const mappingEntries = minionMappingMap[minion.master_id] || [];
-
-      mappingEntries.forEach(({ masterId, replicationPercentage }) => {
-        const key = `${masterId}_${minion.symbol}_${minion.strike_price}_${minion.expiry}_${minion.option_type}`;
-        const masterQty = masterMap[key] || 0;
-        totalMasterNetQty += masterQty * (replicationPercentage || 1); // default to 1
-      });
-
-      return {
-        ...minion,
-        master_net_quantity: totalMasterNetQty,
-        replicationPercentages: mappingEntries.map(
-          (e) => e.replicationPercentage
-        ),
-      };
-    });
-
-    // Build minion data map to enrich masterData
-    const minionMap = {};
-    minionData.forEach((m) => {
-      const key = `${m.symbol}_${m.strike_price}_${m.expiry}_${m.option_type}`;
-      minionMap[key] = (minionMap[key] || 0) + m.total_quantity;
-    });
-
-    const enrichedMasterData = masterData.map((m) => {
-      const key = `${m.symbol}_${m.strike_price}_${m.expiry}_${m.option_type}`;
-      return {
-        ...m,
-        minion_net_quantity: minionMap[key] || 0,
-      };
-    });
-
-    res.json({
-      masterData: enrichedMasterData,
-      minionData: enrichedMinionData,
-    });
-  } catch (err) {
-    console.error("getReconTradeData error:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-
-
-// --------------------------------------------code updated with added master_id , master_neet and master_twelve------------------------------------------------------>>>>>>
-
 
 // export const getReconTradeData = async (req, res) => {
 //   try {
 //     const { masterTraderIds } = req.body;
+//     console.log("Received body:", req.body);
+
 //     if (!Array.isArray(masterTraderIds) || masterTraderIds.length === 0) {
 //       return res.status(400).json({ error: "No master IDs provided" });
 //     }
 
 //     const masterIdStrings = masterTraderIds.map(String);
-//     const mappings = await MappingForm.find({ masterId: { $in: masterIdStrings } });
-//     const mappedMinionIds = mappings.map((m) => m.minionId);
 
-//     const resolveIdsFromAnyField = async (ids) => {
-//       const docs = await TradeFile.find({
-//         $or: [
-//           { master_id: { $in: ids } },
-//           { master_neet: { $in: ids } },
-//           { master_twelve: { $in: ids } },
-//         ],
-//       }).select("master_id master_neet master_twelve -_id");
+//     // Fetch mappings for minion IDs
+//     const mappings = await MappingForm.find({
+//       masterId: { $in: masterIdStrings },
+//     });
 
-//       const result = new Set();
-//       docs.forEach((doc) => {
-//         [doc.master_id, doc.master_neet, doc.master_twelve].forEach((val) => {
-//           if (val) result.add(val.toString());
-//         });
-//       });
-//       return Array.from(result);
-//     };
+//     const minionIdStrings = mappings.map((m) => m.minionId);
+//     const masterIdNums = masterIdStrings.map(String);
+//     const minionIdNums = minionIdStrings.map(String);
 
-//     const resolvedMasterIds = await resolveIdsFromAnyField(masterIdStrings);
-//     const resolvedMinionIds = await resolveIdsFromAnyField(mappedMinionIds);
-
-//     const buildAggregationPipeline = (ids) => [
-//       {
-//         $match: {
-//           $or: [
-//             { master_id: { $in: ids } },
-//             { master_neet: { $in: ids } },
-//             { master_twelve: { $in: ids } },
-//           ],
+//     // Aggregation pipeline function
+//     const aggregateGroupedData = (ids, includeMasterId = false) => {
+//       const pipeline = [
+//         {
+//           $match: { master_id: { $in: ids } },
 //         },
-//       },
-//       {
-//         $addFields: {
-//           resolved_master_id: {
-//             $ifNull: [
-//               "$master_id",
-//               { $ifNull: ["$master_neet", "$master_twelve"] },
-//             ],
-//           },
-//         },
-//       },
-//       {
-//         $group: {
-//           _id: {
-//             master_id: "$resolved_master_id",
-//             symbol: "$symbol",
-//             strike_price: "$strike_price",
-//             expiry: "$expiry",
-//             option_type: "$option_type",
-//           },
-//           total_buy_quantity: { $sum: "$buy_quantity" },
-//           total_sell_quantity: { $sum: "$sell_quantity" },
-//           total_quantity: {
-//             $sum: {
-//               $add: [
-//                 { $ifNull: ["$net_quantity", 0] },
-//                 { $ifNull: ["$quantity", 0] },
-//               ],
+//         ...(includeMasterId
+//           ? [
+//               {
+//                 $addFields: { group_master_id: "$master_id" },
+//               },
+//             ]
+//           : []),
+//         {
+//           $group: {
+//             _id: {
+//               symbol: "$symbol",
+//               strike_price: "$strike_price",
+//               expiry: "$expiry",
+//               option_type: "$option_type",
+//               ...(includeMasterId ? { master_id: "$group_master_id" } : {}),
+//             },
+//             total_buy_quantity: { $sum: "$buy_quantity" },
+//             total_sell_quantity: { $sum: "$sell_quantity" },
+//             total_quantity: {
+//               $sum: {
+//                 $add: [
+//                   { $ifNull: ["$net_quantity", 0] },
+//                   { $ifNull: ["$quantity", 0] },
+//                 ],
+//               },
 //             },
 //           },
 //         },
-//       },
-//       {
-//         $match: { total_quantity: { $ne: 0 } },
-//       },
-//       {
-//         $addFields: {
-//           actionType: {
-//             $cond: [{ $gt: ["$total_quantity", 0] }, "buy", "sell"],
+//         {
+//           $match: { total_quantity: { $ne: 0 } },
+//         },
+//         {
+//           $addFields: {
+//             actionType: {
+//               $cond: [{ $gt: ["$total_quantity", 0] }, "buy", "sell"],
+//             },
 //           },
 //         },
-//       },
-//       {
-//         $project: {
-//           _id: 0,
-//           master_id: "$_id.master_id",
-//           symbol: "$_id.symbol",
-//           strike_price: "$_id.strike_price",
-//           expiry: "$_id.expiry",
-//           option_type: "$_id.option_type",
-//           total_buy_quantity: 1,
-//           total_sell_quantity: 1,
-//           total_quantity: 1,
-//           actionType: 1,
+//         {
+//           $project: {
+//             _id: 0,
+//             symbol: "$_id.symbol",
+//             strike_price: "$_id.strike_price",
+//             expiry: "$_id.expiry",
+//             option_type: "$_id.option_type",
+//             ...(includeMasterId ? { master_id: "$_id.master_id" } : {}),
+//             total_buy_quantity: 1,
+//             total_sell_quantity: 1,
+//             total_quantity: 1,
+//             actionType: 1,
+//           },
 //         },
-//       },
-//     ];
+//       ];
 
-//     const [masterRaw, minionRaw] = await Promise.all([
-//       TradeFile.aggregate(buildAggregationPipeline(resolvedMasterIds)),
-//       TradeFile.aggregate(buildAggregationPipeline(resolvedMinionIds)),
+//       return pipeline;
+//     };
+
+//     // Run both master and minion data aggregations
+//     const [masterData, minionData] = await Promise.all([
+//       TradeFile.aggregate(aggregateGroupedData(masterIdNums, true)),
+//       TradeFile.aggregate(aggregateGroupedData(minionIdNums, true)),
 //     ]);
 
-//     // Filter out only actual masters/minions from mappings
-//     const masterData = masterRaw.filter((m) => masterIdStrings.includes(m.master_id));
-//     const minionData = minionRaw.filter((m) => mappedMinionIds.includes(m.master_id));
-
+//     // Create master quantity map
 //     const masterMap = {};
 //     masterData.forEach((m) => {
 //       const key = `${m.master_id}_${m.symbol}_${m.strike_price}_${m.expiry}_${m.option_type}`;
 //       masterMap[key] = m.total_quantity;
 //     });
 
+//     // Map minionId => [{ masterId, replicationPercentage }]
 //     const minionMappingMap = {};
 //     mappings.forEach(({ masterId, minionId, replicationPercentage }) => {
-//       if (!minionMappingMap[minionId]) minionMappingMap[minionId] = [];
+//       if (!minionMappingMap[minionId]) {
+//         minionMappingMap[minionId] = [];
+//       }
 //       minionMappingMap[minionId].push({ masterId, replicationPercentage });
 //     });
+//     // console.log("minionMappingMap",minionMappingMap)
 
+//     // Enrich minion data with replication-adjusted master_net_quantity
 //     const enrichedMinionData = minionData.map((minion) => {
 //       let totalMasterNetQty = 0;
-//       const mappings = minionMappingMap[minion.master_id] || [];
 
-//       mappings.forEach(({ masterId, replicationPercentage }) => {
+//       const mappingEntries = minionMappingMap[minion.master_id] || [];
+
+//       mappingEntries.forEach(({ masterId, replicationPercentage }) => {
 //         const key = `${masterId}_${minion.symbol}_${minion.strike_price}_${minion.expiry}_${minion.option_type}`;
 //         const masterQty = masterMap[key] || 0;
-//         totalMasterNetQty += masterQty * (replicationPercentage || 1);
+//         totalMasterNetQty += masterQty * (replicationPercentage || 1); // default to 1
 //       });
 
 //       return {
 //         ...minion,
 //         master_net_quantity: totalMasterNetQty,
-//         replicationPercentages: mappings.map((e) => e.replicationPercentage),
+//         replicationPercentages: mappingEntries.map(
+//           (e) => e.replicationPercentage
+//         ),
 //       };
 //     });
 
+//     // Build minion data map to enrich masterData
 //     const minionMap = {};
 //     minionData.forEach((m) => {
 //       const key = `${m.symbol}_${m.strike_price}_${m.expiry}_${m.option_type}`;
@@ -1746,3 +1576,170 @@ export const getReconTradeData = async (req, res) => {
 //     res.status(500).json({ error: "Internal server error" });
 //   }
 // };
+
+// --------------------------------------------code updated with added master_id , master_neet and master_twelve------------------------------------------------------>>>>>>
+
+export const getReconTradeData = async (req, res) => {
+  try {
+    const { masterTraderIds } = req.body;
+    if (!Array.isArray(masterTraderIds) || masterTraderIds.length === 0) {
+      return res.status(400).json({ error: "No master IDs provided" });
+    }
+
+    const masterIdStrings = masterTraderIds.map(String);
+    // Step 1: Fetch mappings using masterId field
+    const mappings = await MappingForm.find({
+      masterId: { $in: masterIdStrings },
+    });
+    const mappedMinionIds = mappings.map((m) => m.minionId);
+
+    // Step 2: Collect all relevant IDs and find matching trade documents
+    const allRelevantIds = [...masterIdStrings, ...mappedMinionIds];
+    const tradeDocs = await TradeFile.find({
+      $or: [
+        { master_id: { $in: allRelevantIds } },
+        { master_neet: { $in: allRelevantIds } },
+        { master_twelve: { $in: allRelevantIds } },
+      ],
+    }).select("master_id master_neet master_twelve");
+
+    // Step 3: Build reverse mapping of each possible ID to its actual field name (based on what matched)
+    const idToFieldMap = new Map();
+    tradeDocs.forEach((doc) => {
+      if (doc.master_id)
+        idToFieldMap.set(doc.master_id.toString(), "master_id");
+      if (doc.master_neet)
+        idToFieldMap.set(doc.master_neet.toString(), "master_neet");
+      if (doc.master_twelve)
+        idToFieldMap.set(doc.master_twelve.toString(), "master_twelve");
+    });
+
+    // Step 4: Aggregation with resolved_master_id assigned based on matching field
+    const buildAggregationPipeline = (ids) => [
+      {
+        $match: {
+          $or: [
+            { master_id: { $in: ids } },
+            { master_neet: { $in: ids } },
+            { master_twelve: { $in: ids } },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          resolved_master_id: {
+            $switch: {
+              branches: [
+                { case: { $in: ["$master_id", ids] }, then: "$master_id" },
+                { case: { $in: ["$master_neet", ids] }, then: "$master_neet" },
+                { case: { $in: ["$master_twelve", ids] }, then: "$master_twelve",},
+              ],
+              default: null,
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            master_id: "$resolved_master_id",
+            symbol: "$symbol",
+            strike_price: "$strike_price",
+            expiry: "$expiry",
+            option_type: "$option_type",
+          },
+          total_buy_quantity: { $sum: "$buy_quantity" },
+          total_sell_quantity: { $sum: "$sell_quantity" },
+          total_quantity: {
+            $sum: {
+              $add: [
+                { $ifNull: ["$net_quantity", 0] },
+                { $ifNull: ["$quantity", 0] },
+              ],
+            },
+          },
+        },
+      },
+      {
+        $match: { total_quantity: { $ne: 0 } },
+      },
+      {
+        $addFields: {
+          actionType: {
+            $cond: [{ $gt: ["$total_quantity", 0] }, "buy", "sell"],
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          resolved_master_id: "$_id.master_id",
+          symbol: "$_id.symbol",
+          strike_price: "$_id.strike_price",
+          expiry: "$_id.expiry",
+          option_type: "$_id.option_type",
+          total_buy_quantity: 1,
+          total_sell_quantity: 1,
+          total_quantity: 1,
+          actionType: 1,
+        },
+      },
+    ];
+
+    const [masterRaw, minionRaw] = await Promise.all([
+      TradeFile.aggregate(buildAggregationPipeline(masterIdStrings)),
+      TradeFile.aggregate(buildAggregationPipeline(mappedMinionIds)),
+    ]);
+
+    const masterMap = {};
+    masterRaw.forEach((m) => {
+      const key = `${m.resolved_master_id}_${m.symbol}_${m.strike_price}_${m.expiry}_${m.option_type}`;
+      masterMap[key] = m.total_quantity;
+    });
+
+    const minionMappingMap = {};
+    mappings.forEach(({ masterId, minionId, replicationPercentage }) => {
+      if (!minionMappingMap[minionId]) minionMappingMap[minionId] = [];
+      minionMappingMap[minionId].push({ masterId, replicationPercentage });
+    });
+
+    const enrichedMinionData = minionRaw.map((minion) => {
+      let totalMasterNetQty = 0;
+      const mappings = minionMappingMap[minion.resolved_master_id] || [];
+
+      mappings.forEach(({ masterId, replicationPercentage }) => {
+        const key = `${masterId}_${minion.symbol}_${minion.strike_price}_${minion.expiry}_${minion.option_type}`;
+        const masterQty = masterMap[key] || 0;
+        totalMasterNetQty += masterQty * (replicationPercentage || 1);
+      });
+
+      return {
+        ...minion,
+        master_net_quantity: totalMasterNetQty,
+        replicationPercentages: mappings.map((e) => e.replicationPercentage),
+      };
+    });
+
+    const minionMap = {};
+    minionRaw.forEach((m) => {
+      const key = `${m.symbol}_${m.strike_price}_${m.expiry}_${m.option_type}`;
+      minionMap[key] = (minionMap[key] || 0) + m.total_quantity;
+    });
+
+    const enrichedMasterData = masterRaw.map((m) => {
+      const key = `${m.symbol}_${m.strike_price}_${m.expiry}_${m.option_type}`;
+      return {
+        ...m,
+        minion_net_quantity: minionMap[key] || 0,
+      };
+    });
+
+    res.json({
+      masterData: enrichedMasterData,
+      minionData: enrichedMinionData,
+    });
+  } catch (err) {
+    console.error("getReconTradeData error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

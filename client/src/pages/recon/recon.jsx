@@ -351,7 +351,7 @@ const Recon = () => {
                         <div className='border rounded-md w-[49%]'>
                             {/* Only show selected masters as clickable items */}
                             <div className='flex p-3 mb-2 font-bold gap-5 flex-wrap'>
-                                {[...new Set(masterDetails.map(m => m.master_id))].map((id) => (
+                                {[...new Set(masterDetails.map(m => m.resolved_master_id))].map((id) => (
                                     <p
                                         key={id}
                                         className={`cursor-pointer ${selectedMasterCode === id ? 'text-blue-600 underline' : ''}`}
@@ -393,7 +393,7 @@ const Recon = () => {
                             {/* Filtered Data */}
                             <div className="max-h-[185px] overflow-y-auto">
                                 {masterDetails
-                                    .filter(m => m.master_id === selectedMasterCode && (m.strike_price?.toString() || '').includes(strikeFilter))
+                                    .filter(m => m.resolved_master_id === selectedMasterCode && (m.strike_price?.toString() || '').includes(strikeFilter))
                                     .map((m, idx) => (
                                         <div key={idx} className='grid grid-cols-3 gap-12 text-sm text-gray-800 p-2 border-t hover:bg-blue-100'>
                                             <div className='break-words whitespace-normal ml-4'>{m.symbol + " " + m.strike_price + m.option_type + " " + m.expiry}</div>
@@ -408,7 +408,7 @@ const Recon = () => {
 
                         <div className='border rounded-md w-[49%]'>
                             <div className='flex flex-wrap p-3 mb-2 font-bold gap-5'>
-                                {[...new Set(minionDetails.map(m => m.master_id))].map((id) => (
+                                {[...new Set(minionDetails.map(m => m.resolved_master_id))].map((id) => (
                                     <p
                                         key={id}
                                         className={`cursor-pointer ${selectedMinionMasterCode === id ? 'text-blue-600 underline' : ''}`}
@@ -438,7 +438,7 @@ const Recon = () => {
                                 />
                             </div>
 
-                            
+
                             <div className='grid grid-cols-3 bg-gray-100 p-2 text-sm font-semibold'>
                                 <p className='ml-4'>Security Name</p>
                                 <p className='ml-4'>Quantity</p>
@@ -446,7 +446,7 @@ const Recon = () => {
                             </div>
                             <div className="max-h-[185px] overflow-y-auto">
                                 {minionDetails
-                                    .filter(m => m.master_id === selectedMinionMasterCode && (m.strike_price?.toString() || '').includes(strikeFilter)) // 👈 Filter based on selected master
+                                    .filter(m => m.resolved_master_id === selectedMinionMasterCode && (m.strike_price?.toString() || '').includes(strikeFilter)) // 👈 Filter based on selected master
                                     .map((m, idx) => (
                                         <div key={idx} className='grid grid-cols-3 gap-14 text-sm text-gray-800 p-2 border-t hover:bg-blue-100'>
                                             <div className="break-words whitespace-normal">{m.symbol + " " + m.strike_price + m.option_type + " " + m.expiry}</div>
@@ -462,8 +462,8 @@ const Recon = () => {
                         <h1 className='text-2xl font-bold text-red-600'>Trade Difference</h1>
 
                         <div className='border rounded-md w[98%]'>
-                            <div className='flex flex-wrap p-3 mb-2 font-bold gap-5'>
-                                {[...new Set(minionDetails.map(m => m.master_id))].map((id) => (
+                            {/* <div className='flex flex-wrap p-3 mb-2 font-bold gap-5'>
+                                {[...new Set(minionDetails.map(m => m.resolved_master_id))].map((id) => (
                                     <p
                                         key={id}
                                         className={`cursor-pointer ${selectedMinionMasterCodeDifference === id ? 'text-blue-600 underline' : ''}`}
@@ -472,6 +472,29 @@ const Recon = () => {
                                         Minion {id}
                                     </p>
                                 ))}
+                            </div> */}
+
+                            {/*-------------------------------------------------WITH COLOR HIGHLIGHTED FOR TRADE DIFFERENCE NOT ZERO-------------------------------------------------------- */}
+
+                            <div className='flex flex-wrap p-3 mb-2 font-bold gap-5'>
+                                {[...new Set(minionDetails.map(m => m.resolved_master_id))].map((id) => {
+                                    const hasDifference = minionDetails.some(m =>
+                                        m.resolved_master_id === id &&
+                                        (m.master_net_quantity - m.total_quantity !== 0)
+                                    );
+
+                                    return (
+                                        <p
+                                            key={id}
+                                            className={`cursor-pointer px-2 py-1 rounded 
+                    ${selectedMinionMasterCodeDifference === id ? 'text-blue-600 underline' : ''} 
+                    ${hasDifference ? 'animate-blink bg-amber-100' : ''}`}
+                                            onClick={() => setSelectedMinionMasterCodeDifference(id)}
+                                        >
+                                            Minion {id}
+                                        </p>
+                                    );
+                                })}
                             </div>
 
 
@@ -497,25 +520,32 @@ const Recon = () => {
                             </div>
                             <div className="max-h-[500px] overflow-y-auto">
                                 {minionDetails
-                                    .filter(m => m.master_id === selectedMinionMasterCodeDifference && (m.strike_price?.toString() || '').includes(strikeFilter)) // 👈 Filter based on selected master
-                                    // .filter(m => m.master_id === selectedMinionMasterCodeDifference && m.master_net_quantity !== 0 && (m.strike_price?.toString() || '').includes(strikeFilter)) // 🚨 Only show items with non-zero master_net_quantity
-                                    .map((m, idx) => (
-                                        <div key={idx} className='grid grid-cols-6 text-sm text-gray-800 p-2 border-t hover:bg-blue-100'>
-                                            <div className='break-words whitespace-normal ml-1'>{m.symbol + " " + m.strike_price + m.option_type + " " + m.expiry}</div>
-                                            <div className={`ml-3 font-semibold ${m.actionType === 'buy' ? 'text-green-600' : 'text-red-600'}`}> {(m.actionType || '').toUpperCase()}</div>
-                                            <div className='ml-10'>{m.master_net_quantity}</div>
-                                            <div className='ml-10'>{m.total_quantity}</div>
-                                            <div className='ml-10'>{m.master_net_quantity - m.total_quantity}</div>
-                                            {/* <div><button className='text-white ml-7 bg-green-500 w-12 rounded-md'>Buy</button></div> */}
-                                            <button
-                                                className='text-white ml-7 bg-green-500 w-12 rounded-md'
-                                                onClick={() => handlePlaceOrder(m)}
-                                            >
-                                                Buy
-                                            </button>
+                                    .filter(m => m.resolved_master_id === selectedMinionMasterCodeDifference && (m.strike_price?.toString() || '').includes(strikeFilter))
+                                    .map((m, idx) => {
+                                        const diff = m.master_net_quantity - m.total_quantity;
+                                        const shouldBlink = diff !== 0;
 
-                                        </div>
-                                    ))}
+                                        return (
+                                            <div key={idx} className={`grid grid-cols-6 text-sm text-gray-800 p-2 border-t hover:bg-blue-100 ${shouldBlink ? 'animate-blink' : ''}`}>
+                                                <div className='break-words whitespace-normal ml-1'>
+                                                    {m.symbol + " " + m.strike_price + m.option_type + " " + m.expiry}
+                                                </div>
+                                                <div className={`ml-3 font-semibold ${m.actionType === 'buy' ? 'text-green-600' : 'text-red-600'}`}>
+                                                    {(m.actionType || '').toUpperCase()}
+                                                </div>
+                                                <div className='ml-10'>{m.master_net_quantity}</div>
+                                                <div className='ml-10'>{m.total_quantity}</div>
+                                                <div className='ml-10'>{diff}</div>
+                                                <button
+                                                    className='text-white ml-7 bg-green-500 w-12 rounded-md'
+                                                    onClick={() => handlePlaceOrder(m)}
+                                                >
+                                                    Buy
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
+
                             </div>
                         </div>
                         {/* <div className='w-full'>
