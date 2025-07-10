@@ -5,7 +5,10 @@ import path from "path";
 export const register = async (req, res) => {
   try {
     // console.log(req.body);
-    const { firstname, lastname, email, phone, password } = req.body;
+    const { firstname, lastname, email, password ,role} = req.body; 
+    if (!firstname || !lastname || !email || !password || !role) {
+      return res.status(400).json({ msg: "All fields are required" });
+    }
     const userExist = await User.findOne({ email });
     if (userExist) {
       return res.status(400).json({ msg: "email already exists" });
@@ -16,9 +19,8 @@ export const register = async (req, res) => {
       firstname,
       lastname,
       email,
-      phone,
       password,
-      role: "reader", // normal registration
+      role: role, // normal registration
       createdBy: "self",
     });
     console.log(req.body);
@@ -78,66 +80,8 @@ export const logout = async (req, res, next) => {
     });
 };
 
-// export const read = (req, res) => {
-//   try {
-//     const filePath = process.env.FILE_PATH;
 
-//     fs.readFile(filePath, 'utf8', (err, data) => {
-//       if (err) {
-//         console.error('Error reading file:', err);
-//         return res.status(500).json({ error: 'Failed to read file' });
-//       }
 
-//       // Split by line and filter empty lines
-//       const lines = data.trim().split('\r\n').filter(line => line);
-
-//       // Define your custom keys
-//       const keys = [
-//         "id", "segment", "instrument", "symbol", "expiry", "strike_price",
-//         "option_type", "contract", "multiplier", "product_type", "lot_size",
-//         "client_code", "field_1", "field_2", "price", "quantity", "field_3",
-//         "order_no", "trade_no", "status", "cover", "order_time", "trade_time",
-//         "exchange_order_id", "ref_no", "entry_time", "branch_code"
-//       ];
-
-//       // Convert to structured JSON
-//       const parsedData = lines.map(line => {
-//         const values = line.split(',');
-//         const obj = {};
-//         keys.forEach((key, i) => {
-//           obj[key] = values[i] || "";
-//         });
-//         return obj;
-//       });
-
-//       res.json(parsedData);
-//     });
-//   } catch (error) {
-//     console.error('Controller error:', error);
-//     res.status(500).json({ error: 'Something went wrong' });
-//   }
-// };
-
-// export const read = (req,res)=>{
-//   try {
-//     // const filePath = path.join(__dirname, 'data.txt');
-//     const filePath = process.env.FILE_PATH;
-
-//     fs.readFile(filePath, 'utf8', (err, data) => {
-//         if (err) {
-//             console.error('Error reading file:', err);
-//             return res.status(500).json({ error: 'Failed to read file' });
-//         }
-
-//         res.json({ content: data });
-//     });
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
-
-// import fs from 'fs';
-// import path from 'path';
 
 export const read = async (req, res) => {
   try {

@@ -11,6 +11,7 @@ import Mapping from "./pages/Mapping/mapping";
 import Transactions from "./pages/Transactions/transactions";
 import Search from "./pages/search";
 import { Bounce, ToastContainer } from "react-toastify";
+import RegisterPage from "./pages/Register/register";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="/users" element={<Users />} />
           <Route path="/masters" element={<Master />} />
           <Route path="/minions" element={<Minion />} />

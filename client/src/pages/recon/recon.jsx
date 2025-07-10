@@ -522,8 +522,8 @@ const Recon = () => {
                                 {minionDetails
                                     .filter(m => m.resolved_master_id === selectedMinionMasterCodeDifference && (m.strike_price?.toString() || '').includes(strikeFilter))
                                     .map((m, idx) => {
-                                        const diff = m.master_net_quantity - m.total_quantity;
-                                        const shouldBlink = diff !== 0;
+                                        const difference = m.master_net_quantity - m.total_quantity;
+                                        const shouldBlink = difference !== 0;
 
                                         return (
                                             <div key={idx} className={`grid grid-cols-6 text-sm text-gray-800 p-2 border-t hover:bg-blue-100 ${shouldBlink ? 'animate-blink' : ''}`}>
@@ -535,7 +535,7 @@ const Recon = () => {
                                                 </div>
                                                 <div className='ml-10'>{m.master_net_quantity}</div>
                                                 <div className='ml-10'>{m.total_quantity}</div>
-                                                <div className='ml-10'>{diff}</div>
+                                                <div className='ml-10'>{difference}</div>
                                                 <button
                                                     className='text-white ml-7 bg-green-500 w-12 rounded-md'
                                                     onClick={() => handlePlaceOrder(m)}
