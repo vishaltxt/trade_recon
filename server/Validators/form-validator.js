@@ -20,7 +20,7 @@ export const formSchema = z.object({
     .string({ required_error: "Password is required" })
     .trim()
     .min(6, { message: "Password must be atleast of 6 characters" })
-    .max(6, { message: "Password can't be greater than 1024 characters" }),
+    .max(30, { message: "Password can't be greater than 1024 characters" }),
     role: z
     .string({ required_error: "Role is required" })
 });

@@ -1632,7 +1632,10 @@ export const getReconTradeData = async (req, res) => {
               branches: [
                 { case: { $in: ["$master_id", ids] }, then: "$master_id" },
                 { case: { $in: ["$master_neet", ids] }, then: "$master_neet" },
-                { case: { $in: ["$master_twelve", ids] }, then: "$master_twelve",},
+                {
+                  case: { $in: ["$master_twelve", ids] },
+                  then: "$master_twelve",
+                },
               ],
               default: null,
             },

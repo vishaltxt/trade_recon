@@ -8,7 +8,7 @@ const RegisterPage = () => {
         lastname: "",
         email: "",
         password: "",
-        role: "reader", // default public role
+        role: "", // default public role
     });
 
     const [errors, setErrors] = useState({});
@@ -48,7 +48,7 @@ const RegisterPage = () => {
                 lastname: "",
                 email: "",
                 password: "",
-                role: "reader",
+                role: "",
             });
             setErrors({});
         } catch (error) {

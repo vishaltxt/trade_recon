@@ -1,6 +1,6 @@
 // import { UserForm } from "../../modals/formModels/userForm-model.js";
 import { User } from "../../modals/userModels/user-model.js";
-// import bcrypt from "bcrypt";
+import bcrypt from "bcrypt";
 
 export const createUser = async (req, res) => {
   try {

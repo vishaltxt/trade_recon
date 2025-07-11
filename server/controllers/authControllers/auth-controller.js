@@ -5,8 +5,8 @@ import path from "path";
 export const register = async (req, res) => {
   try {
     // console.log(req.body);
-    const { firstname, lastname, email, password ,role} = req.body; 
-    if (!firstname || !lastname || !email || !password || !role) {
+    const { firstname, lastname, email, password, role } = req.body; 
+    if (!firstname || !lastname || !email || !password ) {
       return res.status(400).json({ msg: "All fields are required" });
     }
     const userExist = await User.findOne({ email });
