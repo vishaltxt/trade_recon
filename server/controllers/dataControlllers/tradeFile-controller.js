@@ -552,12 +552,9 @@ export const TradeFileData = async (req, res) => {
       }
     }
 
-
     // >>>>>>>>>>>>----------------------------------------- Sensex file:  ----------------------------------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<<
 
-
-
-    // >>>>>>>>>>>>>---------------------------------------Aggregate today's data  ------------------------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    // >>>>>>>>>>>>>>>>>>>>>---------------------------------------Aggregate today's data  ------------------------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     if (todayData.length > 0) {
       await TradeFile.deleteMany({ fileDate: todayStr });
@@ -574,7 +571,7 @@ export const TradeFileData = async (req, res) => {
       const grouped = _.groupBy(todayData, (item) => {
         const symbol = cleanString(item.symbol);
         const expiry = standardizeExpiry(item.expiry);
-        const strike_price = cleanString(item.strike_price);
+        const strike_price = cleanString(item.strike_price) || 0;
         const master_id = cleanString(item.master_id);
         const master_neet = cleanString(item.master_neet);
         const master_twelve = cleanString(item.master_twelve);
@@ -613,7 +610,7 @@ export const TradeFileData = async (req, res) => {
         ] = [
           cleanString(group[0].symbol),
           standardizeExpiry(cleanString(group[0].expiry)),
-          cleanString(group[0].strike_price),
+          cleanString(group[0].strike_price) || 0,
           cleanString(group[0].master_id),
           cleanString(group[0].master_neet),
           // cleanString(group[0].master_twelve),
