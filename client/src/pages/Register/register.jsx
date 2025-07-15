@@ -59,12 +59,12 @@ const RegisterPage = () => {
     };
 
     return (
-        <div className="flex justify-center items-center h-screen bg-gray-50">
+        <div className="flex justify-center items-center h-screen bg-cover bg-center bg-gray-50" style={{ backgroundImage: "url('/bg-bg.jpg')" }}>
             <form
                 onSubmit={handleRegister}
-                className="bg-white shadow-lg rounded p-8 w-full max-w-md"
+                className="shadow-lg rounded bg-yellow-100 p-8 w-full max-w-md bg-opacity-90"
             >
-                <h2 className="text-2xl font-semibold mb-6 text-center">Register</h2>
+                <h2 className="text-3xl font-semibold mb-6 text-center text-amber-300">Register</h2>
 
                 {errors.global && (
                     <p className="text-red-500 text-center mb-4">{errors.global}</p>

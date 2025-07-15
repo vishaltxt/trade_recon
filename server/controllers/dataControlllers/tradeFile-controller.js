@@ -197,6 +197,45 @@ const keys37 = [
   "DalyMrkToMktSettlmVal",
 ];
 
+const keysPro37 = [
+  "Sgmt",
+  "Src",
+  "RptgDt",
+  "BizDt",
+  "TradRegnOrgn",
+  "ClrMmbId",
+  "BrkrOrCtdnPtcptId",
+  "master_twelve",
+  "ClntTp",
+  "symbol",
+  "expiry",
+  "strike_price",
+  "option_type",
+  "FinInstrmTp",
+  "ISIN",
+  "FininstrmActlXpryDt",
+  "NewBrdLotQty",
+  "OpngLngQty",
+  "OpngLngVal",
+  "OpngShrtQty",
+  "OpngShrtVal",
+  "OpnBuyTradgQty",
+  "OpnBuyTradgVal",
+  "OpnSellTradgQty",
+  "OpnSellTradgVal",
+  "PreExrcAssgndLngQty",
+  "PreExrcAssgndLngVal",
+  "PreExrcAssgndShrtQty",
+  "quantity1",
+  "ExrcdQty",
+  "quantity2",
+  "PstExrcAssgndLngVal",
+  "PstExrcAssgndShrtVal",
+  "SttlmPric",
+  "RefRate",
+  "PrmAmt",
+  "DalyMrkToMktSettlmVal",
+];
 const keys26 = [
   "id",
   "segment",
@@ -349,23 +388,28 @@ export const TradeFileData = async (req, res) => {
         )
       : null;
 
-    // Add the new file path:
+    //>>>>>>>>>>>>------------------------------------------------ Add the new file path: --------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<<<<
     // const custposFilePath = previousFileDate
     //   ? path.join(baseDir, `custpos.csv`)
     //   : null;
     const custposFilePath = path.join(baseDir, `custpos.csv`);
     const custposFileDate = "custpos"; // or use a custom label or todayStr
 
-    const [prevData, todayData, newPrevData] = await Promise.all([
-      previousFileDate
-        ? readFileAndParse(previousFilePath, previousFileDate, keys46)
-        : [],
-      readFileAndParse(todayFilePath, todayStr, keys26),
-      readFileAndParse(custposFilePath, custposFileDate, keys37),
-      // previousFileDate
-      //   ? readFileAndParse(custposFilePath, previousFileDate, keys37)
-      //   : [],
-    ]);
+    const ProFilePath = path.join(baseDir, `nowpos.csv`);
+    const ProFileDate = "nowpos";
+
+    const [prevData, todayData, newPrevData, newPrevProData] =
+      await Promise.all([
+        previousFileDate
+          ? readFileAndParse(previousFilePath, previousFileDate, keys46)
+          : [],
+        readFileAndParse(todayFilePath, todayStr, keys26),
+        readFileAndParse(custposFilePath, custposFileDate, keys37),
+        readFileAndParse(ProFilePath, ProFileDate, keysPro37),
+        // previousFileDate
+        //   ? readFileAndParse(custposFilePath, previousFileDate, keys37)
+        //   : [],
+      ]);
     // console.log(newPrevData);
     const validDates = [previousFileDate, todayStr].filter(Boolean);
     console.log("validDates:", validDates);
@@ -384,7 +428,7 @@ export const TradeFileData = async (req, res) => {
     const cleanString = (str) =>
       typeof str === "string" ? str.trim().replace(/\s+/g, " ") : str;
 
-    // Insert yesterday's data AS IS (no transformation)
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<------------------------------------Insert yesterday's data AS IS (no transformation)---------------------------------------<<<<<<<<<<<<<<<
     if (prevData.length > 0) {
       const existing = await TradeFile.countDocuments({
         fileDate: previousFileDate,
@@ -422,7 +466,8 @@ export const TradeFileData = async (req, res) => {
       }
     }
 
-    // Insert new file:
+    //<<<<<<<<<<<<<<<<<<<--------------------------------------------- Insert new file: --------------------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<
+
     if (newPrevData.length > 0) {
       const existingNew = await TradeFile.countDocuments({
         fileDate: custposFileDate,
@@ -460,9 +505,60 @@ export const TradeFileData = async (req, res) => {
         // );
       }
     }
-    // Sensex file:
 
-    // Aggregate today's data
+    //<<<<<<<<<<<<<<<<<<<<<<<------------------------------------ Insert PRO newpos file:---------------------------------------------------------<<<<<<<<<<<<<<<<<<<<<
+
+    const masterIdProMappings = {
+      PRO24: "382355555003",
+      PRO18: "110001555005",
+      PRO15: "201301301001",
+      PRO21: "201301555002",
+    };
+
+    if (newPrevProData.length > 0) {
+      const existingNewPro = await TradeFile.countDocuments({
+        fileDate: ProFileDate,
+        // source: "newPrevData",
+      });
+      // console.log(existingNewPro);
+      if (existingNewPro === 0) {
+        const transformedNewPrevProData = newPrevProData.map((item) => {
+          const transformedItem = {};
+          // keysPro37.forEach((key) => {
+          //   transformedItem[key] = cleanString(item[key]);
+          // });
+          keysPro37.forEach((key) => {
+            let value = cleanString(item[key]);
+
+            // Replace master_twelve if it's in the mapping
+            if (key === "master_twelve" && masterIdProMappings[value]) {
+              value = masterIdProMappings[value];
+            }
+            transformedItem[key] = value;
+          });
+
+          transformedItem.fileDate = ProFileDate;
+          transformedItem.expiry = standardizeExpiry(item.expiry);
+          const qty1 = parseInt(item.quantity1) || 0;
+          const qty2 = parseInt(item.quantity2) || 0;
+          transformedItem.quantity = qty1 - qty2;
+          // transformedItem.source = "newPrevData";
+          return transformedItem;
+        });
+        const inserted = await TradeFile.insertMany(transformedNewPrevProData);
+        insertedCount += inserted.length;
+        insertedData = insertedData.concat(inserted);
+        console.log("custNew Pro data ", insertedCount);
+      }
+    }
+
+
+    // >>>>>>>>>>>>----------------------------------------- Sensex file:  ----------------------------------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+    // >>>>>>>>>>>>>---------------------------------------Aggregate today's data  ------------------------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
     if (todayData.length > 0) {
       await TradeFile.deleteMany({ fileDate: todayStr });
 
@@ -1582,6 +1678,7 @@ export const TradeFileData = async (req, res) => {
 export const getReconTradeData = async (req, res) => {
   try {
     const { masterTraderIds } = req.body;
+    // console.log("Received body:", req.body);
     if (!Array.isArray(masterTraderIds) || masterTraderIds.length === 0) {
       return res.status(400).json({ error: "No master IDs provided" });
     }
