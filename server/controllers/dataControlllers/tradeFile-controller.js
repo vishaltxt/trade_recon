@@ -388,7 +388,7 @@ export const TradeFileData = async (req, res) => {
         )
       : null;
 
-    //>>>>>>>>>>>>------------------------------------------------ Add the new file path: --------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    //>>>>>>>>>>>>>>>>------------------------------------------------ Add the new file path: --------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<<<<
     // const custposFilePath = previousFileDate
     //   ? path.join(baseDir, `custpos.csv`)
     //   : null;
@@ -428,12 +428,12 @@ export const TradeFileData = async (req, res) => {
     const cleanString = (str) =>
       typeof str === "string" ? str.trim().replace(/\s+/g, " ") : str;
 
-    // <<<<<<<<<<<<<<<<<<<<<<<<<<------------------------------------Insert yesterday's data AS IS (no transformation)---------------------------------------<<<<<<<<<<<<<<<
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<------------------------------------Insert FO yesterday's data AS IS (no transformation)------------------------------------------<<<<<<<<<<<<<<<
     if (prevData.length > 0) {
       const existing = await TradeFile.countDocuments({
         fileDate: previousFileDate,
       });
-      console.log(existing);
+      console.log("Previous Day FO data:", existing);
       if (existing === 0) {
         const transformedPrevData = prevData.map((item) => {
           const transformedItem = {};
@@ -445,7 +445,7 @@ export const TradeFileData = async (req, res) => {
           const qty1 = parseInt(item.quantity1) || 0;
           const qty2 = parseInt(item.quantity2) || 0;
           transformedItem.quantity = qty1 - qty2;
-          // transformedItem.option_type = item.option_type || "";
+          transformedItem.option_type = item.option_type || "FF";
           return transformedItem;
         });
         const inserted = await TradeFile.insertMany(transformedPrevData);
@@ -466,7 +466,7 @@ export const TradeFileData = async (req, res) => {
       }
     }
 
-    //<<<<<<<<<<<<<<<<<<<--------------------------------------------- Insert new file: --------------------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<
+    //<<<<<<<<<<<<<<<<<<<--------------------------------------------- Insert CUSTPOS file: --------------------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<
 
     if (newPrevData.length > 0) {
       const existingNew = await TradeFile.countDocuments({
@@ -475,6 +475,7 @@ export const TradeFileData = async (req, res) => {
       });
       // console.log(existingNew);
       if (existingNew === 0) {
+        // console.log("custpos data ", existingNew);
         const transformedNewPrevData = newPrevData.map((item) => {
           const transformedItem = {};
           keys37.forEach((key) => {
@@ -491,7 +492,7 @@ export const TradeFileData = async (req, res) => {
         const inserted = await TradeFile.insertMany(transformedNewPrevData);
         insertedCount += inserted.length;
         insertedData = insertedData.concat(inserted);
-        console.log("custpos data ", insertedCount);
+        console.log("custpos data:", insertedCount);
 
         // const custposExpiryDate = dayjs(previousFileDate, "YYYYMMDD").format(
         //   "YYYY-MM-DD"
@@ -513,6 +514,8 @@ export const TradeFileData = async (req, res) => {
       PRO18: "110001555005",
       PRO15: "201301301001",
       PRO21: "201301555002",
+      B024: "201301777002",
+      B025: "201301777001",
     };
 
     if (newPrevProData.length > 0) {
@@ -548,13 +551,13 @@ export const TradeFileData = async (req, res) => {
         const inserted = await TradeFile.insertMany(transformedNewPrevProData);
         insertedCount += inserted.length;
         insertedData = insertedData.concat(inserted);
-        console.log("custNew Pro data ", insertedCount);
+        console.log("custNew Pro data:", insertedCount);
       }
     }
 
-    // >>>>>>>>>>>>----------------------------------------- Sensex file:  ----------------------------------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<<
+    // >>>>>>>>>>>>>>>>>>>>----------------------------------------- Sensex file:  ----------------------------------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<
 
-    // >>>>>>>>>>>>>>>>>>>>>---------------------------------------Aggregate today's data  ------------------------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    // >>>>>>>>>>>>>>>>>>>>---------------------------------------Aggregate FO today's data  ------------------------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     if (todayData.length > 0) {
       await TradeFile.deleteMany({ fileDate: todayStr });
@@ -575,7 +578,7 @@ export const TradeFileData = async (req, res) => {
         const master_id = cleanString(item.master_id);
         const master_neet = cleanString(item.master_neet);
         const master_twelve = cleanString(item.master_twelve);
-        const option_type = cleanString(item.option_type);
+        const option_type = cleanString(item.option_type) || "FF";
         return [
           symbol,
           expiry,
@@ -615,7 +618,7 @@ export const TradeFileData = async (req, res) => {
           cleanString(group[0].master_neet),
           // cleanString(group[0].master_twelve),
           cleanString(group[0].master_twelve).slice(0, 12),
-          cleanString(group[0].option_type),
+          cleanString(group[0].option_type) || "FF",
         ];
 
         return {
@@ -636,7 +639,7 @@ export const TradeFileData = async (req, res) => {
       const inserted = await TradeFile.insertMany(transformedTodayData);
       insertedCount += inserted.length;
       insertedData = insertedData.concat(inserted);
-      console.log(insertedCount);
+      console.log("Today FO file:", insertedCount);
     }
 
     res.json({
