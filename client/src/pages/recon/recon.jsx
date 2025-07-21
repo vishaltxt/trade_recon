@@ -498,13 +498,23 @@ const Recon = () => {
                             </div>
 
 
-                            <div className="ml-2 mb-2">
+                            {/* <div className="ml-2 mb-2">
                                 <input
                                     type="text"
                                     placeholder="Filter by strike price"
                                     value={strikeFilter}
                                     onChange={(e) => setStrikeFilter(e.target.value)}
                                     className="border rounded-md px-3 py-1 text-sm"
+                                />
+                            </div> */}
+                            <div className='relative'>
+                                <MdSearch className="absolute left-4 top-2 text-gray-500" />
+                                <input
+                                    type="text"
+                                    placeholder="Search for strike price"
+                                    value={strikeFilter}
+                                    onChange={(e) => setStrikeFilter(e.target.value)}
+                                    className="border rounded-md pl-8 py-1 text-sm mb-1 ml-3"
                                 />
                             </div>
 

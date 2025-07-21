@@ -9,7 +9,7 @@ const Mappinglanding = ({ data = [], onAddNew, onEdit, onDelete }) => {
   const itemsPerPage = 13;
 
   const filterData = data.filter((mapping) =>
-    mapping.minionId?.toLowerCase().includes(searchTerm.toLowerCase())
+    mapping.minionId?.toLowerCase().includes(searchTerm.toLowerCase()) ||  mapping.masterId?.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const totalPages = Math.ceil(filterData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
