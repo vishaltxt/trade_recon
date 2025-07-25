@@ -24,7 +24,8 @@ const Login = () => {
         e.preventDefault();
         // console.log(user);
         try {
-            const response = await axios.post('http://localhost:8000/api/auth/login', user);
+            // const response = await axios.post('http://localhost:8000/api/auth/login', user);
+            const response = await axios.post('http://192.168.0.66:8000/api/auth/login', user);
             //     method: 'POST',
             //     headers: {
             //         'Content-Type': 'application/json',

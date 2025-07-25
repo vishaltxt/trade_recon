@@ -43,7 +43,8 @@ const RegisterPage = () => {
         }
 
         try {
-            const response = await axios.post("http://localhost:8000/api/auth/register", formData);
+            // const response = await axios.post("http://localhost:8000/api/auth/register", formData);
+            const response = await axios.post("http://192.168.0.66:8000/api/auth/register", formData);
             setSuccess(response.data.msg);
             setFormData({
                 firstname: "",

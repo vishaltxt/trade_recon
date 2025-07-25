@@ -79,7 +79,8 @@ const Recon = () => {
         try {
             const masterTraderIds = selectedMasters.map(m => m.masterTraderId);
             const minionClientCodes = selectedMinions.map(m => m.minionClientCode);
-            const res = await axios.post("http://localhost:8000/api/data/tradeDatareconcile", { masterTraderIds, minionClientCodes });
+            // const res = await axios.post("http://localhost:8000/api/data/tradeDatareconcile", { masterTraderIds, minionClientCodes });
+            const res = await axios.post("http://192.168.0.66:8000/api/data/tradeDatareconcile", { masterTraderIds, minionClientCodes });
             const masterSide = await res.data.masterData || [];
             const minionSide = await res.data.minionData;
             console.log("masterside data", masterSide);
@@ -514,7 +515,7 @@ const Recon = () => {
                                     placeholder="Search for strike price"
                                     value={strikeFilter}
                                     onChange={(e) => setStrikeFilter(e.target.value)}
-                                    className="border rounded-md pl-8 py-1 text-sm mb-1 ml-3"
+                                    className="border rounded-md pl-8 py-1 text-sm mb-2 ml-3"
                                 />
                             </div>
 

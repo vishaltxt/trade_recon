@@ -12,7 +12,8 @@ const Search = ({ onAddNew }) => {
     const itemsPerPage = 22;
 
     useEffect(() => {
-        axios.post("http://localhost:8000/api/auth/master")
+        // axios.post("http://localhost:8000/api/auth/master")
+        axios.post("http://192.168.0.66:8000/api/auth/master")
             .then(res => {
                 setTrades(res.data);
                 setLoading(false);

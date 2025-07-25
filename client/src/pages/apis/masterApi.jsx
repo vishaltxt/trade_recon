@@ -5,7 +5,8 @@ const getAuthToken = () => {
   return localStorage.getItem('token'); // Change as needed
 };
 
-const API_BASE = "http://localhost:8000/api/master"; // Use base URL for convenience
+// const API_BASE = "http://localhost:8000/api/master"; // Use base URL for convenience
+const API_BASE = "http://192.168.0.66:8000/api/master"; // Use base URL for convenience
 
 export const getMasters = () => {
   const token = getAuthToken();

@@ -32,6 +32,10 @@ app.use("/api/minion",minionFormRouter) // Minion form routes;
 app.use("/api/mapping",mappingFormRouter) // Mapping form routes;
 app.use("/api/data", tradeDataRouter);
 // app.use("/api/form",masterFormRouter);
+// Add this health check/default route
+// app.get("/", (req, res) => {
+//   res.send("🚀 Backend is up and running!");
+// });
 app.use(errorMiddleware);
 
 // Schedule the task every 10 minutes
@@ -48,9 +52,17 @@ cron.schedule('*/1 * * * *', async () => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
+// const PORT = process.env.PORT || 5000;
+// connectDb().then(() => {
+//   app.listen(PORT, () => {
+//     console.log(`server is listening on port: ${PORT}`);
+//   });
+// });
+
+const PORT = process.env.PORT || 8000;
 connectDb().then(() => {
-  app.listen(PORT, () => {
-    console.log(`server is listening on port: ${PORT}`);
-  });
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
 });
+});
+
