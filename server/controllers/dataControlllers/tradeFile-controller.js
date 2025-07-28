@@ -563,15 +563,6 @@ export const TradeFileData = async (req, res) => {
     if (todayData.length > 0) {
       await TradeFile.deleteMany({ fileDate: todayStr });
 
-      // const grouped = _.groupBy(todayData, (item) =>
-      //   [
-      //     cleanString(item.symbol),
-      //     cleanString(item.expiry),
-      //     cleanString(item.strike_price),
-      //     cleanString(item.master_id),
-      //   ].join("|")
-      // );
-
       const grouped = _.groupBy(todayData, (item) => {
         const symbol = cleanString(item.symbol);
         const expiry = standardizeExpiry(item.expiry);

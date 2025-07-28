@@ -475,7 +475,7 @@ const Recon = () => {
                                 ))}
                             </div> */}
 
-                            {/*-------------------------------------------------WITH COLOR HIGHLIGHTED FOR TRADE DIFFERENCE NOT EQUAL TO ZERO-------------------------------------------------------- */}
+                            {/*-------------------------------------------------WITH COLOR HIGHLIGHTED FOR TRADE DIFFERENCE NOT EQUAL TO ZERO---------------------------------------- */}
 
                             <div className='flex flex-wrap p-3 mb-2 font-bold gap-5'>
                                 {[...new Set(minionDetails.map(m => m.resolved_master_id))].map((id) => {
