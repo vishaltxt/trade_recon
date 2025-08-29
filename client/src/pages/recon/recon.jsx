@@ -165,43 +165,68 @@ const Recon = () => {
             setSelectedMinions(updated);
         }
     };
-
     const handlePlaceOrder = async (m) => {
-        const diffQty = m.master_net_quantity - m.total_quantity;
-        const orderSide = diffQty > 0 ? 'BUY' : 'SELL';
-        const requestBody = {
-            symbol: m.symbol + m.strike_price + m.option_type + m.expiry,
-            exchangeSegment: m.exchange_segment || 'NSEFO',
-            exchangeInstrumentID: m.instrument_token, // replace with actual token from your symbol map
-            productType: 'NRML',
-            orderType: 'MARKET',
-            orderSide,
-            timeInForce: 'DAY',
-            disclosedQuantity: 0,
-            orderQuantity: diffQty,
-            limitPrice: m.price || 0,
-            stopPrice: m.price || 0,
-            orderUniqueIdentifier: `client-${Date.now()}`,
-            apiOrderSource: 'TradeReconFrontend'
-        };
         try {
-            const response = await fetch('http://localhost:8000/api/data/place_order', {
-                method: 'POST',
+            const diffQty = (m.master_net_quantity || 0) - (m.total_quantity || 0);
+
+            // Skip if no difference
+            if (diffQty === 0) {
+                toast.info("No difference, trade not needed.");
+                return;
+            }
+
+            // Decide order side
+            const orderSide = diffQty > 0 ? "BUY" : "SELL";
+
+            // Build order payload
+            const requestBody = {
+                symbol: `${m.symbol} ${m.strike_price || ""}${m.option_type || ""} ${m.expiry || ""}`.trim(),
+
+                // XTS-required fields
+                exchangeSegment: Number(m.exchange_segment) || 2, // default to NFO
+                exchangeInstrumentID: Number(m.instrument_token), // required
+                productType: "NRML",  // CNC/MIS/NRML
+                orderType: "MARKET",
+                orderSide,
+                timeInForce: "DAY",
+                disclosedQuantity: 0,
+                orderQuantity: Math.abs(diffQty),   // always positive
+                limitPrice: 0,                      // market order
+                stopPrice: 0,                       // market order
+                orderUniqueIdentifier: `client-${Date.now()}`,
+                apiOrderSource: "TradeReconFrontend",
+            };
+
+            console.log("📤 Sending Order:", requestBody);
+
+            const response = await fetch("http://localhost:8000/api/data/place_order", {
+                method: "POST",
                 headers: {
-                    // 'Authorization': `Bearer ${bearerToken}`,
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
+                    // Add back if using JWT auth
+                    // "Authorization": `Bearer ${localStorage.getItem("token")}`,
                 },
                 body: JSON.stringify(requestBody),
             });
 
             const result = await response.json();
-            console.log("Order response:", result);
-            toast.success(`Order placed: ${result?.orderID || 'Check console'}`);
+            console.log("📥 Order Response:", result);
+
+            if (response.ok && result?.orderID) {
+                toast.success(
+                    `${orderSide} ${Math.abs(diffQty)} placed successfully (OrderID: ${result.orderID})`
+                );
+            } else {
+                toast.error(
+                    `Order failed: ${result?.description || result?.message || "Unknown error"}`
+                );
+            }
         } catch (error) {
-            console.error("Error placing order", error);
-            toast.error("Order failed.");
+            console.error("❌ Error placing order:", error);
+            toast.error("Order request failed. Please try again.");
         }
     };
+
 
 
     return (
@@ -385,10 +410,11 @@ const Recon = () => {
 
 
                             {/* Table Header */}
-                            <div className='grid grid-cols-3 bg-gray-100 p-2 text-sm font-semibold'>
+                            <div className='grid grid-cols-4 bg-gray-100 p-2 text-sm font-semibold'>
                                 <p className='ml-4'>Security  Name</p>
                                 <p className='ml-4'>Quantity</p>
                                 <p className='ml-5'>Type</p>
+                                <p className='ml-10'>Trade_time</p>
                             </div>
 
                             {/* Filtered Data */}
@@ -396,12 +422,13 @@ const Recon = () => {
                                 {masterDetails
                                     .filter(m => m.resolved_master_id === selectedMasterCode && (m.strike_price?.toString() || '').includes(strikeFilter))
                                     .map((m, idx) => (
-                                        <div key={idx} className='grid grid-cols-3 gap-12 text-sm text-gray-800 p-2 border-t hover:bg-blue-100'>
+                                        <div key={idx} className='grid grid-cols-4 gap-12 text-sm text-gray-800 p-2 border-t hover:bg-blue-100'>
                                             <div className='break-words whitespace-normal ml-4'>{m.symbol + " " + m.strike_price + m.option_type + " " + m.expiry}</div>
                                             <div className='break-words whitespace-normal ml-4'>{m.total_quantity}</div>
                                             <div className={`break-words whitespace-normal font-semibold ${m.actionType === 'buy' ? 'text-green-600' : 'text-red-600'}`}>
                                                 {(m.actionType || '').toUpperCase()}
                                             </div>
+                                            <div className='break-words whitespace-normal'>{m.latest_trade_time}</div>
                                         </div>
                                     ))}
                             </div>
@@ -440,21 +467,23 @@ const Recon = () => {
                             </div>
 
 
-                            <div className='grid grid-cols-3 bg-gray-100 p-2 text-sm font-semibold'>
+                            <div className='grid grid-cols-4 bg-gray-100 p-2 text-sm font-semibold'>
                                 <p className='ml-4'>Security Name</p>
                                 <p className='ml-4'>Quantity</p>
                                 <p className='ml-6'>Type</p>
+                                <p className='ml-10'>Trade_time</p>
                             </div>
                             <div className="max-h-[185px] overflow-y-auto">
                                 {minionDetails
                                     .filter(m => m.resolved_master_id === selectedMinionMasterCode && (m.strike_price?.toString() || '').includes(strikeFilter)) // 👈 Filter based on selected master
                                     .map((m, idx) => (
-                                        <div key={idx} className='grid grid-cols-3 gap-14 text-sm text-gray-800 p-2 border-t hover:bg-blue-100'>
+                                        <div key={idx} className='grid grid-cols-4 gap-14 text-sm text-gray-800 p-2 border-t hover:bg-blue-100'>
                                             <div className="break-words whitespace-normal">{m.symbol + " " + m.strike_price + m.option_type + " " + m.expiry}</div>
                                             <div className="break-words whitespace-normal ml-2">{m.total_quantity}</div>
                                             <div className={`break-words whitespace-normal font-semibold ${m.actionType === 'buy' ? 'text-green-600' : 'text-red-600'}`}>
                                                 {(m.actionType || '').toUpperCase()}
                                             </div>
+                                            <div className="break-words whitespace-normal">{m.latest_trade_time}</div>
                                         </div>
                                     ))}
                             </div>
@@ -520,9 +549,10 @@ const Recon = () => {
                             </div>
 
 
-                            <div className='grid grid-cols-6 gap-5 bg-gray-100 p-2 text-sm font-semibold'>
+                            <div className='grid grid-cols-7 gap-5 bg-gray-100 p-2 text-sm font-semibold'>
                                 <div className='ml-4'>Security Name</div>
                                 <div>Type</div>
+                                <div>Latest_trade_time</div>
                                 <div>Total quantity of masters</div>
                                 <div>Total quantity of minion</div>
                                 <div>Difference in quantities</div>
@@ -536,21 +566,24 @@ const Recon = () => {
                                         const shouldBlink = difference !== 0;
 
                                         return (
-                                            <div key={idx} className={`grid grid-cols-6 text-sm text-gray-800 p-2 border-t hover:bg-blue-100 ${shouldBlink ? 'animate-blink' : ''}`}>
+                                            <div key={idx} className={`grid grid-cols-7 text-sm text-gray-800 p-2 border-t hover:bg-blue-100 ${shouldBlink ? 'animate-blink' : ''}`}>
                                                 <div className='break-words whitespace-normal ml-1'>
                                                     {m.symbol + " " + m.strike_price + m.option_type + " " + m.expiry}
                                                 </div>
                                                 <div className={`ml-3 font-semibold ${m.actionType === 'buy' ? 'text-green-600' : 'text-red-600'}`}>
                                                     {(m.actionType || '').toUpperCase()}
                                                 </div>
+                                                <div className='ml-1'>{m.latest_trade_time}</div>
                                                 <div className='ml-10'>{m.master_net_quantity}</div>
                                                 <div className='ml-10'>{m.total_quantity}</div>
                                                 <div className='ml-10'>{difference}</div>
                                                 <button
-                                                    className='text-white ml-7 bg-green-500 w-12 rounded-md'
+                                                    disabled={difference === 0}
+                                                    className={`text-white ml-7 w-14 rounded-md 
+                                                        ${difference === 0 ? "bg-gray-400 cursor-not-allowed" : difference > 0 ? "bg-green-500" : "bg-red-500"}`}
                                                     onClick={() => handlePlaceOrder(m)}
                                                 >
-                                                    Buy
+                                                    {difference > 0 ? "Buy" : "Sell"}
                                                 </button>
                                             </div>
                                         );

@@ -11,6 +11,7 @@ const tradeFileSchema = new mongoose.Schema({
   option_type: String,
   quantity: Number,
   net_quantity: Number,
+  trade_time : String,
   // contract_Name: String,
   buy_quantity: Number,
   sell_quantity: Number,

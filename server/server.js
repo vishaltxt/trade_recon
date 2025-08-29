@@ -13,6 +13,7 @@ import { errorMiddleware } from "./middlewares/error-middleware.js";
 import cors from 'cors';
 import cron from 'node-cron';
 import { TradeFileData } from "./controllers/dataControlllers/tradeFile-controller.js";
+import { initXTS } from "./services/example/interactiveTestApi.js";
 
 
 const corsOptions = {
@@ -22,8 +23,12 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-
 app.use(express.json());
+
+// Initialize XTS session
+await initXTS();
+
+
 app.use("/api/auth", authRouter); // Authentication routes
 app.use("/api/users", addUserRouter);  // User form routes
 // app.use("/api/data",addUserRouter);
