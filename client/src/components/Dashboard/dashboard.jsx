@@ -27,7 +27,7 @@ const Dashboard = () => {
             <div className='h-[96vh]'>
                 <h2 className='text-xl text-center text-white p-3'>Trade Reconcilation</h2>
                 <hr />
-                <ul className=' p-4 text-white font-normal text-sm'>
+                <ul className='p-4 text-white font-normal text-sm'>
                     <Link to='/users'><li className='p-3  rounded-lg hover:text-white hover:bg-gray-900'>Users</li></Link>
                     <Link to='/masters'><li className='p-3 rounded-lg hover:bg-gray-900'>Masters</li></Link>
                     <Link to='/minions'><li className='p-3 rounded-lg hover:bg-gray-900'>Minions</li></Link>

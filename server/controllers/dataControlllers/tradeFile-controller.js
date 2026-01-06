@@ -17,69 +17,207 @@ const formatDate = (date) => {
   return `${dd}${mm}${yyyy}`;
 };
 
+//sensex file 1.
+const getTodayYYYYMMDD = () => {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}${mm}${dd}`;
+};
+
 const prevformatDate = (date) => {
   const dd = String(date.getDate()).padStart(2, "0");
   const mm = String(date.getMonth() + 1).padStart(2, "0");
   const yyyy = date.getFullYear();
   return `${yyyy}${mm}${dd}`;
 };
+
+// ----------------------------1st logic correct------------------------------------->>>>>>>>>>>>>>>>
+// const standardizeExpiry = (expiry) => {
+//   if (!expiry) return "";
+//   expiry = expiry.trim().toUpperCase();
+
+//   const isoMatch = /^\d{4}-\d{2}-\d{2}$/;
+//   if (isoMatch.test(expiry)) {
+//     return expiry;
+//   }
+
+//   // Convert e.g. 26JUN2025 to 26Jun2025 (capitalize the month part)
+//   const match = expiry.match(/^(\d{2})([A-Z]{3})(\d{4})$/);
+//   if (match) {
+//     const day = match[1];
+//     const month = match[2].charAt(0) + match[2].slice(1).toLowerCase();
+//     const year = match[3];
+//     const newExpiry = `${day}${month}${year}`;
+//     const parsed = dayjs(newExpiry, "DDMMMYYYY", true);
+//     if (parsed.isValid()) {
+//       return parsed.format("YYYY-MM-DD");
+//     }
+//   }
+
+//   // Normalize month: 26-JUN-2025 -> 26-Jun-2025
+//   const normalizeMonth = (str) => {
+//     return str.replace(
+//       /(\d{2})-([A-Z]{3})-(\d{4})/,
+//       (_, day, mon, year) =>
+//         `${day}-${mon.charAt(0) + mon.slice(1).toLowerCase()}-${year}`
+//     );
+//   };
+
+//   // expiry = normalizeMonth(expiry);
+
+//   // Fallback formats
+//   expiry = normalizeMonth(expiry);
+//   const fallbackFormats = [
+//     "DD-MMM-YYYY",
+//     "DD/MMM/YYYY",
+//     "DD MMM YYYY",
+//     "DD MMM, YYYY",
+//   ];
+//   for (const fmt of fallbackFormats) {
+//     const fallbackParsed = dayjs(expiry, fmt, true);
+//     if (fallbackParsed.isValid()) {
+//       return fallbackParsed.format("YYYY-MM-DD");
+//     }
+//   }
+
+//   if (!standardizeExpiry.warned) standardizeExpiry.warned = new Set();
+//   if (!standardizeExpiry.warned.has(expiry)) {
+//     console.warn(`Warning: Could not parse expiry: ${expiry}`);
+//     standardizeExpiry.warned.add(expiry);
+//   }
+//   return expiry;
+// };
+
+// Should output: "2025-06-26"
+// console.log(standardizeExpiry("26JUN2025"));
+
+//--------------------------------2nd logic after sensex ------------------------------------------>>>>>>>>>>>>>>>
+// const standardizeExpiry = (expiry) => {
+//   if (!expiry) return "";
+//   expiry = expiry.trim().toUpperCase();
+
+//   // ISO: 2026-01-01
+//   if (/^\d{4}-\d{2}-\d{2}$/.test(expiry)) {
+//     return expiry;
+//   }
+
+//   // FO: 26JUN2025
+//   const match = expiry.match(/^(\d{2})([A-Z]{3})(\d{4})$/);
+//   if (match) {
+//     const parsed = dayjs(
+//       `${match[1]}${match[2]}${match[3]}`,
+//       "DDMMMYYYY",
+//       true
+//     );
+//     if (parsed.isValid()) {
+//       return parsed.format("YYYY-MM-DD");
+//     }
+//   }
+
+//   // 26-JUN-2025 → 26-Jun-2025
+//   const normalizeMonth = (str) =>
+//     str.replace(
+//       /(\d{2})-([A-Z]{3})-(\d{4})/,
+//       (_, d, m, y) => `${d}-${m[0] + m.slice(1).toLowerCase()}-${y}`
+//     );
+
+//   // 01 JAN 2026 → 01 Jan 2026
+//   const normalizeMonthSpace = (str) =>
+//     str.replace(
+//       /(\d{2})\s([A-Z]{3})\s(\d{4})/,
+//       (_, d, m, y) => `${d} ${m[0] + m.slice(1).toLowerCase()} ${y}`
+//     );
+
+//   expiry = normalizeMonth(expiry);
+//   expiry = normalizeMonthSpace(expiry);
+
+//   const fallbackFormats = [
+//     "DD-MMM-YYYY",
+//     "DD/MMM/YYYY",
+//     "DD MMM YYYY",
+//     "DD MMM, YYYY",
+//   ];
+
+//   for (const fmt of fallbackFormats) {
+//     const parsed = dayjs(expiry, fmt, true);
+//     if (parsed.isValid()) {
+//       return parsed.format("YYYY-MM-DD");
+//     }
+//   }
+
+//   if (!standardizeExpiry.warned) standardizeExpiry.warned = new Set();
+//   if (!standardizeExpiry.warned.has(expiry)) {
+//     console.warn(`Warning: Could not parse expiry: ${expiry}`);
+//     standardizeExpiry.warned.add(expiry);
+//   }
+
+//   return expiry;
+// };
+
+const MONTH_MAP = {
+  JAN: "01",
+  FEB: "02",
+  MAR: "03",
+  APR: "04",
+  MAY: "05",
+  JUN: "06",
+  JUL: "07",
+  AUG: "08",
+  SEP: "09",
+  OCT: "10",
+  NOV: "11",
+  DEC: "12",
+};
+
 const standardizeExpiry = (expiry) => {
   if (!expiry) return "";
-  expiry = expiry.trim().toUpperCase();
 
-  const isoMatch = /^\d{4}-\d{2}-\d{2}$/;
-  if (isoMatch.test(expiry)) {
+  expiry = String(expiry).trim().toUpperCase();
+
+  // 1️⃣ ISO: 2026-01-01
+  if (/^\d{4}-\d{2}-\d{2}$/.test(expiry)) {
     return expiry;
   }
 
-  // Convert e.g. 26JUN2025 to 26Jun2025 (capitalize the month part)
-  const match = expiry.match(/^(\d{2})([A-Z]{3})(\d{4})$/);
-  if (match) {
-    const day = match[1];
-    const month = match[2].charAt(0) + match[2].slice(1).toLowerCase();
-    const year = match[3];
-    const newExpiry = `${day}${month}${year}`;
-    const parsed = dayjs(newExpiry, "DDMMMYYYY", true);
-    if (parsed.isValid()) {
-      return parsed.format("YYYY-MM-DD");
-    }
+  // 2️⃣ FO: 26JUN2025
+  let match = expiry.match(/^(\d{2})([A-Z]{3})(\d{4})$/);
+  if (match && MONTH_MAP[match[2]]) {
+    const [, d, m, y] = match;
+    return `${y}-${MONTH_MAP[m]}-${d}`;
   }
 
-  // Normalize month: 26-JUN-2025 -> 26-Jun-2025
-  const normalizeMonth = (str) => {
-    return str.replace(
-      /(\d{2})-([A-Z]{3})-(\d{4})/,
-      (_, day, mon, year) =>
-        `${day}-${mon.charAt(0) + mon.slice(1).toLowerCase()}-${year}`
-    );
-  };
-
-  // expiry = normalizeMonth(expiry);
-
-  // Fallback formats
-  expiry = normalizeMonth(expiry);
-  const fallbackFormats = [
-    "DD-MMM-YYYY",
-    "DD/MMM/YYYY",
-    "DD MMM YYYY",
-    "DD MMM, YYYY",
-  ];
-  for (const fmt of fallbackFormats) {
-    const fallbackParsed = dayjs(expiry, fmt, true);
-    if (fallbackParsed.isValid()) {
-      return fallbackParsed.format("YYYY-MM-DD");
-    }
+  // 3️⃣ 26-JUN-2025
+  match = expiry.match(/^(\d{2})-([A-Z]{3})-(\d{4})$/);
+  if (match && MONTH_MAP[match[2]]) {
+    const [, d, m, y] = match;
+    return `${y}-${MONTH_MAP[m]}-${d}`;
   }
 
+  // 4️⃣ 01 JAN 2026
+  match = expiry.match(/^(\d{2})\s([A-Z]{3})\s(\d{4})$/);
+  if (match && MONTH_MAP[match[2]]) {
+    const [, d, m, y] = match;
+    return `${y}-${MONTH_MAP[m]}-${d}`;
+  }
+
+  // 5️⃣ Absolute fallback (non-strict)
+  const parsed = dayjs(expiry);
+  if (parsed.isValid()) {
+    return parsed.format("YYYY-MM-DD");
+  }
+
+  // 6️⃣ Warn once
   if (!standardizeExpiry.warned) standardizeExpiry.warned = new Set();
   if (!standardizeExpiry.warned.has(expiry)) {
     console.warn(`Warning: Could not parse expiry: ${expiry}`);
     standardizeExpiry.warned.add(expiry);
   }
-  return expiry;
+
+  return "";
 };
-// Should output: "2025-06-26"
-// console.log(standardizeExpiry("26JUN2025"));
+
 
 // 🔍 Helper to get the latest file date from the directory
 const getLatestFileDate = (baseDir) => {
@@ -107,6 +245,31 @@ const getLatestFileDate = (baseDir) => {
   dates.sort((a, b) => b - a); // descending order
   return dates[0];
 };
+
+// const getLatestSensexFile = (baseDir) => {
+//   const files = fs.readdirSync(baseDir);
+//   const pattern = /^EQD_ITRTM_3129_(\d{8})\.csv$/;
+
+//   const datedFiles = files
+//     .map((file) => {
+//       const match = file.match(pattern);
+//       if (!match) return null;
+
+//       const d = match[1];
+//       return {
+//         file,
+//         date: new Date(
+//           Number(d.slice(0, 4)),
+//           Number(d.slice(4, 6)) - 1,
+//           Number(d.slice(6, 8))
+//         ),
+//       };
+//     })
+//     .filter(Boolean)
+//     .sort((a, b) => b.date - a.date);
+
+//   return datedFiles.length ? datedFiles[0].file : null;
+// };
 
 const keys46 = [
   "Sgmt",
@@ -279,11 +442,11 @@ const Sensexkeys47 = [
   "strike_price",
   "option_type",
   "symbol",
-  "expiry1111",
-  "FininstrmActlXpryDt",
-  "strike_price1111",
+  "buyBroker",
+  "sellBroker",
+  "tradePrice",
   "quantity",
-  "NewBrdLotQty",
+  "seriesid",
   "master_twelve1",
   "OpngLngVal",
   "OpngShrtQty",
@@ -315,7 +478,6 @@ const Sensexkeys47 = [
   "buy_sell1",
   "buy_sell",
 ];
-
 
 const readFileAndParse = (filePath, dateStr, keys) => {
   return new Promise((resolve) => {
@@ -417,7 +579,7 @@ const readFileAndParse = (filePath, dateStr, keys) => {
 export const TradeFileData = async (req, res) => {
   try {
     const baseDir = process.env.FILE_PATH || "./data";
-    // const baseDir2 = process.env.FILE_PATH2 || "./data";
+    const baseDir2 = process.env.FILE_PATH2 || "./data";
     const today = new Date();
     const todayStr = formatDate(today);
 
@@ -440,14 +602,13 @@ export const TradeFileData = async (req, res) => {
         )
       : null;
 
-      // const sensexFilePath = sensexFileDate
-      // ? path.join(
-          // baseDir,
-          // `Position_NCL_FO_0_CM_06432_${previousFileDate}_F_0000.csv`
-          // `EQD_ITRTM_3129_{previousFileDate}.csv`
-        // )
-      // : null;
-
+      // sensex code add
+    const sensexDate = getTodayYYYYMMDD();
+    const sensexFilePath = path.join(
+      baseDir2,
+      // `Position_NCL_FO_0_CM_06432_${previousFileDate}_F_0000.csv`
+      `EQD_ITRTM_3129_${sensexDate}.csv`
+    );
 
     //>>>>>>>>>>>>>>>>------------------------------------------------ Add the new file path: --------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<<<<
     // const custposFilePath = previousFileDate
@@ -459,12 +620,13 @@ export const TradeFileData = async (req, res) => {
     const ProFilePath = path.join(baseDir, `nowpos.csv`);
     const ProFileDate = "nowpos";
 
-    const [prevData, todayData, newPrevData, newPrevProData] =
+    const [prevData, todayData, sensexData, newPrevData, newPrevProData] =
       await Promise.all([
         previousFileDate
           ? readFileAndParse(previousFilePath, previousFileDate, keys46)
           : [],
         readFileAndParse(todayFilePath, todayStr, keys26),
+        readFileAndParse(sensexFilePath, sensexDate, Sensexkeys47),
         readFileAndParse(custposFilePath, custposFileDate, keys37),
         readFileAndParse(ProFilePath, ProFileDate, keysPro37),
         // previousFileDate
@@ -480,6 +642,7 @@ export const TradeFileData = async (req, res) => {
       $or: [
         { fileDate: { $exists: false } },
         { fileDate: { $nin: validDates } },
+        // { fileDate: { $ne:sensexDate } },
       ],
     });
 
@@ -527,47 +690,154 @@ export const TradeFileData = async (req, res) => {
       }
     }
 
-
     // >>>>>>>>>>>>>>>>>>>>----------------------------------------- Sensex file:  ----------------------------------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<
 
-// if (prevData.length > 0) {
-//       const existing = await TradeFile.countDocuments({
-//         fileDate: previousFileDate,
-//       });
-//       console.log("Previous Day FO data:", existing);
-//       if (existing === 0) {
-//         const transformedPrevData = prevData.map((item) => {
-//           const transformedItem = {};
-//           keys46.forEach((key) => {
-//             transformedItem[key] = cleanString(item[key]);
-//           });
-//           transformedItem.fileDate = previousFileDate;
-//           transformedItem.expiry = standardizeExpiry(item.expiry);
-//           const qty1 = parseInt(item.quantity1) || 0;
-//           const qty2 = parseInt(item.quantity2) || 0;
-//           transformedItem.quantity = qty1 - qty2;
-//           transformedItem.option_type = item.option_type || "FF";
-//           return transformedItem;
-//         });
-//         const inserted = await TradeFile.insertMany(transformedPrevData);
-//         insertedCount += inserted.length;
-//         insertedData = insertedData.concat(inserted);
+    const normalize = (v) => cleanString(v);
+    const normalizeStrike = (v) => Number(v) || 0;
+    const normalizeSymbol = (v) => normalize(v).slice(0, 6);
+    // const normalizeMasterTwelve = (v) => normalize(v).slice(0, 13);
+    const normalizeMasterTwelve = (v) => {
+      const str = normalize(v);
+      if (str.length < 7) return str;
 
-//         // ❌ Delete entries where expiry === fileDate
-//         const fileDateAsExpiry = dayjs(previousFileDate, "YYYYMMDD").format(
-//           "YYYY-MM-DD"
-//         );
-//         await TradeFile.deleteMany({
-//           fileDate: previousFileDate,
-//           expiry: fileDateAsExpiry,
-//         });
-//         console.log(
-//           `Deleted entries of yesterday FO file where expiry === fileDate (${fileDateAsExpiry})`
-//         );
-//       }
-//     }
+      // remove 7th character (index 6)
+      const without7th = str.slice(0, 6) + str.slice(7);
 
+      // then limit length if required
+      return without7th.slice(0, 12);
+    };
 
+    const normalizeOption = (v) => normalize(v) || "FF";
+
+    const expandedRows = [];
+
+    sensexData.forEach((row) => {
+      const qty = Number(row.quantity) || 0;
+      if (!qty) return;
+
+      // BUY SIDE (master_id1)
+      if (row.master_id1) {
+        expandedRows.push({
+          symbol: row.symbol,
+          expiry: row.expiry,
+          strike_price: row.strike_price,
+          option_type: row.option_type,
+          master_id: row.master_id1,
+          master_neet: row.master_neet1,
+          master_twelve: row.master_twelve1,
+          trade_time: row.trade_time,
+          side: "BUY",
+          quantity: qty,
+        });
+      }
+
+      // SELL SIDE (master_id)
+      if (row.master_id) {
+        expandedRows.push({
+          symbol: row.symbol,
+          expiry: row.expiry,
+          strike_price: row.strike_price,
+          option_type: row.option_type,
+          master_id: row.master_id,
+          master_neet: row.master_neet,
+          master_twelve: row.master_twelve,
+          trade_time: row.trade_time,
+          side: "SELL",
+          quantity: qty,
+        });
+      }
+    });
+
+    const grouped = _.groupBy(expandedRows, (item) => {
+      return [
+        normalizeSymbol(item.symbol),
+        standardizeExpiry(item.expiry),
+        normalizeStrike(item.strike_price),
+        normalizeOption(item.option_type),
+        normalize(item.master_id),
+        normalize(item.master_neet),
+        normalizeMasterTwelve(item.master_twelve),
+        normalize(item.trade_time),
+      ].join("|");
+    });
+
+    const transformedSensexData = Object.values(grouped).map((group) => {
+      let buy_quantity = 0;
+      let sell_quantity = 0;
+
+      group.forEach((item) => {
+        if (item.side === "BUY") buy_quantity += item.quantity;
+        else if (item.side === "SELL") sell_quantity += item.quantity;
+      });
+
+      const net_quantity = buy_quantity - sell_quantity;
+      const base = group[0];
+
+      return {
+        symbol: normalizeSymbol(base.symbol),
+        expiry: standardizeExpiry(base.expiry),
+        strike_price: normalizeStrike(base.strike_price),
+        option_type: normalizeOption(base.option_type),
+        master_id: normalize(base.master_id),
+        master_neet: normalize(base.master_neet),
+        master_twelve: normalizeMasterTwelve(base.master_twelve),
+        trade_time: normalize(base.trade_time),
+        buy_quantity,
+        sell_quantity,
+        net_quantity,
+        fileDate: sensexDate,
+        source: "SENSEX",
+      };
+    });
+
+    // await TradeFile.deleteMany({
+    //   fileDate: { $ne:sensexDate },
+    //   source: "SENSEX",
+    // });
+
+    // await TradeFile.insertMany(transformedSensexData);
+    const inserted = await TradeFile.insertMany(transformedSensexData);
+    insertedCount += inserted.length;
+    insertedData = insertedData.concat(inserted);
+    console.log("sensex data:", insertedCount);
+    // if (prevSensexData.length > 0) {
+    //       const existing = await TradeFile.countDocuments({
+    //         fileDate: previousFileDate,
+    //       });
+    //       console.log("Previous Day FO data:", existing);
+    //       if (existing === 0) {
+    //         const transformedPrevData = prevData.map((item) => {
+    //           const transformedItem = {};
+    //           keys46.forEach((key) => {
+    //             transformedItem[key] = cleanString(item[key]);
+    //           });
+    //           transformedItem.fileDate = previousFileDate;
+    //           transformedItem.expiry = standardizeExpiry(item.expiry);
+    //           const qty1 = parseInt(item.quantity1) || 0;
+    //           const qty2 = parseInt(item.quantity2) || 0;
+    //           transformedItem.quantity = qty1 - qty2;
+    //           transformedItem.option_type = item.option_type || "FF";
+    //           return transformedItem;
+    //         });
+    //         const inserted = await TradeFile.insertMany(transformedPrevData);
+    //         insertedCount += inserted.length;
+    //         insertedData = insertedData.concat(inserted);
+
+    //         // ❌ Delete entries where expiry === fileDate
+    //         const fileDateAsExpiry = dayjs(previousFileDate, "YYYYMMDD").format(
+    //           "YYYY-MM-DD"
+    //         );
+    //         await TradeFile.deleteMany({
+    //           fileDate: previousFileDate,
+    //           expiry: fileDateAsExpiry,
+    //         });
+    //         console.log(
+    //           `Deleted entries of yesterday FO file where expiry === fileDate (${fileDateAsExpiry})`
+    //         );
+    //       }
+    //     }
+
+    // acc"
     //<<<<<<<<<<<<<<<<<<<--------------------------------------------- Insert CUSTPOS file: --------------------------------------------------<<<<<<<<<<<<<<<<<<<<<<<<
 
     if (newPrevData.length > 0) {
@@ -608,7 +878,7 @@ export const TradeFileData = async (req, res) => {
         // );
       }
     }
-//05355
+
     //<<<<<<<<<<<<<<<<<<<<<<<------------------------------------ Insert PRO newpos file:---------------------------------------------------------<<<<<<<<<<<<<<<<<<<<<
 
     const masterIdProMappings = {
@@ -619,15 +889,21 @@ export const TradeFileData = async (req, res) => {
       PRO37: "201301901001",
       B024: "201301777002",
       B025: "201301777001",
-// -----MASTERS  pro37,01141
-      PRO30: "4156", 
+      // -----MASTERS  pro37,01141
+      PRO30: "4156",
       PRO31: "57492",
-      PRO32: "10994",   
+      PRO32: "10994",
       PRO33: "4153",
       PRO34: "40443",
       PRO35: "4183",
+      PRO39: "201301888007",
       //  ------ PRO16 MINION
-      PRO16: "382355555004"
+      PRO16: "382355555004",
+      // "41296A":"41296",
+      // C41296:"41296",
+      // C05735 :"05735",
+      // "05735B": "05735",
+      // "05735A": "05735",
     };
 
     if (newPrevProData.length > 0) {
@@ -1954,12 +2230,8 @@ export const TradeFileData = async (req, res) => {
 //   }
 // };
 
-
-
-
-
 // <<<<<<<<<<<<<<<<<---------------------------- UPDATED CODE WITH QUANTITIES FOUND IN MASTER BUT NOT IN MINION SOLVED CODE -------------------------------->>>>>>>>>>>>>>
- 
+
 export const getReconTradeData = async (req, res) => {
   try {
     const { masterTraderIds } = req.body;
@@ -2126,7 +2398,9 @@ export const getReconTradeData = async (req, res) => {
         const mastersInstruments = masterByMasterId[masterId] || [];
         mastersInstruments.forEach((m) => {
           const instrKey = `${m.symbol}_${m.strike_price}_${m.expiry}_${m.option_type}`;
-          const weighted = (expectedByMinion[minionId][instrKey] || 0) + (m.total_quantity || 0) * rep;
+          const weighted =
+            (expectedByMinion[minionId][instrKey] || 0) +
+            (m.total_quantity || 0) * rep;
           expectedByMinion[minionId][instrKey] = weighted;
         });
       });
@@ -2153,7 +2427,9 @@ export const getReconTradeData = async (req, res) => {
         ...Object.keys(expectedMap),
       ]);
 
-      const repList = (minionMappingMap[minionId] || []).map((e) => e.replicationPercentage);
+      const repList = (minionMappingMap[minionId] || []).map(
+        (e) => e.replicationPercentage
+      );
 
       unionInstrKeys.forEach((instrKey) => {
         const actual = actualMap[instrKey]; // may be undefined
@@ -2163,11 +2439,14 @@ export const getReconTradeData = async (req, res) => {
           // existing minion row: just attach computed master_net_quantity (fallback 0)
           let totalMasterNetQty = 0;
           const mappingsForThisMinion = minionMappingMap[minionId] || [];
-          mappingsForThisMinion.forEach(({ masterId, replicationPercentage }) => {
-            const k = `${masterId}_${actual.symbol}_${actual.strike_price}_${actual.expiry}_${actual.option_type}`;
-            const masterQty = masterMap[k] || 0;
-            totalMasterNetQty += masterQty * (Number(replicationPercentage) || 1);
-          });
+          mappingsForThisMinion.forEach(
+            ({ masterId, replicationPercentage }) => {
+              const k = `${masterId}_${actual.symbol}_${actual.strike_price}_${actual.expiry}_${actual.option_type}`;
+              const masterQty = masterMap[k] || 0;
+              totalMasterNetQty +=
+                masterQty * (Number(replicationPercentage) || 1);
+            }
+          );
 
           enrichedMinionData.push({
             ...actual,
@@ -2181,7 +2460,9 @@ export const getReconTradeData = async (req, res) => {
           enrichedMinionData.push({
             resolved_master_id: minionId,
             symbol,
-            strike_price: isNaN(Number(strike_price)) ? strike_price : Number(strike_price),
+            strike_price: isNaN(Number(strike_price))
+              ? strike_price
+              : Number(strike_price),
             expiry,
             option_type,
             total_buy_quantity: 0,
